@@ -1,0 +1,7 @@
+
+config NE_L3COS
+	bool "L3 Class-of-Service (cos)"
+	default n
+	---help---
+	  Set cos in HashLite according to certain egress packet fields.
+	  Currently it only supports egress outer VID and/or egress 802.1p.

@@ -1,0 +1,39 @@
+/*
+ * dts file for Cortina Access Venus FPGA Board
+ *
+ * Copyright (C) 2018, Cortina Access
+ *
+ */
+
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include "ca8277-soc_fpga.dtsi"
+#include "ca8277-spinand.dtsi"
+#include "ca8277-fpga-voip.dts"
+
+/ {
+	model = "Cortina Access Venus FPGA Board";
+	compatible = "cortina,venus", "cortina,ca8277";
+	#address-cells = <2>;
+	#size-cells = <2>;
+	interrupt-parent = <&gic>;
+
+	memory { /* 240MB */
+		device_type = "memory";
+		reg = <0x00000000 0x00000000 0x0 0x0F000000>;
+	};
+};
+
+/* "okay" - turn on, "disabled" - turn off */
+&glb_phy {
+	forced-on;
+};
+
+&usb_hsphy {
+	status = "okay";
+};
+
+&usb_ssphy {
+	status = "okay";
+};

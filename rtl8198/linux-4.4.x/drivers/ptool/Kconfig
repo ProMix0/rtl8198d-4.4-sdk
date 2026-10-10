@@ -1,0 +1,25 @@
+#
+# Realtek Performance Monitor Drivers
+#
+
+config RTK_PTOOL
+	bool "Realtek performance tools"
+	default n
+	help
+	  Say y if you want to use Realtek performance monitors tools.
+
+config RTK_PTOOL_CPU_PERF
+	depends on RTK_PTOOL
+	bool "Realtek CPU performance tool"
+	default n
+	help
+	  Say y if you want to use Realtek CPU performance monitor.
+
+config RTK_PTOOL_LA_BY_GPIO
+	depends on RTK_PTOOL
+	bool "Realtek Logical Analysis by GPIO"
+	default n
+	help
+	  Say y if you want to use Realtek LA by GPIO.
+
+

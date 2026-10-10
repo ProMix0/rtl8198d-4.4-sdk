@@ -1,0 +1,48 @@
+config NE_CPU256
+        bool "CPU256"
+        default n
+        ---help---
+          If turn on this flag L3QM CPU256 will be supported. 
+
+config NE_PHY_CALIBRATION
+        bool "PHY calibration"
+        default n
+        ---help---
+          BJ4
+
+config NE_MANAGEMENT_MODE
+        bool "NI management mode"
+        default n
+        ---help---
+          BJ4
+
+config NE_AUTO_TEST_MODE
+        bool "NI auto test mode"
+        default n
+        ---help---
+          It use to forward the test packet between analyte board and Auto Test Tool.
+          Auto test tool need to connect on RGMII port.
+          1. Remove the pseudo header from RGMII port(and src/dst port=9877),
+                     then forward real data to target port.
+          2. Add the pseudo header from other port0 - port4,
+                     then forward data to RGMII port.
+
+config NE_TX_LLID_MAP
+        bool "NI TX do LLID map with source IP"
+        default n
+        ---help---
+          Cortina API will provide LLID map to source IP
+          in ca_ni_start_xmit() will look up the map table
+          and get the llid from source IP and transmit it
+          in pol_id of Header A
+
+config NE_PTP_CLOCK
+        bool "NI PTP Clock support"
+        default n
+        ---help---
+          This driver adds support for using the Cortina SoC as a PTP
+          clock. This clock is only useful if your PTP programs are
+          getting hardware time stamps on the PTP Ethernet packets
+          using the Linux SO_TIMESTAMPING API.
+
+          This requires to enable Linux option CONFIG_PTP_1588_CLOCK.

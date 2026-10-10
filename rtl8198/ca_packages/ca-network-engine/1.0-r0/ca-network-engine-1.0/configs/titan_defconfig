@@ -1,0 +1,6 @@
+#
+# Automatically generated file; DO NOT EDIT.
+# CA-Netowrk-Engine Module Configuration
+#
+CONFIG_NE_HAVE_DOT_CONFIG=y
+CONFIG_NE_AAL_PORT_NUM_ETH=5

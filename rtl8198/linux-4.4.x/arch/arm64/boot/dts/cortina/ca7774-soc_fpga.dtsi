@@ -1,0 +1,704 @@
+/*
+ * dts file for Cortina Access CA77xx SoC
+ *
+ * Copyright (C) 2016, Cortina Access
+ */
+
+#include <dt-bindings/soc/cortina_irqs.h>
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/reset/cortina,rst-mgr.h>
+#include <dt-bindings/phy/phy-ca77xx.h>
+
+/memreserve/ 0x0740f000 0x1000;  /* for spin-table */
+
+/ {
+	/* explained in Documentation/devicetree/bindings/arm/cpus.txt */
+	/* topology explained in Documentation/devicetree/bindings/arm/topology.txt */
+	/* TODO: cpufreq voltage and freq scaling, see Documentation/devicetree/bindings/cpufreq/cpufreq-dt.txt  */
+	cpus {
+		#address-cells = <2>;
+		#size-cells = <0>;
+
+		cpu0: cpu@0 {
+			compatible = "arm,cortex-a53", "arm,armv8";
+			device_type = "cpu";
+			reg = <0x0 0x0>;
+			enable-method = "spin-table";
+			cpu-release-addr = <0x0 0x740fff8>;
+		};
+		cpu1: cpu@1 {
+			compatible = "arm,cortex-a53", "arm,armv8";
+			device_type = "cpu";
+			reg = <0x0 0x1>;
+			enable-method = "spin-table";
+			cpu-release-addr = <0x0 0x740fff8>;
+		};
+		cpu2: cpu@2 {
+			compatible = "arm,cortex-a53", "arm,armv8";
+			device_type = "cpu";
+			reg = <0x0 0x2>;
+			enable-method = "spin-table";
+			cpu-release-addr = <0x0 0x740fff8>;
+		};
+		cpu3: cpu@3 {
+			compatible = "arm,cortex-a53", "arm,armv8";
+			device_type = "cpu";
+			reg = <0x0 0x3>;
+			enable-method = "spin-table";
+			cpu-release-addr = <0x0 0x740fff8>;
+		};
+
+		cpu-map {
+			cluster0 {
+				core0 {
+					cpu = <&cpu0>;
+				};
+				core1 {
+					cpu = <&cpu1>;
+				};
+				core2 {
+					cpu = <&cpu2>;
+				};
+				core3 {
+					cpu = <&cpu3>;
+				};
+			};
+		};
+	};
+
+	/* memory map from STS 1.8 */
+	/*gic: interrupt-controller@f4700000 { */
+	gic: interrupt-controller@f6f00000 {
+		compatible = "arm,gic-400", "arm,cortex-a15-gic";
+		reg = <0x0 0xf7011000 0x0 0x1000>, /* GICD */
+		      <0x0 0xf7012000 0x0 0x2000>, /* GICC */
+		      <0x0 0xf4704000 0x0 0x2000>, /* GICH */
+		      <0x0 0xf4706000 0x0 0x2000>; /* GICV */
+		#interrupt-cells = <3>;
+		#address-cells = <0>;
+		interrupt-controller;
+#if 0
+		interrupts = <1 9 0xf04>; /* explained in Documentation/devicetree/bindings/arm/gic.txt */
+#endif
+	};
+
+	/* Reserver memory region for Hash/FBM/NE and etc.
+	 * Fixme when NE team finalize size and offset
+	 */
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		ddr_reserved: ddr_buffer@0x40ee00000 {
+			reg = <0x00000000 0x0bc48000 0x0 0x1200000>,    /* reserved memory area in DDR $-coherent */
+			      <0x00000000 0x09000000 0x0 0x2270000>;    /* reserved memory area in DDR non-$cable */
+		      //reg = <0x00000000 0x0ee00000 0x0 0x1200000>,    /* reserved memory area in DDR $-coherent */
+		      //    <0x00000000 0x0cb80000 0x0 0x2270000>;    /* reserved memory area in DDR non-$cable */
+		};
+
+		fbm_reserverd: fbm_buffer@8000000 {
+			reg = <0x0 0x08000000 0x0 0x800000>;
+		};
+
+		hash_pool: hash_buffer@8800000 {
+			reg = <0x0 0x08800000 0x0 0x800000>;
+		};
+	};
+
+	/* Block Reset */
+	block_rst: reset-controller@f4320004 {
+		compatible = "cortina,rst-mgr";
+		reg = <0x0 0xf4320004 0x0 0x04>;
+		#reset-cells = <1>;
+	};
+
+	/* DPHY Reset */
+	dphy_rst: reset-controller@f4320008 {
+		compatible = "cortina,rst-mgr";
+		reg = <0x0 0xf4320008 0x0 0x04>;
+		#reset-cells = <1>;
+	};
+
+	/* Peripheral interrupts */
+	per_ictl: per_ictl@f4329004  {
+				compatible = "cortina,per-ictl";
+				reg = <0x0 0xf4329004  0x0 0x10>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupt-parent = <&gic>;
+				interrupts = <GIC_SPI IRQ_GLB_PERI IRQ_TYPE_LEVEL_HIGH>;
+	};
+
+	/* DMA SSP 0 interrupts */
+	dma_ssp_ictl0: dma_ssp_ictl@f7001e08 {
+			compatible = "cortina,per-ictl";
+			reg = <0x0 0xf7001e08 0x0 0x8>;
+			interrupt-controller;
+			#interrupt-cells = <1>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI IRQ_GLB_DMA_SSP_0 IRQ_TYPE_LEVEL_HIGH>;
+	};
+
+	/* NE interrupts, offset is GLOBAL_NETWORK_ENGINE_INTERRUPT_0 */
+	ne_ictl: ne_ictl@f43200a0  {
+				compatible = "cortina,per-ictl";
+				reg = <0x0 0xf43200a0  0x0 0x10>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupt-parent = <&gic>;
+				interrupts = <GIC_SPI IRQ_GLB_NE IRQ_TYPE_LEVEL_HIGH>;
+	};
+
+	/* clocks explained here Documentation/devicetree/bindings/clock/clock-bindings.txt */
+	/* TODO */
+
+	/* ARM V8 timer explained here /Documentation/devicetree/bindings/arm/arch_timer.txt */
+	timer {
+		compatible = "arm,armv8-timer";
+		interrupt-parent = <&gic>;
+		/* interrupts values below are bit position and ordering is listed as secure, non-secure, virtual and hypervisor modes */
+		interrupts = <1 13 0xff08>,
+			     <1 14 0xff08>,
+			     <1 11 0xff08>,
+			     <1 10 0xff08>;
+		clock-frequency = <25000000>; /* Joe confirmed external timer frequence is 25MHz */
+	};
+
+	uart0: uart@f4329148 { /* console */
+		device_type = "serial";
+		compatible = "cortina,serial";
+		reg = <0x00000000 0xf4329148 0x0 0x30>; /* TODO - update when memory map available */
+		clocks = <&apb_pclk>;
+		interrupts = <GIC_SPI IRQ_GLB_UART0 IRQ_TYPE_LEVEL_HIGH>; /* TODO - update when interrupt map available */
+	};
+
+	uart1: uart@f4329178 {
+		device_type = "serial";
+		compatible = "cortina,serial";
+		reg = <0x00000000 0xf4329178 0x0 0x30>; /* TODO - update when memory map available */
+		clocks = <&apb_pclk>;
+		interrupts = <GIC_SPI IRQ_GLB_UART1 IRQ_TYPE_LEVEL_HIGH>; /* TODO - update when interrupt map available */
+	};
+
+	gpio-controller@f4329280 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "cortina,ca77xx-gpio";
+		reg = <0x0 0xf4329280 0x0 0xb4>,
+		      <0x0 0xf4320050 0x0 0x14>;
+
+		/* bank 0 with an interrupt */
+		gpio0: bank@0 {
+			gpio-controller;
+			interrupt-controller;
+			reg = <0>;
+			ngpios = <16>;
+			#gpio-cells = <2>;
+			#interrupt-cells = <2>;
+			interrupt-parent = <&per_ictl>;
+			interrupts = <IRQ_PER_GPIO0>;
+		};
+
+		/* bank 1 with an interrupt */
+		gpio1: bank@1 {
+			gpio-controller;
+			interrupt-controller;
+			reg = <1>;
+			ngpios = <17>;
+			#gpio-cells = <2>;
+			#interrupt-cells = <2>;
+			interrupt-parent = <&per_ictl>;
+			interrupts = <IRQ_PER_GPIO1>;
+		};
+
+		/* bank 2 without interrupt */
+		gpio2: bank@2 {
+			gpio-controller;
+			interrupt-controller;
+			reg = <2>;
+			ngpios = <12>;
+			#gpio-cells = <2>;
+			#interrupt-cells = <2>;
+			interrupt-parent = <&per_ictl>;
+			interrupts = <IRQ_PER_GPIO2>;
+		};
+
+		/* bank 3 without interrupt */
+		gpio3: bank@3 {
+			gpio-controller;
+			interrupt-controller;
+			reg = <3>;
+			ngpios = <8>;
+			#gpio-cells = <2>;
+			#interrupt-cells = <2>;
+			interrupt-parent = <&per_ictl>;
+			interrupts = <IRQ_PER_GPIO3>;
+		};
+
+		/* bank 4 without interrupt */
+		gpio4: bank@4 {
+			gpio-controller;
+			interrupt-controller;
+			reg = <4>;
+			ngpios = <8>;
+			#gpio-cells = <2>;
+			#interrupt-cells = <2>;
+			interrupt-parent = <&per_ictl>;
+			interrupts = <IRQ_PER_GPIO4>;
+		};
+	};
+
+	/* explained in Documentation/devicetree/bindings/phy/ca77xx-phy.txt */
+	glb_phy: phy@f4320024 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "cortina,ca77xx-phy";
+		reg = <0x0 0xf4320024 0x0 0x8>;
+
+		s0_pcie_phy: phy@PHY_S0_PCIE {
+			reg = <PHY_S0_PCIE>;
+			#phy-cells = <0>;
+		};
+
+		s1_pcie_phy: phy@PHY_S1_PCIE {
+			reg = <PHY_S1_PCIE>;
+			#phy-cells = <0>;
+		};
+
+		s2_pcie_phy: phy@PHY_S2_PCIE {
+			reg = <PHY_S2_PCIE>;
+			#phy-cells = <0>;
+		};
+
+		s2_usb_phy: phy@PHY_S2_USB {
+			reg = <PHY_S2_USB>;
+			#phy-cells = <0>;
+		};
+
+		s3_usb_phy: phy@PHY_S3_USB {
+			reg = <PHY_S3_USB>;
+			#phy-cells = <0>;
+		};
+	};
+
+	atu@f432d000 {
+		compatible = "cortina,ca77xx-atu";
+		reg = <0x0 0xf432d000 0x0 0x00000800>,
+		      <0x0 0xf6700000 0x0 0x00000500>;
+		reg-names = "apb1_atu", "apb2_atu";
+	};
+
+	/* Synopsis Designware PCIe interface */
+	/* explained in Documentation/devicetree/bindings/pci/ca77xx-pcie.txt */
+	pcie0: pcie@f4325000 {
+		compatible = "cortina,ca77xx-pcie";
+		reg = <0x0 0xf4325000 0x0 0x00000400>,
+		      <0x0 0xf0000000 0x0 0x00001000>,
+		      <0x0 0xf0001000 0x0 0x00002000>;
+		reg-names = "glbl_regs", "rc_dbi", "config";
+		#address-cells = <3>;
+		#size-cells = <2>;
+		device_type = "pci";
+		ranges = <0x81000000 0 0          0 0xf0003000 0 0x00010000   /* downstream I/O */
+			  0x82000000 0 0xf0013000 0 0xf0013000 0 0x00fed000>; /* non-prefetchable memory */
+
+		id = <0>;
+		num-lanes = <2>;
+
+		//clocks = <&clks 144>, <&clks 206>, <&clks 189>;
+		//clock-names = "pcie", "pcie_bus", "pcie_phy";
+		//cortina,pcie-port = 0
+
+		resets = <&block_rst PCI0_RESET>, <&dphy_rst PHY_S0_PCIE_RESET>;
+		reset-names = "core_reset", "phy_reset";
+
+		phys = <&s0_pcie_phy>;
+		phy-names = "pcie-phy";
+
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI IRQ_GLB_PCI_0 IRQ_TYPE_LEVEL_HIGH>; /* controller interrupt */
+
+		#interrupt-cells = <1>;
+		interrupt-map-mask = <0 0 0 7>;
+		interrupt-map = <0 0 0 1 &pcie0_intc 1>,
+				<0 0 0 2 &pcie0_intc 2>,
+				<0 0 0 3 &pcie0_intc 3>,
+				<0 0 0 4 &pcie0_intc 4>;
+		pcie0_intc: interrupt-controller {
+			interrupt-controller;
+			#address-cells = <0>;
+			#interrupt-cells = <1>;
+		};
+	};
+
+	pcie1: pcie@f4326000 {
+		compatible = "cortina,ca77xx-pcie";
+		reg = <0x0 0xf4326000 0x0 0x00000400>,
+		      <0x0 0xf1000000 0x0 0x00001000>,
+		      <0x0 0xf1001000 0x0 0x00002000>;
+		reg-names = "glbl_regs", "rc_dbi", "config";
+		#address-cells = <3>;
+		#size-cells = <2>;
+		device_type = "pci";
+		ranges = <0x81000000 0 0          0 0xf1003000 0 0x00010000   /* downstream I/O */
+			  0x82000000 0 0xf1013000 0 0xf1013000 0 0x00fed000>; /* non-prefetchable memory */
+
+		id = <1>;
+		num-lanes = <1>;
+
+		//clocks = <&clks 144>, <&clks 206>, <&clks 189>;
+		//clock-names = "pcie", "pcie_bus", "pcie_phy";
+		//cortina,pcie-port = 0
+
+		resets = <&block_rst PCI1_RESET>, <&dphy_rst PHY_S1_PCIE_RESET>;
+		reset-names = "core_reset", "phy_reset";
+
+		phys = <&s1_pcie_phy>;
+		phy-names = "pcie-phy";
+
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI IRQ_GLB_PCI_1 IRQ_TYPE_LEVEL_HIGH>; /* controller interrupt */
+
+		#interrupt-cells = <1>;
+		interrupt-map-mask = <0 0 0 7>;
+		interrupt-map = <0 0 0 1 &pcie1_intc 0>,
+				<0 0 0 2 &pcie1_intc 1>,
+				<0 0 0 3 &pcie1_intc 2>,
+				<0 0 0 4 &pcie1_intc 3>;
+		pcie1_intc: interrupt-controller {
+			interrupt-controller;
+			#address-cells = <0>;
+			#interrupt-cells = <1>;
+		};
+	};
+
+	pcie2: pcie@f4327000 {
+		compatible = "cortina,ca77xx-pcie";
+		reg = <0x0 0xf4327000 0x0 0x00000400>,
+		      <0x0 0xf2000000 0x0 0x00001000>,
+		      <0x0 0xf2001000 0x0 0x00002000>;
+		reg-names = "glbl_regs", "rc_dbi", "config";
+		#address-cells = <3>;
+		#size-cells = <2>;
+		device_type = "pci";
+		ranges = <0x81000000 0 0          0 0xf2003000 0 0x00010000   /* downstream I/O */
+			  0x82000000 0 0xf2013000 0 0xf2013000 0 0x00fed000>; /* non-prefetchable memory */
+
+		id = <2>;
+		num-lanes = <1>;
+
+		//clocks = <&clks 144>, <&clks 206>, <&clks 189>;
+		//clock-names = "pcie", "pcie_bus", "pcie_phy";
+		//cortina,pcie-port = 0
+
+		resets = <&block_rst PCI2_RESET>, <&dphy_rst PHY_S2_PCIE_RESET>;
+		reset-names = "core_reset", "phy_reset";
+
+		phys = <&s2_pcie_phy>;
+		phy-names = "pcie-phy";
+
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI IRQ_GLB_PCI_2 IRQ_TYPE_LEVEL_HIGH>; /* controller interrupt */
+
+		#interrupt-cells = <1>;
+		interrupt-map-mask = <0 0 0 7>;
+		interrupt-map = <0 0 0 1 &pcie2_intc 1>,
+				<0 0 0 2 &pcie2_intc 2>,
+				<0 0 0 3 &pcie2_intc 3>,
+				<0 0 0 4 &pcie2_intc 4>;
+		pcie2_intc: interrupt-controller {
+			interrupt-controller;
+			#address-cells = <0>;
+			#interrupt-cells = <1>;
+		};
+	};
+
+	soc {
+		compatible = "cortina,g3";
+		reg = <0x00000000 0xf4320000 0x0 0x4>,		/* GLOBAL_JTAG_ID */
+		      <0x00000000 0xf4320134 0x0 0x44>;		/* GLOBAL_CPLLDIV */
+		reg-names = "JTAG_ID", "CLOCK";
+	};
+
+	ethernet@f4300000 {
+		compatible = "cortina,ni-interface";
+
+		reg = <0x00000000 0xf4300000 0x0 0x10000>,	/* reserved memory area for HV NE(APB0) module registers */
+		      <0x00000000 0xf43200a0 0x0 0x10>,		/* reserved memory area for Global Network Engine Interrupt registers */
+		      <0x00000000 0xf43290d8 0x0 0x48>, 	/* reserved memory area for MDIO registers */
+		      <0x00000000 0xf4500000 0x0 0x2000>,	/* reserved memory area for XRAM */
+		      <0x00000000 0xf7001000 0x0 0x900>,	/* reserved memory area for DMA LSO */
+                      <0x00000000 0xc0000000 0x0 0x40000>,      /* reserved memory area in SRAM */
+                      //<0x00000000 0x0ee00000 0x0 0x1200000>,    /* reserved memory area in DDR $-coherent */
+                      //<0x00000000 0x0cb80000 0x0 0x2270000>;    /* reserved memory area in DDR non-$cable */
+                      <0x00000000 0x0bc48000 0x0 0x1200000>,    /* reserved memory area in DDR $-coherent */
+                      <0x00000001 0x09000000 0x0 0x2270000>;    /* reserved memory area in DDR non-$cable */
+
+		//interrupt-parent=<&ne_ictl>;
+		//interrupts=<0>,					/* interupt for NI */
+		//	   <4>;					/* interrupt for TQM */
+		interrupt-parent=<&gic>;
+		interrupts=<GIC_SPI IRQ_GLB_QM_CPU_FIFO0_REQ IRQ_TYPE_LEVEL_HIGH>,
+			   <GIC_SPI IRQ_GLB_QM_CPU_FIFO1_REQ IRQ_TYPE_LEVEL_HIGH>,
+			   <GIC_SPI IRQ_GLB_QM_CPU_FIFO2_REQ IRQ_TYPE_LEVEL_HIGH>,
+			   <GIC_SPI IRQ_GLB_QM_CPU_FIFO3_REQ IRQ_TYPE_LEVEL_HIGH>,
+			   <GIC_SPI IRQ_GLB_QM_CPU_FIFO4_REQ IRQ_TYPE_LEVEL_HIGH>,
+			   <GIC_SPI IRQ_GLB_QM_CPU_FIFO5_REQ IRQ_TYPE_LEVEL_HIGH>,
+			   <GIC_SPI IRQ_GLB_QM_CPU_FIFO6_REQ IRQ_TYPE_LEVEL_HIGH>,
+			   <GIC_SPI IRQ_GLB_QM_CPU_FIFO7_REQ IRQ_TYPE_LEVEL_HIGH>,
+			   <GIC_SPI IRQ_GLB_QM_CPU_REFILL_REQ_8 IRQ_TYPE_LEVEL_HIGH>,
+			   <GIC_SPI IRQ_GLB_QM_CPU_REFILL_REQ_9 IRQ_TYPE_LEVEL_HIGH>;
+
+		resets = <&block_rst NI_RESET>, <&block_rst L2FE_RESET>, <&block_rst L2TM_RESET>, <&block_rst L3FE_RESET>, <&block_rst SDRAM_RESET>, <&block_rst TQM_RESET>;
+		reset-names = "ni_reset", "l2fe_reset", "l2tm_reset", "l3fe_reset", "sdram_reset", "tqm_reset";
+		memory-region = <&ddr_reserved>;
+	};
+
+	ldma@f6701200{
+		compatible = "cortina,adma";
+		reg = <0x00000000 0xf6701200 0x0 0x100>;
+		interrupts = <GIC_SPI IRQ_GLB_LDMA_0 IRQ_TYPE_LEVEL_HIGH>;	/* Fixme: update when interrupt map available */
+	};
+
+	sflash@f4324000 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "cortina,sflash";
+		reg = <0x00000000 0xf4324000 0x0 0x50>;
+		sflash_mem_addr = <0x00000000 0xe0000000>;
+		sflash_mem_size = <0x00000000 0x10000000>;
+
+		bootloader@0 {
+			label = "bootloader";
+			reg = <0x0 0x100000>;
+		};
+
+		kernel@100000 {
+			label = "kernel";
+			reg = <0x100000 0x500000>;
+		};
+
+		user@600000 {
+			label = "user";
+			reg = <0x600000 0xA00000>;
+		};
+
+	};
+
+	ipc: ipc@f67100c8 { /* IPC */
+		compatible = "cortina,ipc";
+		reg = <0x00000000 0xf67100c8 0x0 0x48>,				/* TODO - reserved for mailbox register*/
+		      <0x00000000 0xc0000000 0x0 0x4800>;			/* TODO - reserved memory area for IPC packet*/
+		interrupts = <GIC_SPI IRQ_GLB_IPC_ARM0 IRQ_TYPE_LEVEL_HIGH>;
+	};
+
+	sem: sem@f6710000 { /* Hardware Semaphore */
+		compatible = "cortina,sem";
+		reg = <0x00000000 0xf6710000 0x0 0xc8>;				/* TODO - reserved for semaphore register*/
+	};
+
+        ssc0: ssc@f0010000 {
+                status = "okay";
+        };
+
+	/* TODO I2C interface - board specific */
+	i2c: i2c@f4329120 {
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "cortina,ca77xx-i2c";
+		reg = <0x00000000 0xf4329120 0x0 0x28>;
+		interrupt-parent = <&per_ictl>;
+		interrupts = <IRQ_PER_BIW>;
+		device_type = "i2c";
+		#clock-frequency = <&apb_pclk>;
+
+		freq_rcl = <25000000>;      /* Reference Clock */
+		freq_scl = <100000>;	    /* Serial Clock */
+		timeout  = <100>;	    /* In milliseconds */
+		retries  = <3>;             /* retry count */
+		/*status = "ok";*/
+
+                dae4p001: dae4p001@59 {
+                        compatible = "d2,dae4p";
+			reset-gpio = <&gpio0 3 GPIO_ACTIVE_LOW>;
+			reg = <0x59>;
+                };
+	};
+
+	/* explained in Documentation/devicetree/bindings/spi/spi-bus.txt */
+	spi0: spi@f4329098 {
+		compatible = "cortina,ca77xx-spi";
+		reg = <0x00000000 0xf4329098 0x0 0x40>;
+		interrupt-parent = <&per_ictl>;
+		interrupts = <IRQ_PER_SPI>;
+		clocks = <&apb_pclk>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+
+	audio: ssp0@f7001b80 {
+                compatible = "cortina,ca77xx-audio";
+		reg = <0x00000000 0xf7001b80 0x0 0x80>,
+		      <0x00000000 0xf7001064 0x0 0x08>,
+		      <0x00000000 0xf7001a80 0x0 0x80>;
+		reg-names = "ssp", "dma-glb", "dma-ssp";
+
+		interrupt-parent = <&dma_ssp_ictl0>;
+                interrupts = <IRQ_DMA_SSP_SSP0>,
+			     <IRQ_DMA_SSP_TXQ6>,
+			     <IRQ_DMA_SSP_RXQ6>;
+		interrupt-names = "ssp", "dma-tx", "dma-rx";
+        };
+
+	mmc0: mmc@f4400000 {
+			compatible = "snps,dw-mshc";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0 0xf4400000 0 0x1000>;
+			interrupts = <GIC_SPI IRQ_GLB_SD IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&sd_clk>, <&sd_clk>;
+			clock-names = "ciu","biu";
+			cd-gpios;
+			num-slots = <1>;
+			card-detect-delay = <200>;
+			bus-width = <4>;
+			cap-mmc-highspeed;
+			cap-sd-highspeed;
+		};
+
+        sound {
+                compatible = "cortina,ca77xx-evm-audio";
+                cortina,model = "DAE4P-EVMSK";
+                cortina,audio-codec = <&dae4p001>;
+                cortina,ssc-controller = <&ssc0>;
+                cortina,codec-clock-rate = <24000000>;
+                cortina,audio-routing =
+                        "Headphone Jack",       "HPLOUT",
+                        "Headphone Jack",       "HPROUT";
+        };
+
+	ca77xx_evm0: ca77xx-i2s {
+		compatible = "cortina,ca77xx-i2s";
+	};
+
+        ca77xx_pcm_audio: ca77xx_pcm_audio@0xf7001000 {
+		.compatible = "cortina,ca77xx-pcm-audio";
+        };
+
+#if 0	/* Cannot try until we got bitfile which support USB */
+	usb@f4200000 {
+		compatible = "cortina,dwusb3";
+		ranges;
+		usbdrd_dwc3: dwc3 {
+			compatible = "synopsys,dwc3";
+			reg = <0 0xf4200000 0 0x10000>;
+			interrupts = <GIC_SPI IRQ_GLB_USB3_1 IRQ_TYPE_LEVEL_HIGH>;
+			phys = <&usb2_phy>, <&usb3_phy>;
+			phy-names = "usb2-phy", "usb3-phy";
+			maximum-speed = "super-speed";
+			dr_mode = "host";
+		};
+	};
+#endif
+
+#if 0
+	smb {
+		compatible = "simple-bus";
+		#address-cells = <2>;
+		#size-cells = <2>;
+		interrupt-parent = <&gic>;
+		ranges;
+
+		uart2: uart@0xf4570174 {
+			device_type = "serial";
+			compatible = "cortina,serial";
+			reg = <0x0 0xf4570174 0x0 0x30>; /* TODO - update when memory map available */
+			clocks = <&apb_pclk>;
+			interrupts = <0 32 0x1>; /* TODO - update when interrupt map available */
+		};
+
+		uart3: uart@0xf45701a4 {
+			device_type = "serial";
+			compatible = "cortina,serial";
+			reg = <0x0 0xf45701a4 0x0 0x30>; /* TODO - update when memory map available */
+			clocks = <&apb_pclk>;
+			interrupts = <0 32 0x1>; /* TODO - update when interrupt map available */
+		};
+
+		/* Synopsis Designware SATA interface - ahci_platform.c  */
+		/* explained in Documentation/devicetree/bindings/ata/ahci-platform.txt */
+		/* TODO - revisit PHY configuration and clocks, when info available */
+		sata0: sata@f4100000 {
+			compatible = "snps,dwc-ahci";
+			reg = <0 0xf4100000 0 0x800>;
+			interrupts = <0 355 4>; /* TODO - update when interrupt map available */
+			clocks = <&apb_pclk>;
+			dma-coherent;
+		};
+
+		/* Synopsis Designware USB 2.0 interface */
+		/* explained in Documentation/devicetree/bindings/usb/dwc2.txt */
+		usb0: usb@f4200000 {
+			compatible = "snps,dwc2";
+			reg = <0xf4200000 0x10000>; /* TODO: revisit when memory map finalized */
+			interrupts = <0 70 0x4>; /* TODO: revisit when irq map available */
+			clocks = <&usb2_clk>;
+			clock-names = "otg";
+			/* TODO: revisit when PHY decided */
+			/*
+			phys = <&usbphy>;
+			phy-names = "usb2-phy";
+			*/
+		};
+
+		/* Synopsis Designware USB 3.0 interface */
+		/* explained in Documentation/devicetree/bindings/usb/dwc3.txt */
+		/* TODO: requires cortina specific glue logic driver to be developed */
+		/* INCOMPLETE below, PHY driver and Glue logic. All comments out for now */
+		usb1: usb@f4280000 {
+			compatible = "cortina,g3-dwc3";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			reg = <0xf4280000 0x10000>;
+			clocks = <&clkusb>;
+			clock-names = "usb";
+			interrupts = <0 393 1>;
+			ranges;
+			dma-coherent;
+			dma-ranges;
+			status = "disabled";
+
+			dwc3@f4280000 {
+				compatible = "synopsys,dwc3";
+				reg = <0xf4280000 0x70000>;
+				interrupts = <0 393 1>;
+				usb-phy = <&usb3_phy>, <&usb3_phy>;
+			};
+		};
+
+		usb3_phy: usb_phy@2620738 {
+			compatible = "realtek,usb3phy";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			reg = <0x2620738 24>;
+			status = "disabled";
+		};
+		*/
+	};
+	/* TODO list, some of these are going to be board specific and thus
+	 * should be moved to the board specific device tree file like fpga
+	 * board.
+	 */
+	/* TODO NI interface  - board specific phy config */
+	/* TODO Temperture Monitor - board specific */
+	/* TODO I2S/PCM interface  - board specific */
+	/* TODO SPI interface - board specific */
+	/* TODO I2C interface - board specific */
+	/* TODO GPIO interface - board specific */
+	/* TODO Clock tree - board specific */
+#endif
+
+};

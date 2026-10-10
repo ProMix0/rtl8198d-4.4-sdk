@@ -1,0 +1,33 @@
+config NE_SW_SHAPER
+	bool "Software Shaper"
+	default n
+	---help---
+	  A Software Shaper to shape the traffic through CPU256 256 VoQs to WAN port.
+	  This module only needed in Soc which supports CPU256 256 VoQs.
+
+config NE_US_RATE_MANAGER
+	bool "Up Stream Rate Manager"
+	default n
+	---help---
+	  A up stream rate manager to manager the traffic through CPU256 256 VoQs to WAN port.
+	  This module only needed in Soc which supports CPU256 256 VoQs.
+
+config NE_TPUT_TEST
+	bool "Throughput Test"
+	default n
+	---help---
+	  Cortina UDP throughput test by offload processor.
+	  This includes the APIs to enable offload processor to generate packets and return the statistic.
+
+config NE_WELL_KNOWN_MULTICAST
+        bool "well known multicast"
+        default n
+        ---help---
+	  Support well-known multicast address flooding based on RFC4541.
+	  The well-knowm multicast packet will be offloaded into PE.
+
+config NE_L3_MCAST
+        bool "Layer3 Multicast"
+        default n
+        ---help---
+	  BJ4 by Aaron

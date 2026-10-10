@@ -1,0 +1,22 @@
+From f5da3c602827965b3c245a21ded8cfe3247af9fd Mon Sep 17 00:00:00 2001
+From: limin_w8272 <limin_w8272@tp-link.com.cn>
+Date: Thu, 22 Sep 2022 20:30:28 +0800
+Subject: tmp toolchain cc link
+
+
+diff --git a/toolchain/msdk-4.8.5-mips-EB-4.4-u0.9.33-m32ut-180206/bin/mips-linux-cc b/toolchain/msdk-4.8.5-mips-EB-4.4-u0.9.33-m32ut-180206/bin/mips-linux-cc
+new file mode 120000
+index 000000000..524527988
+--- /dev/null
++++ b/toolchain/msdk-4.8.5-mips-EB-4.4-u0.9.33-m32ut-180206/bin/mips-linux-cc
+@@ -0,0 +1 @@
++mips-linux-uclibc-gcc
+\ No newline at end of file
+diff --git a/toolchain/msdk-4.8.5-mips-EB-4.4-u0.9.33-m32ut-180206/bin/msdk-linux-cc b/toolchain/msdk-4.8.5-mips-EB-4.4-u0.9.33-m32ut-180206/bin/msdk-linux-cc
+new file mode 120000
+index 000000000..524527988
+--- /dev/null
++++ b/toolchain/msdk-4.8.5-mips-EB-4.4-u0.9.33-m32ut-180206/bin/msdk-linux-cc
+@@ -0,0 +1 @@
++mips-linux-uclibc-gcc
+\ No newline at end of file

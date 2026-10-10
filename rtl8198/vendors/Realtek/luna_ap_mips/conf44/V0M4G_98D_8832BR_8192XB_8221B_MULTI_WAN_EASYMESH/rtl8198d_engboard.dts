@@ -1,0 +1,93 @@
+/*
+ * Realtek Semiconductor Corp.
+ *
+ * Device Tree Structure
+ *
+ * Tony Wu (tonywu@realtek.com)
+ */
+
+/dts-v1/;
+/*Reference resources from rtl8198f-engboard.dts and rtl9607c_engboard.dts*/
+#include "rtl8198d_soc.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#ifndef CONFIG_LUNA_MEMORY_AUTO_DETECTION 
+/*#include "memory.dts"*/
+#endif
+
+/ {
+	compatible = "rtk,8198d";
+	#address-cells = <1>;
+	#size-cells = <1>;
+	
+	leds {
+		compatible = "gpio-leds";
+		led_wps {
+			label = "LED_WPS_G";
+			gpios = <&gpio1 24 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
+		};
+
+	};
+	gpio-keys {
+		compatible = "gpio-keys";
+		autorepeat;
+
+		btn_reset {
+			label = "btn,reset";
+			linux,code = <KEY_RESTART>;
+			gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
+			autorepeat;
+		};
+		btn_wps {
+			label = "btn,wps";
+			linux,code = <KEY_WPS_BUTTON>;
+			gpios = <&gpio1 2 GPIO_ACTIVE_LOW>;
+			autorepeat;
+		};
+	};
+
+    board_setting {
+                pci0_gpio_rst = <&gpio1 8 GPIO_ACTIVE_HIGH>;
+                pci1_gpio_rst = <&gpio1 7 GPIO_ACTIVE_HIGH>;
+                rtl8221b_dev0_reset = <&gpio1 28 GPIO_ACTIVE_LOW>;
+        };
+};
+
+&gic {
+	timer {
+		compatible = "mti,gic-timer";
+		interrupts = <GIC_LOCAL 1 IRQ_TYPE_NONE>;
+		/* clocks = <&soc_clk25mhz>; */
+		clocks = <&apro_soc_clk 0>;
+		/* clock-frequency = <900000000>; */
+	};
+};
+
+&uart0 {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED GIC_EXT_UART0 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+
+/* FIXME Disable for early development
+&eth0 {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED 9 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+&gmac {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED 9 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+&usb {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED 8 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+&hdmi0 {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED 13 IRQ_TYPE_LEVEL_HIGH>;
+};
+*/

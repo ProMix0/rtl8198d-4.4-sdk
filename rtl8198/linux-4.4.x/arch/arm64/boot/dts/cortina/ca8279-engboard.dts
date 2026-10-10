@@ -1,0 +1,208 @@
+/*
+ * dts file for Cortina Access G3 ASIC Development Board
+ *
+ * Copyright (C) 2017, Cortina Access
+ *
+ */
+
+#include "ca7774-engboard.dts"
+#include "ca8279-saturn_soc.dtsi"
+
+/ {
+	model = "Cortina Access G3HGU Engineering Board";
+
+    /* Driver for thermal sensor, this sensor located at Saturn diode */
+    thermal_sensor1: thermal@f310017c {
+		compatible = "cortina,thermal-sensor";
+		reg = <0 0xf310017c 0 0x10>;
+		#thermal-sensor-cells = <0>;
+	};
+
+	thermal_cpu_hotplug: cpu_hotplug {
+       compatible = "thermal-cpu-hotplug";
+       cooling-min-level = <0>;
+       cooling-max-level = <3>;
+       #cooling-cells = <2>;
+    };
+
+	thermal-zones {
+        cpu_thermal: cpu-thermal {
+                polling-delay-passive = <500>; /* milliseconds */
+                polling-delay = <3000>; /* milliseconds */
+
+                thermal-sensors = <&thermal_sensor1>;
+
+                trips {
+                        cpu_alert0: cpu-alert0 {
+                                temperature = <90000>; /* millicelsius */
+                                hysteresis =  <5000>; /* millicelsius */
+                                type = "active";
+                        };
+                        cpu_hot0: cpu-hot0 {
+                                temperature = <105000>; /* millicelsius */
+                                hysteresis = <5000>; /* millicelsius */
+                                type = "passive";
+                        };
+                        cpu_crit0: cpu-crit0 {
+                                temperature = <115000>; /* millicelsius */
+                                hysteresis = <5000>; /* millicelsius */
+                                type = "critical";
+                        };
+                };
+
+                cooling-maps {
+                        map0 {
+                                trip = <&cpu_alert0>;
+                                cooling-device =
+					<&cpu0 0 7>;
+                        };
+                        map1 {
+                                trip = <&cpu_hot0>;
+                                cooling-device =
+					<&thermal_cpu_hotplug 0 3>;
+                        };
+                        map2 {
+                                trip = <&cpu_crit0>;
+                                cooling-device =
+					<&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+                        };
+                };
+        };
+	};
+
+	/* Saturn GPIO */
+	sgpio-controller@f3224280 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "cortina,ca77xx-gpio";
+		reg = <0x0 0xf3224280 0x0 0x24>,
+		      <0x0 0xf3100058 0x0 0x04>;
+		id = <1>;
+		iomux; /* no pinctrl support */
+
+		/* Saturn GPIO bank 0 w/o interrupt */
+		sgpio0: bank@0 {
+			gpio-controller;
+			reg = <0>;
+			ngpios = <16>;
+			#gpio-cells = <2>;
+		};
+
+		/* Saturn GPIO bank 1 w/o interrupt */
+		sgpio1: bank@1 {
+			gpio-controller;
+			reg = <1>;
+			ngpios = <17>;
+			#gpio-cells = <2>;
+		};
+
+		/* Saturn GPIO bank 2 w/o interrupt */
+		sgpio2: bank@2 {
+			gpio-controller;
+			reg = <2>;
+			ngpios = <12>;
+			#gpio-cells = <2>;
+		};
+
+		/* Saturn GPIO bank 3 w/o interrupt */
+		sgpio3: bank@3 {
+			gpio-controller;
+			reg = <3>;
+			ngpios = <8>;
+			#gpio-cells = <2>;
+		};
+
+	};
+
+	gpio-reset {
+		pcie1_device_rst: pcie1_device {
+			gpios = <&gpio0 255 GPIO_ACTIVE_LOW>;
+		};
+
+		pcie2_device_rst: pcie2_device {
+			gpios = <&gpio0 255 GPIO_ACTIVE_LOW>;
+		};
+	};
+};
+
+&pcie0 {
+	serdes-cfg0 = <0xf4333004 0xa84a>,
+		      <0xf4333008 0x6042>,
+		      <0xf4333010 0x4000>,	/* BIT13: SSC */
+		      <0xf4333018 0x001f>,
+		      <0xf4333024 0x520c>,
+ 		      <0xf4333028 0x9273>,
+		      <0xf433302c 0x7905>,
+		      <0xf4333034 0xf722>,
+		      <0xf433303c 0x6000>,
+		      <0xf4333044 0x4400>,
+		      <0xf4333068 0x0000>,
+		      <0xf4333070 0x0420>,
+		      <0xf4333080 0x9477>,
+		      <0xf4333090 0x080c>,
+		      <0xf4333098 0xc40b>,
+		      <0xf43330ac 0xa803>,
+
+		      <0xf4333104 0xa84a>,
+		      <0xf4333108 0x6042>,	/* BIT13: SSC */
+		      <0xf4333110 0x4000>,
+		      <0xf4333118 0x001f>,
+		      <0xf4333124 0x520c>,
+		      <0xf4333128 0x9273>,
+		      <0xf433312c 0x7905>,
+		      <0xf4333134 0xf722>,
+		      <0xf433313c 0x6000>,
+		      <0xf4333144 0x4400>,
+		      <0xf4333168 0x0000>,
+		      <0xf4333170 0x0420>,
+		      <0xf4333180 0x9477>,
+		      <0xf4333190 0x080c>,
+		      <0xf4333198 0xc40b>,
+		      <0xf43331ac 0xa803>;
+
+	serdes-cfg1 = <0xf4334004 0xa84a>,
+		      <0xf4334008 0x6042>,
+		      <0xf4334010 0x4000>,	/* BIT13: SSC */
+		      <0xf4334018 0x001f>,
+		      <0xf4334024 0x520c>,
+		      <0xf4334028 0x9273>,
+		      <0xf433402c 0x7905>,
+		      <0xf4334034 0xf722>,
+		      <0xf433403c 0x6000>,
+		      <0xf4334044 0x4400>,
+		      <0xf4334068 0x0000>,
+		      <0xf4334070 0x0420>,
+		      <0xf4334080 0x9477>,
+		      <0xf4334090 0x080c>,
+		      <0xf4334098 0xc40b>,
+		      <0xf43340ac 0xa803>,
+
+		      <0xf4334104 0xa84a>,
+		      <0xf4334108 0x6042>,
+		      <0xf4334110 0x4000>,	/* BIT13: SSC */
+		      <0xf4334118 0x001f>,
+		      <0xf4334124 0x520c>,
+		      <0xf4334128 0x9273>,
+		      <0xf433412c 0x7905>,
+		      <0xf4334134 0xf722>,
+		      <0xf433413c 0x6000>,
+		      <0xf4334144 0x4400>,
+		      <0xf4334168 0x0000>,
+		      <0xf4334170 0x0420>,
+		      <0xf4334180 0x9477>,
+		      <0xf4334190 0x080c>,
+		      <0xf4334198 0xc40b>,
+		      <0xf43341ac 0xa803>;
+};
+
+&pcie1 {
+	status = "disabled";
+};
+
+&pcie2 {
+	status = "disabled";
+};
+
+&lm75a {
+	status = "disabled";
+};

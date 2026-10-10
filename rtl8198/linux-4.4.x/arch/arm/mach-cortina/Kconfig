@@ -1,0 +1,75 @@
+
+if ARCH_CORTINA
+
+config ARCH_CORTINA_G3LITE
+	bool "G3Lite SoC Support"
+	select CPU_V7
+	select ARM_GIC
+	select HAVE_ARM_ARCH_TIMER
+	select GENERIC_IRQ_CHIP
+	help
+	  This enables support for systems based on Cortina G3Lite SoCs.
+
+config ARCH_RTL8198F
+	bool "RTL8198F SoC Support"
+	select CPU_V7
+	select ARM_GIC
+	select HAVE_ARM_ARCH_TIMER
+	select GENERIC_IRQ_CHIP
+	select PINCTRL
+	select PINCTRL_RTL8198F
+	select RTK_DEV_AP
+	help
+	  This enables support for systems based on RTL8198F SoCs.
+
+config RTK_DEV_AP
+	bool "Realtek Device type Wifi AP"
+	help
+	  This product is designed for Wifi AP.
+
+if ARCH_RTL8198F || ARCH_CORTINA_G3LITE
+
+choice
+	prompt "Board Type"
+	default CORTINA_BOARD_FPGA
+	help
+	  Choose the board type
+
+config CORTINA_BOARD_FPGA
+	bool "FPGA Board"
+	help
+	  Support for the FPGA board.
+
+config CORTINA_BOARD_8198F_ENG
+	bool "Engineering Board"
+	help
+	  Support for the Engineering Board
+
+endchoice
+
+endif
+
+source "arch/arm/mach-cortina/Kconfig.hook"
+
+config CORTINA_CPU_TAG
+	bool "Cortina NE CPU_TAG Support"
+	default n
+	depends on ARCH_CORTINA_G3LITE
+	depends on RTL_83XX_SUPPORT
+	help
+	  CPU_TAG function in Network Engine.
+	  This is only supported in G3Lite SoC.
+
+config CORTINA_SHORT_IPG
+	bool
+	default y
+	depends on CORTINA_CPU_TAG
+
+config RTK_PERF_EVENTS
+	bool "light ARM PMU by Realtek"
+	default n
+	depends on ARCH_CORTINA_G3LITE
+	help
+	  This is only tested in G3Lite SoC.
+	  
+endif

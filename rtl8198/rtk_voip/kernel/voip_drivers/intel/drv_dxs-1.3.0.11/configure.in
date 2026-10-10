@@ -1,0 +1,236 @@
+#
+#  Copyright (c) 2014-2015 Lantiq Deutschland GmbH
+#  Copyright (c) 2015-2016 Lantiq Beteiligungs-GmbH & Co.KG
+#  Copyright 2016-2018 Intel Corporation.
+#
+#  For licensing information, see the file 'LICENSE' in the root folder of
+#  this software module.
+#
+
+AC_PREREQ(2.59)
+AC_COPYRIGHT([Copyright (C) 2014-2018, Intel Corporation
+For licensing information please see the file 'LICENSE' in the root folder of
+this software module.])
+
+AC_INIT([DUSLIC XS Device Driver],[1.3.1.0],[Intel Corporation],[drv_dxs])
+AC_CONFIG_SRCDIR(src/drv_dxs_linux.c)
+AM_INIT_AUTOMAKE([-Wno-portability tar-pax])
+
+m4_pattern_allow([^AM_ACLOCAL_INCLUDE$])
+AM_ACLOCAL_INCLUDE(m4)
+
+# save the configure arguments
+# remove the install dir from the distcheck configure line to avoid that the
+# installed binaries are deleted on distcheck. The regex will remove
+# --prefix and all subsequent "non-space" chars from the configure options
+# as well as the internal features.
+# Note: The escaped \' are important.
+# Note: Don't lin* - it would match also --enable-linux-26 (!)
+CONFIGURE_OPTIONS=''
+for c_arg in $ac_configure_args; do
+         case $c_arg in
+            \'--prefix=* | \'--enable-el_debug\' | \'--enable-eval\')
+            #echo "skipping configure option for distcheck: $c_arg"
+            ;;
+         *)
+            CONFIGURE_OPTIONS="$CONFIGURE_OPTIONS $c_arg"
+            ;;
+         esac
+done
+AC_SUBST(CONFIGURE_OPTIONS)
+
+AC_CONFIG_HEADER(drv_dxs_config_defines.h)
+
+dnl enable debugging mode
+DEBUG_CHECK
+
+if [[ "$CFLAGS" == "" ]] ; then
+   CFLAGS="-O2"
+fi
+
+AC_PROG_CC
+AM_PROG_CC_C_O
+AC_PROG_RANLIB
+
+AH_TOP(
+[/******************************************************************************
+
+  Copyright (c) 2014-2015 Lantiq Deutschland GmbH
+  Copyright (c) 2015-2016 Lantiq Beteiligungs-GmbH & Co.KG
+  Copyright 2016-2018 Intel Corporation.
+
+  For licensing information, see the file 'LICENSE' in the root folder of
+  this software module.
+
+******************************************************************************/
+
+#ifndef _DRV_DXS_CONFIG_DEFINES_H_
+#define _DRV_DXS_CONFIG_DEFINES_H_]
+)
+
+AH_BOTTOM([
+#endif /* _DRV_DXS_CONFIG_DEFINES_H_ */
+])
+
+AC_DEFINE_UNQUOTED([DXS_CONFIGURE_STR], ["$ac_configure_args"], [configure options string])
+
+
+dnl set kernel include and build directories
+dnl enable linux kernel 2.6.x support (Make sure AC_PROG_CC is defined before to set $CC!)
+KERNEL_CHECK_CONFIG
+
+
+dnl enable compiler warnings
+WARNINGS_CHECK
+
+dnl enable warnings as error
+WERROR_CHECK
+
+DXS_DCDC_HW_CHECK
+
+PROC_CHECK(DXS_USE_PROC)
+
+dnl set HL TAPI include path
+DRV_TAPI_INCL_CHECK_FOR_LL_DRV
+
+MAX_DEVICES_CHECK(DUSLIC XS, DXS_MAX_DEVICES)
+
+EVALUATION_CHECK
+
+
+TRACE_CHECK
+
+TAPI_LL_LT_CHECK([disable], DXS)
+TAPI_LL_GPIO_CTRL_CHECK([disable], DXS)
+TAPI_LL_DIRECT_CHIP_ACCESS_CHECK([disable], DXS)
+TAPI_KERNEL_API_CHECK([disable], DXS)
+TAPI_TONE_GENERATOR_CHECK([enable], DXS)
+
+dnl check TAPI CID support
+TAPI_CID_CHECK(
+        [enable], # default
+        [AC_DEFINE([DXS_CID],[1],[enable CID support])]
+)
+
+dnl check TAPI NLT support
+TAPI_NLT_CHECK(
+        [enable], # default
+        [
+                AC_DEFINE([DXS_NLT],[1],[enable NLT support])
+        ]
+)
+
+dnl enable DXS METERING support
+TAPI_METERING_CHECK(
+        [disabled], # default
+        [AC_DEFINE([DXS_METERING],[1],[enable METERING support])]
+)
+
+dnl enable Analog Line Continuous Measurement support
+dnl enable TAPI Analog Line Continuous Measurement support
+TAPI_CONT_MEAS_CHECK(
+        [disable], # default
+        [AC_DEFINE([DXS_CONT_MEASUREMENT],[1],[enable Analog Line Continuous Measurement])]
+)
+
+dnl enable DXS Power Save support
+DXT_POWER_SAVE_CHECK(
+        [enable] # default
+)
+
+dnl enable DXS UTD support
+DXT_UTD_CHECK(
+        [enable] # default
+)
+
+dnl enable event logger debugging
+EVENT_LOGGER_CHECK_CONFIG
+
+dnl set additional (device specific) CFLAGS
+WITH_CFLAGS_CHECK
+
+dnl Set lib_ifxos include path
+LIBIFXOS_CHECK_CONFIG_INCL
+
+dnl Check board driver includes
+AC_ARG_WITH([board-incl],
+      AS_HELP_STRING(
+         [--with-board-incl@<:@=DIR@:>@],
+         [Set BOARD driver include path (optional)]
+      ),
+      [
+       __with_board_incl=$withval
+       AC_MSG_CHECKING(for BOARD driver includes)
+       if test -f "$__with_board_incl/drv_board_io.h"; then
+          AC_MSG_RESULT([$__with_board_incl/drv_board_io.h found])
+          AC_SUBST([BOARD_INCL_PATH],[$__with_board_incl])
+       else
+          AC_MSG_ERROR([BOARD driver include path is invalid!])
+       fi
+      ],
+      [
+       AC_MSG_RESULT([WARNING: optional BOARD driver include path is not set])
+      ]
+)
+
+dnl Check for SPI 8-bit mode
+DXS_SPI_8BIT_CHECK
+
+dnl enable kernel module
+WITH_KERNEL_MODULE_CHECK(
+   [yes], # default
+   [INTERRUPTS_CHECK(
+      [enable], # default
+      [
+         AC_DEFINE([DXS_HAVE_INTERRUPTS],[1],[enable interrupts])
+      ]
+   )]
+)
+
+AC_DEFINE_UNQUOTED([WITH_CLFAGS_CONFIGURE_OPTION],[$CFLAGS],[environment and device specific CFLAGS passed to configure])
+
+## Target host specific compilation flags
+#case "${host}" in
+#   mips_fp_be)
+#      CFLAGS="$CFLAGS -fno-strict-aliasing -fno-common -fomit-frame-pointer \
+#         -G 0 -mno-abicalls -fno-pic -pipe -mtune=r4600 -mips2 -Wa,--trap \
+#         -DMODVERSIONS -DEXPORT_SYMTAB"
+#      ;;
+#   mips-linux)
+#      CFLAGS="$CFLAGS -fno-strict-aliasing -fno-common -fomit-frame-pointer \
+#        -G 0 -mno-abicalls -fno-pic -pipe -mtune=r4600 -mips2 -Wa,--trap \
+#         -mlong-calls -DMODVERSIONS -DEXPORT_SYMTAB"
+#      ;;
+#   mipsel-linux)
+#      CFLAGS="$CFLAGS -fno-strict-aliasing -fno-common -fomit-frame-pointer \
+#         -mno-abicalls -fno-pic -pipe -mips2 -Wa,--trap  -Wa,--trap \
+#         -D__linux__ -D_MIPS_ISA=6 -D_MIPS_SZLONG=32 -D_MIPS_SZPTR=32 \
+#         -D_MIPS_SZINT=32 -D__MIPSEL__ -DUTS_MACHINE='"mips"' -mlong-calls"
+#      ;;
+#   powerpc-linux-uclibc)
+#      CFLAGS="$CFLAGS -fno-strict-aliasing -fno-common -fomit-frame-pointer"
+#      ;;
+#   *)
+#      ;;
+#esac
+
+
+AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([src/Makefile])
+
+AC_OUTPUT
+
+echo \
+"------------------------------------------------------------------------
+DUSLIC XS driver configuration:
+
+  Source code location: ${srcdir}
+  Compiler:             ${CC}
+  Compiler flags:       ${CFLAGS}
+  Host System Type:     ${host}
+  Install path:         ${prefix}
+
+  TAPI HL include path: ${HL_TAPI_INCL_PATH}
+  IFXOS include path:   ${IFXOS_INCL_PATH}
+  KERNEL_INCL_PATH:     ${KERNEL_INCL_PATH}
+------------------------------------------------------------------------"

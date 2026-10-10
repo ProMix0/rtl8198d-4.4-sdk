@@ -1,0 +1,37 @@
+/*
+ * dts file for Cortina Access Venus FPGA Board
+ *
+ * Copyright (C) 2018, Cortina Access
+ *
+ */
+
+/dts-v1/;
+
+#include "rtl8277C-soc_fpga.dtsi"
+#include "rtl8277C-spinand_fpga.dtsi"
+
+/ {
+	model = "Realtek Taurus FPGA Board";
+	compatible = "realtek,taurus";
+	#address-cells = <2>;
+	#size-cells = <2>;
+	interrupt-parent = <&gic>;
+
+	memory { /* 240MB */
+		device_type = "memory";
+		reg = <0x00000000 0x00000000 0x0 0x0F000000>;
+	};
+};
+
+/* "okay" - turn on, "disabled" - turn off */
+&glb_phy {
+	forced-on;
+};
+
+&usb_hsphy {
+	status = "okay";
+};
+
+&usb_ssphy {
+	status = "okay";
+};

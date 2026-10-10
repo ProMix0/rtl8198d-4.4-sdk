@@ -1,0 +1,69 @@
+#include "ca8279-engboard.dts"
+
+/ {
+	reserved-memory {
+		/* reserved memory area in DDR for Taroko eCos */
+		voip_vector_reserved: voip_vector_buffer@0x0 {
+			reg = <0x00000000 0x0 0x0 0x1000>;
+		};
+
+		/* reserved memory area in DDR for Taroko eCos */
+		voip_reserved: voip_buffer@0x2000000 {
+			 reg = <0x00000000 0x2000000 0x0 0x700000>;
+		};
+
+		voip_ipc_reserved: voip_ipc_noncache_buffer@0x2700000 {
+			 reg = <0x00000000 0x2700000 0x0 0x100000>;
+		};
+	};
+
+	voip_ipc@0x2700000 {
+		compatible = "cortina,voip_ipc";
+		reg = <0x0 0xf4329000 0x0 0x20>,
+		      <0x0 0xc0000000 0x0 0x10>;
+		memory-region = <&voip_ipc_reserved>,
+				 <&voip_reserved>;
+		interrupt-parent = <&per_ictl>;
+		interrupts = <IRQ_PER_SOFT>;
+
+		resets = <&block_rst PE1_RESET>, <&block_rst RCPU1_RESET>;
+		reset-names = "pe_reset", "rcpu_reset";
+	};
+};
+
+&dma_ssp_ictl0 {
+	/* "disabled" -> "okay" to support DSP on main CPU */
+	status = "disabled";
+};
+
+&audio {
+	/* "disabled" -> "okay" to support DSP on main CPU */
+	status = "disabled";
+};
+
+&spi0 {
+	slic_spi0: slic_spi0@0 {
+		compatible = "realtek,support-slic";
+		status = "okay";
+		spi-max-frequency = <2500000>;
+		reg = <0>;
+		/* used for ISI/CSI/SPI+PCM */
+		/* reset-gpio = <&gpio0 15 GPIO_ACTIVE_LOW>; */
+	};
+};
+
+&led1 {
+	active-low;
+	label = "VoIP0:R5";
+	linux,default-trigger = "VOIP0_LED";
+	on,sw;
+	default-state = "enabled";
+};
+
+&led6 {
+	active-low;
+	label = "VoIP1:L5";
+	linux,default-trigger = "VOIP1_LED";
+	on,sw;
+	default-state = "enabled";
+};

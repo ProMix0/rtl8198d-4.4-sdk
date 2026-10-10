@@ -1,0 +1,47 @@
+<!-- add by liuxiao 2008-01-22 -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>中国电信—我的E家</title>
+<meta http-equiv=pragma content=no-cache>
+<meta http-equiv=cache-control content="no-cache, must-revalidate">
+<meta http-equiv=content-type content="text/html; charset=utf-8">
+<meta http-equiv=content-script-type content=text/javascript>
+<style type=text/css>
+@import url(/style/default.css);
+</style>
+<script language="javascript" src="/common.js"></script>
+</head>
+<body>
+	<blockquote>
+		<div align="left" style="padding-left:20px;"><br>
+			<div align="left">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td width=20>&nbsp;</td>
+                  <td><!-- 1. --><b>VoIP诊断</b></td>
+                </tr>
+                <tr>
+                  <td width=20>&nbsp;</td>
+                  <td class="tabdataleft"><ul>
+                      <li>话机连接性诊断，测试选择为PhoneConnetivityTest， 然后点击开始，查看测试结果即可。</li>
+                      <li>仿真测试</li> 
+					  <br>					  
+					  <ul><li><span style="font-weight:bold;">(1)主叫仿真: </span>测试选择X_CMCC_SimulateTest，仿真测试类型为Caller，填写被叫的号码。
+					  如果没有勾选拨号确认，则无需额外操作，主叫在进入通话后，会自动断线，测试完成。如果勾选了拨号确认，必须填写拨号确认号码，
+					  例如：1234。点击开始测试，被叫响铃后接起电话，被叫会听到第一个按键提示音，被叫需要按下“1”，然后会听到第二个按键提示音，被叫需要按下2， 
+					  如此循环，直到按完确认号码，最后挂机查看测试结果。</li></ul> 
+					  <br>
+					  <ul><li><span style="font-weight:bold;">(2)被叫仿真: </span>测试选择X_CMCC_SimulateTest，仿真测试类型为Called点击开始，
+					  在120s内必须拨入，否则测试失败。本地被叫无需额外操作，在1~2两声ringing之后，通话会自动建立，如果主叫发送了digit，
+					  被叫会自动发送相同的digit。主叫断线，被叫也会断线，仿真结束，即可查看结果。</li></ul>
+                    </ul></td>
+                </tr>
+            </table>			
+			</div>
+		</div>
+	</blockquote>
+</body>
+</html>
+<!-- add end by liuxiao 2008-01-22 -->
+

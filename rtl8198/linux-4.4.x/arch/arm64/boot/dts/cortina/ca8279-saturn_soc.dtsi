@@ -1,0 +1,193 @@
+/*
+ * Copyright (c) 2015-2017, Cortina Access. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/soc/cortina_glb_cfg.h>
+
+/ {
+#if 0
+	compatible = "rtk,sheipa";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu@0 {
+			compatible = "mips,mips24KEc";
+		};
+	};
+
+	cpuintc: cpuintc@0 {
+		#address-cells = <0>;
+		#interrupt-cells = <1>;
+		interrupt-controller;
+		compatible = "mti,cpu-interrupt-controller";
+	};
+
+    vecintc: vecintc@0 {
+		#address-cells = <0>;
+		#interrupt-cells = <1>;
+		interrupt-controller;
+		compatible = "cortina,vec-interrupt-controller";
+    };
+	/* APB clock varies based */
+	/* TODO: develop clock driver to switch between freq. for now use fixed freq. */
+	io_clk: io_clk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <125000000>;
+	};
+
+	system_ictl: system_ictl@bc100070 {	/* System interrupt */
+				compatible = "cortina,per-ictl";
+				reg = <0xbc100070  0x8>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupt-parent = <&cpuintc>;
+				interrupts = <2>;
+	};
+
+	per_ictl: per_ictl@b2224004 {	/* peripheral interrupt */
+				compatible = "cortina,per-ictl";
+				reg = <0xb2224004  0x8>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupt-parent = <&cpuintc>;
+				interrupts = <3>;
+	};
+
+
+
+	lso_fbm_ictl: lso_fbm_ictl@bc100080 {	/* LSO_FBM interrupt */
+				compatible = "cortina,per-ictl";
+				reg = <0xbc100080  0x8>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupt-parent = <&cpuintc>;
+				interrupts = <5>;
+	};
+
+	ldma_ictl: ldma_ictl@bc100088 {	/* LDMA interrupt */
+				compatible = "cortina,per-ictl";
+				reg = <0xbc100088  0x8>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupt-parent = <&cpuintc>;
+				interrupts = <6>;
+	};
+
+	ne_ictl: ne_ictl@bc10009c {	/* NE interrupt */
+				compatible = "cortina,per-ictl";
+				reg = <0xbc10009c  0x8>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupt-parent = <&vecintc>;
+				interrupts = <4>;	/* vector driver handle it as x+VEC_BASE */
+	};
+	
+
+
+	ipc0_ictl: ipc0_ictl@bc100078 {	/* IPC  interrupt */
+				compatible = "cortina,per-ictl";
+				reg = <0xbc100078 0x8>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupt-parent = <&vecintc>;
+				interrupts = <6>;	/* vector driver handle it as x+VEC_BASE */
+	};
+
+	wol_ictl: wol_ictl@bc1000e0 {	/* Wake on LAN interrupt */
+				compatible = "cortina,per-ictl";
+				reg = <0xbc1000e0  0x8>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupt-parent = <&ne_ictl>;
+				interrupts = <7>;
+	};
+#endif
+
+	/* Block Reset */
+#if 0
+	/* can't use here because the address is mapped by ca-pon-mac already */
+	saturn_block_rst: reset-controller@f3100028 {
+		compatible = "cortina,rst-mgr";
+		reg = <0x0 0xf3100028 0x0 0x04>;
+		#reset-cells = <1>;
+	};
+
+	saturn_ethernet {
+		resets = <&saturn_block_rst NI_RESET>, <&saturn_block_rst L2FE_RESET>, <&saturn_block_rst L2TM_RESET>, <&saturn_block_rst L3FE_RESET>, <&saturn_block_rst SDRAM_RESET>, <&saturn_block_rst TQM_RESET>;
+		reset-names = "saturn_ni_reset", "saturn_l2fe_reset", "saturn_l2tm_reset", "saturn_l3fe_reset", "saturn_sdram_reset", "saturn_tqm_reset";
+	};
+#endif
+
+#if 0
+	/* Global Config */
+	global_cfg: reset-controller@bc100048 {
+		compatible = "cortina,rst-mgr";
+		reg = <0xbc100048 0x04>;
+		#reset-cells = <1>;
+	};
+
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+	};
+
+	uart0: uart@b2224148 { /* console */
+		device_type = "serial";
+		compatible = "cortina,serial";
+		reg = <0xb2224148 0x30>;
+		clocks = <&io_clk>;
+		interrupt-parent = <&system_ictl>;
+		interrupts = <4>;
+	};
+
+	uart1: uart@b2224178 { /* console */
+		device_type = "serial";
+		compatible = "cortina,serial";
+		reg = <0xb2224178 0x30>;
+		clocks = <&io_clk>;
+		interrupt-parent = <&system_ictl>;
+		interrupts = <5>;
+	};
+
+	soc {
+		compatible = "cortina,saturn-sfu";
+		reg = <0xbc100000 0x4>,		/* GLOBAL_JTAG_ID */
+		      <0xbc109000 0x40>,	/* CLKGEN_CLKGEN_CONFIG */
+		      <0xbc100034 0x4>;		/* GLOBAL_STRAP */
+		reg-names = "JTAG_ID", "CLOCK", "STRAP";
+	};
+
+	chosen {
+		/*TODO: need modfiy according to ramdisk at uboot stage */
+		bootargs = "rd_start=0x86000000 rd_size=8018950 root=/dev/ram console=ttyS0,115200 rdinit=/sbin/init ";
+	};
+#endif
+};

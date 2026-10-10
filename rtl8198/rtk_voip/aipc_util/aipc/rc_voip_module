@@ -1,0 +1,23 @@
+#!/bin/sh
+if [ -f /bin/modprobe ]; then
+	modprobe aipc_char.ko
+	modprobe voip_kernel.ko
+else
+	KERNEL_VERSION=`cat /proc/version | awk '{print $3}'`
+	AIPC_MODULE=/lib/modules/$KERNEL_VERSION/kernel/drivers/char/aipc/aipc_char.ko
+	VOIP_MODULE=/lib/modules/$KERNEL_VERSION/kernel/rtk_voip/voip_kernel.ko
+
+	if [ -f $AIPC_MODULE ]; then
+		echo "Loading AIPC module"
+		/bin/insmod $AIPC_MODULE
+	else
+		echo "$AIPC_MODULE not found"
+	fi
+
+	if [ -f $VOIP_MODULE ]; then
+		echo "Loading VOIP module"
+		/bin/insmod $VOIP_MODULE
+	else
+		echo "$VOIP_MODULE not found"
+	fi
+fi

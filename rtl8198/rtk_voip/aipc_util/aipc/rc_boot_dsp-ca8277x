@@ -1,0 +1,21 @@
+#!/bin/sh
+
+model=`cat /proc/device-tree/model | awk '{print $3}'`
+if [ "$model" == "Venus" ]; then
+# PE0 ATU setting
+devmem 0x90300004 32 0x00001030
+devmem 0x90300008 32 0x0000FFFF
+devmem 0x9030000C 32 0x00009030
+devmem 0x90300000 32 0x81000003
+fi
+
+aipc_util -B
+aipc_util -e
+aipc_util -w -d 0x02000400 -i /image/dsp.img
+aipc_util -b
+if [ -x "/bin/wait_dsp" ]; then
+	wait_dsp
+else
+	echo "no wait_dsp, so force to sleep 5 seconds..."
+	sleep 5
+fi

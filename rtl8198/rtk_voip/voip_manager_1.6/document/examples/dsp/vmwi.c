@@ -1,0 +1,16 @@
+#include <unistd.h>
+#include "voip_manager.h"
+
+int main(void)
+{
+	char vmwi_on = 1, vmwi_off = 0;
+	
+	rtk_GetVoIPFeature();
+
+	// VMWI test via FSK Type I
+	rtk_GenFskVmwi(0, &vmwi_on, 0);
+	sleep(2);
+	rtk_GenFskVmwi(0, &vmwi_off, 0);
+
+	return 0;
+}

@@ -1,0 +1,31 @@
+#!/bin/sh
+
+local dot_server=$1
+local dot_port=853
+local filename=$(echo -n "$dot_server" | md5sum | cut -d' ' -f1)
+
+if [ -e "/tmp/detect_dohdot_server/$filename" ]; then
+    exit 2
+else
+    touch "/tmp/detect_dohdot_server/$filename"
+    echo "touch file '$filename' "
+fi
+
+detect_func()
+{
+    local result=$(openssl s_client -connect "${dot_server}:${dot_port}" | grep 00000003)
+    if [ $result = "CONNECTED(00000003)" ]; then
+        result=1
+    else
+        result=0
+    fi
+    echo "$result" > /tmp/detect_dohdot_server/$filename
+}
+
+detect_func &
+local pid=$!
+sleep 5
+if [ -z "/tmp/detect_dohdot_server/$filename" ]; then
+    echo "0" > /tmp/detect_dohdot_server/$filename
+    kill $pid
+fi

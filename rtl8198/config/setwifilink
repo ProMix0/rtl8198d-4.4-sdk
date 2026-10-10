@@ -1,0 +1,88 @@
+#!/bin/sh
+#############################################################################
+#
+#	This script gets called in two ways,  the first is to set the
+#	default config up.  The second "final" pass is to save any settings
+#	back to the vendors directory for permanent inclusion.
+#
+#	Copyright (C) 2001       Lineo    <davidm@snapgear.com>
+#	Copyright (C) 2001-2002  SnapGear <davidm@snapgear.com>
+#
+#############################################################################
+#
+# Some basic starting points
+#
+CONFIG=.config
+PASS=$1
+var_isset() # because of make evironment inheritance,  we must look in the file
+{
+	if grep "$1=y" $CONFIG > /dev/null
+	then
+		return 0
+	fi
+	return 1
+}
+
+#### for rtl8192cd
+var_isload() # because of make evironment inheritance,  we must look in the file
+{
+	RECONFIG_KERNEL=0
+	if [ ! -f ./.wifi_loaded ];then
+		echo "wifi_load not exit!"
+		RECONFIG_KERNEL=1
+	fi
+	if grep "$1=y" ./.wifi_loaded > /dev/null
+	then
+		RECONFIG_KERNEL=1
+	fi
+	
+	return 0
+}
+
+#################For RTL8192CD path ###########################
+chechk_rtl8192cd_link(){
+   expert_target=$1
+   echo ${expert_target}
+   if [ -e  ./linux-4.4.x/drivers/net/wireless/realtek/rtl8192cd-link ]; then
+     linktarget=`ls -l ./linux-4.4.x/drivers/net/wireless/realtek/rtl8192cd-link | awk -F'->' '{ print $2 }' | tr -d " " | tr -d "/"`
+     if [ x"${expert_target}" != x"${linktarget}" ];then
+	echo " ln -s ${expert_target}/  ./rtl8192cd-link"
+	rm -f  ./linux-4.4.x/drivers/net/wireless/realtek/rtl8192cd-link 
+	cd ./linux-4.4.x/drivers/net/wireless/realtek && ln -fs ${expert_target}/  ./rtl8192cd-link
+     else
+        echo "Exist rtl8192cd-link : ${linktarget} == ${expert_target}"
+     fi
+   else
+	echo "cd ./linux-4.4.x/drivers/net/wireless/realtek && ln -s ${expert_target}/ ./rtl8192cd-link"
+	cd ./linux-4.4.x/drivers/net/wireless/realtek && ln -fs ${expert_target}/  ./rtl8192cd-link
+   fi
+}
+
+echo "setwifilink wifi"
+RECONFIG_KERNEL=0
+if [ "$PASS" = "wifi" ]; then
+	
+	if var_isset "CONFIG_MAIN_RTL8192"
+	then	
+		var_isload "CONFIG_SP_RTL8192"
+		if [ ${RECONFIG_KERNEL} -eq 1 ];
+		then
+			echo "CONFIG_DEFAULTS_KERNEL=y" >> ${CONFIG}
+		fi
+		echo "CONFIG_MAIN_RTL8192=y" > ./.wifi_loaded
+                chechk_rtl8192cd_link rtl8192cd
+	fi
+	if var_isset "CONFIG_SP_RTL8192"
+	then
+		var_isload "CONFIG_MAIN_RTL8192"
+		if [ ${RECONFIG_KERNEL} -eq 1 ];
+		then
+			echo "CONFIG_DEFAULTS_KERNEL=y" >> ${CONFIG}
+		fi	
+		echo "CONFIG_SP_RTL8192=y" > ./.wifi_loaded
+                chechk_rtl8192cd_link rtl8192cd-92FR
+	fi
+
+fi
+#############################################################################
+exit 0

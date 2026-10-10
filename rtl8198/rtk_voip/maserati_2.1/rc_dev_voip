@@ -1,0 +1,18 @@
+#Luna SDK use awk by default
+major=`grep voip /proc/devices| awk '{print $1}'`
+#major=`grep voip /proc/devices| cut -f 1 -d ' '`
+
+mkdir -p /dev/voip
+
+/bin/mknod /dev/voip/dtmfdet0 c ${major} 76
+/bin/mknod /dev/voip/dtmfdet1 c ${major} 77
+/bin/mknod /dev/voip/ivr8k c ${major} 16
+/bin/mknod /dev/voip/mgr c ${major} 1
+/bin/mknod /dev/voip/pcmrx0 c ${major} 65
+/bin/mknod /dev/voip/pcmrx1 c ${major} 74
+/bin/mknod /dev/voip/pcmtx0 c ${major} 64
+/bin/mknod /dev/voip/pcmtx1 c ${major} 73
+
+/bin/mknod /dev/voip/ipc c ${major} 66
+/bin/mknod /dev/voip/log_ioctl c ${major} 40
+

@@ -1,0 +1,5 @@
+ccflags-y += -Werror -I$(M)/include
+
+obj-m += libscfg.o
+libscfg-objs :=  scfg.o scfg_parse.o scfg_show.o
+

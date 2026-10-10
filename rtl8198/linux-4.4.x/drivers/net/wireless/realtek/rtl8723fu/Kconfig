@@ -1,0 +1,6 @@
+config RTL8723FU
+	tristate "Realtek 8723F USB WiFi"
+	---help---
+	  Realtek RTL8723FU chipset driver
+	  802.11ac USB wireless network adapter
+

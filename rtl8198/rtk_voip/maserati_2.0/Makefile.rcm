@@ -1,0 +1,4 @@
+# todo..
+CFLAGS += -DRCM_VOIP_INTERFACE_ROUTE -DSUPPORT_CUSTOMIZE_FRAME_SIZE -I$(DIR_LINUX) -I$(ROOTDIR)/rtk_voip/voip_manager_1.6/includes
+
+

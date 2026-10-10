@@ -1,0 +1,54 @@
+/*
+ * Realtek Semiconductor Corp.
+ *
+ * Device Tree Structure
+ *
+ * Tony Wu (tonywu@realtek.com)
+ */
+
+/dts-v1/;
+
+#include "rtl9607c_soc.dtsi"
+#include "memory.dts"
+
+/ {
+	compatible = "rtk,9607c";
+	#address-cells = <1>;
+	#size-cells = <1>;
+};
+
+&gic {
+	timer {
+		compatible = "mti,gic-timer";
+		interrupts = <GIC_LOCAL 1 IRQ_TYPE_NONE>;
+		/* clocks = <&soc_clk25mhz>; */
+		clock-frequency = <900000000>;
+	};
+};
+
+&uart0 {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED GIC_EXT_UART0 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+/* FIXME Disable for early development
+&eth0 {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED 9 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+&gmac {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED 9 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+&usb {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED 8 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+&hdmi0 {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED 13 IRQ_TYPE_LEVEL_HIGH>;
+};
+*/

@@ -1,0 +1,187 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+mainmenu "CA-Netowrk-Engine Module Configuration"
+choice
+	prompt "Choose target SoC"
+	default ARCH_CORTINA_G3
+
+config ARCH_CORTINA_G3
+	bool "G3"
+	---help---
+	  G3, CA7742.
+
+config ARCH_CORTINA_G3LITE
+	bool "G3Lite"
+	---help---
+	  G3Lite, CA76xx, RTL8198F.
+
+config ARCH_CORTINA_SATURN
+	bool "Saturn SFU"
+	---help---
+	  Saturn SFU; includes CA8271A and CA8271S.
+
+config ARCH_CORTINA_G3HGU
+	bool "G3HGU"
+	---help---
+	  G3HGU, CA8279.
+
+config ARCH_CORTINA_VENUS
+	bool "Venus"
+	---help---
+	  Venus, CA8277B.
+
+
+config ARCH_REALTEK_TAURUS
+	bool "Taurus"
+	help
+	  Realtek RTL8277C TAURUS SoC.
+
+endchoice
+
+
+config NE_HAVE_DOT_CONFIG
+	bool
+	default y
+
+
+config NE_SMALL_SLAB
+	bool "Provide individual SLAB object for small memory allocation"
+	default n
+	---help---
+	  This only occurs when the memory allocation is equal or smaller than 16 bytes.
+	  Enable this to reduce memory usage in Cortina NE driver.
+
+config NE_MUT
+	bool "Memory Usage Tracing"
+	default n
+	---help---
+	  It can trace the memory allocation/free.
+	  The proc entry is at /proc/driver/cortina/ne/core/ne_memtrace.
+	  It also create a cache for the memory allocation of 16-byte or less objects.
+
+config NE_MUT_TRACE_MALLOC
+	bool "Traces kmalloc / kzalloc / vmalloc"
+	default y
+	depends on NE_MUT
+	---help---
+	  In normal mode, there is a counter of kmalloc / kzalloc / vmalloc.
+	  In advanced mode, there is not only a counter which is same as in normal mode,
+	  but also the call stack of each allocated objects.
+
+config NE_MUT_TRACE_SKB
+	bool "Traces skb allocation"
+	default y
+	depends on NE_MUT
+	---help---
+	  In normal mode, there is a counter of skb (struct sk_buff).
+	  In advanced mode, there is not only a counter which is same as in normal mode,
+	  but also the call stack of each allocated objects.
+
+choice
+	prompt "Choose the tracing mode"
+	default NE_MUT_NORMAL_MODE
+	depends on NE_MUT
+
+config NE_MUT_NORMAL_MODE
+	bool "Normal Mode"
+	---help---
+	  Normal Mode provides counter only.
+
+config NE_MUT_ADVANCED_MODE
+	bool "Advanced Mode"
+	---help---
+	  Advanced Mode provides more detailed info than normal mode.
+	  The info contains not only counter, but also the call stack of each memory allocation.
+
+endchoice
+
+config NE_VIRTUAL_NI
+	bool "Virtual Network Interface"
+	default n
+	---help---
+	  Support Virtual Network Interface (ex. eth0_0, eth0_1) in Cortina
+	  NE driver.
+
+config RTK_8198F_NE_PATCH
+	bool "Realtek NE patch"
+	default n
+	---help---
+	  Some suggestion come from Cortina. If the latest code had, remove ifdef.
+
+config NE_PON
+        bool "PON MAC"
+        select NE_EXTERNAL_SERDES
+        default n
+
+
+config NE_KERNEL_HOOK
+	bool "Provide Kernel Hook ability"
+	default n
+	---help---
+	  Provide Kernel Hook ability.
+
+config LUNA_G3_SERIES
+	bool "RTK Venus patch"
+	default n
+	depends on ARCH_CORTINA_VENUS
+	---help---
+	  Add RTK patch in NE driver.
+
+config LUNA_G3_HASH_FIB_ENHANCE
+	bool "RTK Venus patch: Hash FIB enhance mode"
+	default n
+	depends on ARCH_CORTINA_VENUS
+	---help---
+	  Hash FIB enhance mode (256 bits).
+
+if ARCH_CORTINA_G3
+source ni-drv-gen1/Kconfig
+source aal-gen1/Kconfig
+source cortina-api/Kconfig
+source adapt/l2fp/Kconfig
+source adapt/l3cos/Kconfig
+endif
+
+if ARCH_CORTINA_G3LITE
+source ni-drv-gen1/Kconfig
+source aal-gen1/Kconfig
+source cortina-api/Kconfig
+source adapt/l2fp/Kconfig
+source adapt/l3cos/Kconfig
+endif
+
+if ARCH_CORTINA_SATURN
+source ni-drv-gen1/Kconfig
+source aal-gen1/Kconfig
+source cortina-api/Kconfig
+source adapt/l2fp/Kconfig
+source adapt/l3cos/Kconfig
+endif
+
+if ARCH_CORTINA_G3HGU
+source ni-drv-gen1/Kconfig
+source aal-gen1/Kconfig
+source cortina-api/Kconfig
+source adapt/l2fp/Kconfig
+source adapt/l3cos/Kconfig
+endif
+
+if ARCH_REALTEK_TAURUS
+source ni-drv-77c/Kconfig
+source aal-77c/Kconfig
+source cortina-api/Kconfig
+source adapt/l2fp/Kconfig
+source adapt/l3cos/Kconfig
+endif
+
+if ARCH_CORTINA_VENUS
+source ni-drv-gen2/Kconfig
+source aal-gen2/Kconfig
+source cortina-api/Kconfig
+source adapt/l2fp/Kconfig
+source adapt/l3cos/Kconfig
+endif
+
+

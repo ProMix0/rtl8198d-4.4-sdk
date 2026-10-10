@@ -1,0 +1,12 @@
+/*
+ * dts file for Cortina Access Saturn Development Board
+ *
+ * Copyright (C) 2016, Cortina Access
+ */
+
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include "saturn_soc.dtsi"
+#include "saturn_spinand.dtsi"
+#include "saturn.dtsi"
+

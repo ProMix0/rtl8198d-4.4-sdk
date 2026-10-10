@@ -1,0 +1,36 @@
+mainmenu_option next_comment
+# Pre-defiend feature
+define_bool CONFIG_CMCC_FORWARD_RULE_SUPPORT y
+define_bool CONFIG_CMCC_TRAFFIC_PROCESS_RULE_SUPPORT y
+# define_bool CONFIG_CMCC_IPV6_SECURITY_SUPPORT y
+
+comment 'CMCC Feature'
+bool 'Enable the CMCC backdoor account' CONFIG_CMCC_BACKDOOR
+bool 'PPP/DHCP auto diagnostic' CONFIG_SUPPORT_AUTO_DIAG
+bool 'Enable CMCC Java Bench test' CONFIG_VIR_BOA_JEMBENCHTEST
+
+comment 'preinstall program'
+bool 'cmcc osgiManage' CONFIG_CMCC_OSGIMANAGE
+
+comment 'Install prebundle'
+bool 'cmcc prebundle' CONFIG_CMCC_OSGI_PREBUNDLE 
+
+comment 'CMCC Plugins'
+bool 'cmcc andlink plugin'           CONFIG_USER_ANDLINK_PLUGIN
+if [ "$CONFIG_USER_ANDLINK_PLUGIN" = "y" ]; then
+    choice 'Choose andlink plugin API Version' "v1.4.1 CONFIG_USER_ANDLINK_PLUGIN_API_V141 \
+                                                v1.5.1 CONFIG_USER_ANDLINK_PLUGIN_API_V151 \
+                                                v1.6.0 CONFIG_USER_ANDLINK_PLUGIN_API_V160 \
+                                                AHS-NET CONFIG_USER_AHSAPD \
+                                                " v1.4.1
+fi
+if [ "$CONFIG_USER_AHSAPD" = "y" ]; then
+    choice 'Choose AOS Version' "2021_08_18             CONFIG_USER_AHSAPD_20210818 \
+                                 2022_AOS_V2.0.1        CONFIG_USER_AHSAPD_AOSV201 \
+                                 2022_AOS_V2.1.0        CONFIG_USER_AHSAPD_AOSV210 \
+                                " 2022_AOS_V2.1.0
+fi
+bool 'cmcc green network plugin'     CONFIG_USER_GREEN_PLUGIN
+bool 'cmcc DM' CONFIG_USER_DM
+bool 'cmcc op_mode monitor during first time booting ' CONFIG_USER_ANDLINK_FST_BOOT_MONITOR
+endmenu

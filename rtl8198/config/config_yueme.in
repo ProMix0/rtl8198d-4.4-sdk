@@ -1,0 +1,120 @@
+mainmenu_option next_comment
+comment 'China Telecom Yueme Feature'
+
+comment 'preinstall program'
+bool 'dbus' 		CONFIG_USER_DBUS
+bool 'lxc 1.0.8' 	CONFIG_USER_LXC
+bool 'glib'	 	CONFIG_USER_GLIB
+if [ "$CONFIG_USER_GLIB" = "y" ]; then
+	define_bool CONFIG_LIB_ZLIB y
+	define_bool CONFIG_LIB_LIBFFI y
+	choice 'GLIB Version'		"2.56.1 CONFIG_USER_GLIB_VERSION_2_56_1 \
+									2.41.1 CONFIG_USER_GLIB_VERSION_2_41_1" 2.56.1
+	if [ "$CONFIG_USER_GLIB_VERSION_2_56_1" = "y" ]; then
+		define_string CONFIG_USER_GLIB_VERSION "2.56.1"
+	elif [ "$CONFIG_USER_GLIB_VERSION_2_41_1" = "y" ]; then
+		define_string CONFIG_USER_GLIB_VERSION "2.41.1"
+	fi
+fi
+bool 'shadow 4.2.1' 	CONFIG_USER_SHADOW
+
+comment 'Province Requirement'
+bool 'BUAPP Feature' CONFIG_USER_CTMANAGEDEAMON
+bool 'modern traceroute' CONFIG_MODERN_TRACEROUTE
+bool 'Anhui QuickInstall' CONFIG_USER_QUICKINSTALL
+bool 'PPP auto diagnostic' CONFIG_SUPPORT_AUTO_DIAG
+bool 'An-Hui Behavior Analysis' CONFIG_USER_BEHAVIOR_ANALYSIS
+bool 'PPPoE Delay Intervals Retry Machanism '    CONFIG_USER_PPPOE_CTC_DELAY_INT
+
+comment 'dbus agent'
+bool 'dbusproxy' 	CONFIG_USER_DBUS_PROXY
+if [ "$CONFIG_USER_DBUS_PROXY" = "y" ]; then
+	choice 'Dbusproxy Version'		"3.0 CONFIG_USER_DBUS_PROXY_VERSION_3_0 \
+									2.0 CONFIG_USER_DBUS_PROXY_VERSION_2_0" 3.0
+	if [ "$CONFIG_USER_DBUS_PROXY_VERSION_3_0" = "y" ]; then
+		define_string CONFIG_USER_DBUS_PROXY_VERSION "3.0"
+	elif [ "$CONFIG_USER_DBUS_PROXY_VERSION_2_0" = "y" ]; then
+		define_string CONFIG_USER_DBUS_PROXY_VERSION "2.0"
+	fi 
+fi 
+
+comment 'dbus service development'
+bool 'samba api'	CONFIG_USER_SAMBAAPI
+
+bool 'nas'		CONFIG_USER_HOME_NAS
+bool 'nas client' 	CONFIG_USER_HOME_NAS_CLIENT
+bool 'nas api' 		CONFIG_USER_HOME_NAS_API
+# bool 'nas api test'  	CONFIG_USER_HOME_NAS_API_TEST
+bool 'usb inout' 	CONFIG_USER_USBINOUT
+bool 'usb format' 	CONFIG_USER_USBFORMAT_USBFORMAT
+
+bool 'httpdownload wanrate' 	CONFIG_USER_WANRATE
+bool 'httpdownloadff'		CONFIG_USER_SPEEDTEST_FF
+
+bool 'poll_lanNetInfo' 		CONFIG_USER_POLLING_LAN_NEW_DEV_UPLINK
+bool 'mcdiag'			CONFIG_USER_MCDIAG
+#bool 'mcdiag test'		CONFIG_USER_MCDIAG_TEST
+
+bool 'Log collection function'	CONFIG_USER_RTK_OMD
+
+#comment 'other test tools'
+#bool 'push web test'		CONFIG_USER_TEST_IN_WEB
+#bool 'web redirect test'	CONFIG_USER_TEST_URL_REDIRECT
+#bool 'interface test'		CONFIG_USER_TEST_INTERFACE
+
+
+comment 'other services'
+bool 'vsftpd'                   CONFIG_USER_VSFTPD
+
+comment 'mtools'
+bool 'mtools'			CONFIG_USER_MTOOLS
+if [ "$CONFIG_USER_MTOOLS" = "y" ]; then
+choice 'Version'		"4.0.17	CONFIG_USER_MTOOLS_4_0_17 \
+				4.0.18	CONFIG_USER_MTOOLS_4_0_18" 4.0.18
+fi
+
+comment 'libiconv'
+bool 'libiconv'			CONFIG_USER_LIBICONV
+if [ "$CONFIG_USER_LIBICONV" = "y" ]; then
+choice 'Version'		"1.11.1	CONFIG_USER_LIBICONV_1_11_1 \
+				1.14	CONFIG_USER_LIBICONV_1_14 \
+				1.15	CONFIG_USER_LIBICONV_1_15" 1.14
+fi
+
+comment 'inotify-tools'
+bool 'inotify-tools'			CONFIG_USER_INOTIFY_TOOLS
+if [ "$CONFIG_USER_INOTIFY_TOOLS" = "y" ]; then
+choice 'Version'		"3.13	CONFIG_USER_INOTIFY_TOOLS_3_13 \
+				3.14	CONFIG_USER_INOTIFY_TOOLS_3_14" 3.14
+fi
+
+comment 'dosfstools'
+bool 'dosfstools'			CONFIG_USER_DOSFSTOOLS
+if [ "$CONFIG_USER_DOSFSTOOLS" = "y" ]; then
+choice 'Version'		"3.0.27	CONFIG_USER_DOSFSTOOLS_3_0_27" 3.0.27
+fi
+
+
+#bool 'LED Timer' CONFIG_LED_INDICATOR_TIMER
+#bool 'RG SleepMode Timer' CONFIG_RG_SLEEPMODE_TIMER
+
+
+define_bool CONFIG_USER_CURL y
+# define_bool CONFIG_USER_TEST_IN_WEB y
+# define_bool CONFIG_USER_TEST_URL_REDIRECT y
+# define_bool CONFIG_USER_TEST_INTERFACE y
+# define_bool CONFIG_USER_LAN_INFO_API y
+define_bool CONFIG_USER_MCDIAG y
+# define_bool CONFIG_USER_MCDIAG_TEST y
+define_bool CONFIG_USER_WANRATE y
+define_bool CONFIG_USER_POLLING_LAN_NEW_DEV_UPLINK y
+define_bool	CONFIG_USER_HOME_NAS_CLIENT	y
+define_bool	CONFIG_USER_HOME_NAS_API	y
+define_bool CONFIG_USER_USBINOUT		y
+define_bool	CONFIG_USER_USBFORMAT_USBFORMAT	y
+define_bool	CONFIG_USER_RTK_OMD y
+define_bool     CONFIG_USER_SMART_WLANAPP	y
+
+bool 'su command for telnet' CONFIG_USER_SU
+
+endmenu

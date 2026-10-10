@@ -1,0 +1,77 @@
+#if 1 /* RTK VoIP */
+/ {
+	reserved-memory {
+		/* reserved memory area in DDR for Taroko eCos */
+                voip_vector_reserved: voip_vector_buffer@0x0 {
+                        reg = <0x00000000 0x0 0x0 0x1000>;
+                };
+
+                /* reserved memory area in DDR for Taroko eCos */
+		voip_reserved: voip_buffer@0x2000000 {
+			 reg = <0x00000000 0x2000000 0x0 0x300000>;
+		};
+
+		voip_ipc_reserved: voip_ipc_noncache_buffer@0x2300000 {
+			 reg = <0x00000000 0x2300000 0x0 0x100000>;
+		};
+	};
+
+	voip_ipc@0x2300000 {
+		 compatible = "cortina,voip_ipc";
+		 reg = <0x0 0xf4329000 0x0 0x20>,
+		      <0x0 0x80000000 0x0 0x10>;
+		 memory-region = <&voip_ipc_reserved>,
+				 <&voip_reserved>;
+		 interrupt-parent = <&per_ictl>;
+		 interrupts = <IRQ_PER_SOFT>;
+
+		resets = <&block_rst PE0_RESET>, <&block_rst RCPU0_RESET>;
+		reset-names = "pe_reset", "rcpu_reset";
+	};
+};
+
+&dma_ssp_ictl0 {
+	status = "disabled";
+};
+
+&audio {
+	status = "disabled";
+};
+
+#else	/* SLIC SDK diagnostic */
+/ {
+	slic_clk: ext_slic_clk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+#if 0
+		/* extclk ONLY and divided internally to generate sclk
+		 * ISI:24576000, ZSI:49152000
+		 */
+		clock-frequency = <24576000>;
+		clock-output-names = "ext-slic-clk";
+#else
+		/* extclk & extsclk BOTH
+		 * ISI: extclk - 24576000/extsclk - 2048000
+		 * ZSI: extclk - 49152000/extsclk - 4096000
+		 */
+		clock-frequency = <4096000>;
+		clock-output-names = "ext-slic-sclk";
+#endif
+	};
+};
+
+&audio {
+	clocks = <&slic_clk>;
+	/* clocks = <&apb_pclk>; */
+};
+#endif
+
+&spi0 {
+	slic_spi0: slic_spi0@0 {
+		compatible = "realtek,support-slic";
+		status = "okay";
+		spi-max-frequency = <2500000>;
+		reg = <0>;
+		reset-gpio = <&gpio0 3 GPIO_ACTIVE_LOW>;
+	};
+};

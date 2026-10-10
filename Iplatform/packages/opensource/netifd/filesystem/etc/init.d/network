@@ -1,0 +1,118 @@
+#!/bin/sh /etc/rc.common
+
+START=25
+STOP=90
+
+SERVICE_DAEMONIZE=1
+SERVICE_WRITE_PID=1
+
+NETWORK_MOD_ID=290
+LOGX_ID_NETIFD_START=200
+LOGX_ID_NETIFD_STOP=201
+
+[ -f /lib/vpn/vpn_fc.sh ] && . /lib/vpn/vpn_fc.sh
+
+get_wan_port()
+{
+	local portname=$(uci get switch.wan.switch_port)
+	local port=$(uci get switch.$portname.port)
+	echo $port > /proc/sys/ppe/wan_port
+}
+
+start() {
+	local pid=""
+
+	# BCM4908: work around a flow cache bug
+	if [ -d /proc/fcache/ ] ; then
+		update_pptp_fc_gre_status
+	fi
+
+	# Intel:config ppa
+	if [ -d /proc/ppa/ ] ; then
+		config_ppa
+	fi	
+	
+	stop
+
+	[ -e /proc/sys/kernel/core_pattern ] && {
+		ulimit -c unlimited
+		echo '/tmp/%e.%p.%s.%t.core' > /proc/sys/kernel/core_pattern
+	}
+
+	# netifd depends on "statistics" kern module
+	# we insmod statistics in boot, so no need to do it here
+	# insmod statistics
+	pid=$(pidof tfstats)
+	if [ x"$pid" != x ]; then
+		local enable=$(uci get tfstats.switch.enable)
+		if [ "$enable" = "on" ] ; then
+			ubus call tfstats on || true
+		fi
+	fi
+
+	if [ ! -f /tmp/need_to_reset_vlanid ];then
+		touch /tmp/need_to_reset_vlanid
+	fi
+
+	service_start /sbin/netifd
+
+	pid=$(pidof netifd)
+	if [ x"$pid" != x ]; then
+		logx -p $pid $NETWORK_MOD_ID $LOGX_ID_NETIFD_START
+	fi
+
+	if [ -e /proc/sysconfig/net/app_shortcut ]; then
+		echo "reload" > /proc/sysconfig/net/app_shortcut
+	fi
+
+	local model=$(uci get profile.@global[0].model -c "/etc/profile.d")
+	if [ "$model" = "QCA_IPQ95XX" ]; then
+		get_wan_port
+	fi
+}
+
+restart() {
+	start
+
+	 ### NOTE Ugly fix eth1(port6) unlink bug...
+	local model=$(uci get profile.@global[0].model -c "/etc/profile.d")
+	local sysmode=$(uci get sysmode.sysmode.mode)
+	[ "$sysmode" == "router" -a "$model" == "QCA_IPQ95XX" ] && [ "$(uci get switch.wan.switch_port)" == "port6" ] && {
+                sleep 5
+                ssdk_sh port poweron set 6
+	} &
+	# for brcm reset wl affinity
+	if [[ -f /etc/init.d/bcm_cpu_affinity ]]; then
+		/etc/init.d/bcm_cpu_affinity restart
+	fi
+}
+
+shutdown() {
+	stop
+}
+
+stop() {
+	local pid=$(pidof netifd)
+
+	ifdown -a
+	if [ x"$pid" != x ]; then
+		sleep 1
+	fi
+
+	service_stop /sbin/netifd
+	ubus call tfstats off || true
+	#rmmod statistics
+
+	if [ x"$pid" != x ]; then
+		logx -p $pid $NETWORK_MOD_ID $LOGX_ID_NETIFD_STOP
+	fi
+}
+
+reload() {
+	ubus call network reload
+
+	# for brcm reset wl affinity
+	if [[ -f /etc/init.d/bcm_cpu_affinity ]]; then
+		/etc/init.d/bcm_cpu_affinity restart
+	fi
+}

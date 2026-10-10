@@ -1,0 +1,10 @@
+
+config NE_L2FP
+	bool "L2 Fast Path management"
+	default n
+	---help---
+	  The L2 Fast Path module is using the CPU ports as interface between
+	  L2FE and 3rd Party OS Network Device Driver. This module is only
+	  needed for the Soc which L2FE supports the CPU ports for L2 mac
+	  learning/flooding.
+

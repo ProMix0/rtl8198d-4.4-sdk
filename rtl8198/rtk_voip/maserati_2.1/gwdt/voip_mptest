@@ -1,0 +1,7 @@
+echo z > /var/run/solar_control.fifo
+
+echo "Set VoIP into MP test mode"
+
+sleep 1
+
+echo "voip restart done."

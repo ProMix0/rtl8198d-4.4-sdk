@@ -1,0 +1,2 @@
+#define VOIP_VERSION "VoIP-1.6-DSP-R5523-Luna-R24-Integrate_RTL_CA"
+#define SYS_VERSION "2.5.1T-R2053"

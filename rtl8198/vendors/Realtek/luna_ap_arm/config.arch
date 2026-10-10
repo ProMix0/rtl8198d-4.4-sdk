@@ -1,0 +1,165 @@
+.EXPORT_ALL_VARIABLES:
+############################################################################
+#
+#  A Generic ARM config.arch that can be included by other platforms
+#  to reduce the number of places that need to be edited when something
+#  common changes.  If you include this file you should provide:
+#
+#  CPUFLAGS            - cpu specific flags to pass to the compiler
+#  VENDOR_CFLAGS       - vendor specific flags to pass to the compiler
+#  DISABLE_XIP         - set this to 1 to disable XIP code
+#  DISABLE_MOVE_RODATA - set this to 1 to disable moving rodata to text
+#  LOPT                - library optimisation flags
+#  UOPT                - user optimisation flags
+#
+#  David McCullough <davidm@snapgear.com>
+#
+############################################################################
+#
+# Generic settings
+#
+
+ifndef CONSOLE_BAUD_RATE
+CONSOLE_BAUD_RATE = 115200
+endif
+
+############################################################################
+#
+# The makefiles need to know how to do things in different contexts
+# To save some pain we put it all here
+#
+# First settings we always want for all build
+#
+# ARCH is for the kernel
+# TARGET_ARCH is for uClibc
+
+MACHINE       = arm
+ARCH          = arm
+CROSS_HOST = arm-linux
+CROSS_TARGET = arm-linux
+
+CONFIG_USE_RSDK_WRAPPER=1
+
+ifdef CONFIG_USE_RSDK_WRAPPER
+	RSDK ?= ""
+	ifneq ($(strip $(CONFIG_RSDK_DIR)),"")
+		RSDK := $(subst ",,$(CONFIG_RSDK_DIR))
+		CROSS_COMPILE        := $(RSDK)/bin/arm-linux-
+
+		ifeq ($(findstring a32,$(CONFIG_RSDK_DIR)),a32)
+			MACHINE       = arm
+			ARCH          = arm
+			CROSS_HOST = arm-linux
+			CROSS_TARGET = arm-linux
+			CROSS_COMPILE        := $(RSDK)/bin/arm-linux-
+		endif
+	endif
+
+	
+	CROSS_KERNEL_COMPILE := $(CROSS_COMPILE)
+	CROSS_KERNEL_TOOLS   := $(CROSS_COMPILE)
+	
+	LIBC_INCLUDE=$(RSDK)/include 
+	LIBC_LIB=$(RSDK)/lib
+
+CROSS     = $(CROSS_COMPILE)
+CC        = $(CROSS_COMPILE)gcc $(CPUFLAGS)
+AS        = $(CROSS_COMPILE)as $(CPUFLAGS)
+CXX       = $(CROSS_COMPILE)g++ $(CPUFLAGS)
+AR        = $(CROSS_COMPILE)ar
+LD        = $(CROSS_COMPILE)ld
+OBJCOPY   = $(CROSS_COMPILE)objcopy
+RANLIB    = $(CROSS_COMPILE)ranlib
+ELF2FLT   = elf2flt
+STRIPTOOL = $(CROSS_COMPILE)strip
+STRIP     = $(STRIPTOOL)
+
+else
+@echo "Must use RSDK"; exit 1;
+endif
+
+
+############################################################################
+#
+# General purpose lib building rules,  uClibc.config uses these when
+# possible
+#
+
+CFLAGS += -D_LARGEFILE_SOURCE
+CFLAGS += -D_LARGEFILE64_SOURCE
+CFLAGS += -D_FILE_OFFSET_BITS=64
+CFLAGS += -pipe
+
+ifdef UCLINUX_BUILD_LIB
+
+  ifdef CONFIG_LIB_DEBUG
+#	CFLAGS  := -g
+	LDFLAGS :=
+  else
+	CFLAGS  := -O2
+	LDFLAGS := -Wl,-S
+  endif
+
+ifdef CONFIG_DEFAULTS_KERNEL_4_4
+	CFLAGS  += -D_LINUX_4_4_
+endif #CONFIG_DEFAULTS_KERNEL_4_4
+  
+ifdef CONFIG_USE_RSDK_WRAPPER
+	CFLAGS  += $(VENDOR_CFLAGS)
+	CFLAGS  += -fno-builtin
+	CFLAGS  += -fPIC -DEMBED -Dlinux -D__linux__ -Dunix
+	CFLAGS  += -D_USE_RSDK_WRAPPER_
+
+else #CONFIG_USE_RSDK_WRAPPER
+	$(error Must use Supported ASDK or YOCTO ToolChain!);
+endif #CONFIG_USE_RSDK_WRAPPER
+
+endif
+
+############################################################################
+#
+# Settings for building user apps
+#
+
+ifdef UCLINUX_BUILD_USER
+	LIBM        = -lm
+	LIBPTHREAD  = -lpthread
+	LIBSTDCPP   = -lstdc++
+	LIBDES      = -ldes
+	LIBAES      = -laes
+	LIBPCAP     = -L$(ROOTDIR)/lib/libpcap -lpcap
+	LIBSSL      = -L$(ROOTDIR)/lib/libssl -lssl -lcrypto
+	LIBMATRIXSSL = -L$(ROOTDIR)/lib/libmatrixssl -lmatrixssl
+	LIBCRYPT    = -lcrypt
+	LIBIOSTREAM = -liostream
+	LIBZ		= -L$(ROOTDIR)/lib/zlib -lz
+
+	INCPCAP = -I$(ROOTDIR)/lib/libpcap
+	INCSSL  = -I$(ROOTDIR)/lib/libssl/include
+	INCZ    = -I$(ROOTDIR)/lib/zlib
+	INCVEND = -I$(ROOTDIR)/vendors/include
+
+
+  ifdef CONFIG_LIB_LIBMD5_FORCE
+	LIBMD5  = -lmd5
+	LDPATH += -L$(ROOTDIR)/lib/libmd5
+	INCMD5  = -I$(ROOTDIR)/lib/libmd5
+	CFLAGS += -DUSE_LIBMD5
+  else
+	LIBMD5  =
+	INCMD5  =
+  endif
+
+	CFLAGS  += -I$(ROOTDIR)/include $(INCMD5)
+	CFLAGS  += -Dlinux -D__linux__ -Dunix -DEMBED
+	CFLAGS  += -D_USE_RSDK_WRAPPER_
+ifdef CONFIG_DEFAULTS_KERNEL_4_4
+	CFLAGS  += -D_LINUX_4_4_ -include linux/config.h
+endif #CONFIG_DEFAULTS_KERNEL
+
+	CFLAGS  += -I$(ROOTDIR)
+	CFLAGS  += -fsigned-char
+endif
+	CFLAGS  += -I$(TMPFSDIR)/include
+	LDFLAGS += -L$(TMPFSDIR)/lib
+############################################################################

@@ -1,0 +1,19 @@
+config NE_AAL_PORT_NUM_ETH
+        int "Ethernet Port Number"
+	---help---
+         Number of Ethernet Port
+
+
+config NE_AAL_XFI
+	bool "XFI Support"
+        select NE_EXTERNAL_SERDES
+        default n
+	---help---
+	  This is a AAL XFI module to support the XFI interface with ASIC.
+	  When there is XFI interfaces supportted in our ASIC, the AAL XFI module should be turned on.
+
+config NE_EXTERNAL_SERDES
+	bool 
+	---help---
+          This is for external serdes configuration setting.
+          Because of phy, serdes configuration in each board may be different.

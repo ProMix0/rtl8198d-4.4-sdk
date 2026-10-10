@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) Cortina-Access Limited 2015.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+/*
+ * aal_common_iros.h: Common definitions exported for iROS
+ *
+ */
+
+#include "aal_common.h"
+
+ca_status_t ca_hash_mask_unmask (
+	CA_IN		ca_device_id_t			device_id,
+	CA_IN_OUT	aal_hash_mask_t			*hash_mask )
+{
+	hash_mask_unmask(hash_mask);
+	return CA_E_OK;
+}
+EXPORT_SYMBOL(ca_hash_mask_unmask);
+

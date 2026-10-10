@@ -1,0 +1,26 @@
+<Config_Information_File_8671>
+ <chain chainName="WLAN_MBSSIB_TBL"> <!--index=0-->
+ </chain>
+ <chain chainName="WLAN_MBSSIB_TBL"> <!--index=1-->
+ </chain>
+ <chain chainName="WLAN_MBSSIB_TBL"> <!--index=2-->
+ </chain>
+ <chain chainName="WLAN_MBSSIB_TBL"> <!--index=3-->
+ </chain>
+ <chain chainName="WLAN_MBSSIB_TBL"> <!--index=4-->
+ </chain>
+ <chain chainName="WLAN_MBSSIB_TBL"> <!--index=5-->
+ </chain>
+ <chain chainName="WLAN1_MBSSIB_TBL"> <!--index=0-->
+ </chain>
+ <chain chainName="WLAN1_MBSSIB_TBL"> <!--index=1-->
+ </chain>
+ <chain chainName="WLAN1_MBSSIB_TBL"> <!--index=2-->
+ </chain>
+ <chain chainName="WLAN1_MBSSIB_TBL"> <!--index=3-->
+ </chain>
+ <chain chainName="WLAN1_MBSSIB_TBL"> <!--index=4-->
+ </chain>
+ <chain chainName="WLAN1_MBSSIB_TBL"> <!--index=5-->
+ </chain>
+</Config_Information_File_8671>

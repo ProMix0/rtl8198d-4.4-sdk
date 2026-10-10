@@ -1,0 +1,104 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=100
+. /usr/lib/dnsproxy/dnsproxy_api.sh
+
+local dns_privacy=$(uci -q get dns_privacy.global.dns_privacy)
+local dns_mode=$(uci -q get dns_privacy.global.dns_mode)
+local custom_config_template="/etc/stubby/custom.yml"
+local custom_config_path="/tmp/stubby/custom.yml"
+#local server_list=$(uci get dns_privacy.stubby.server | tr ' ' '\n')
+local server1=$(uci get -q dns_privacy.stubby.server1)
+local server2=$(uci get -q dns_privacy.stubby.server2)
+local server3=$(uci get -q dns_privacy.stubby.server3)
+local wan_type=$(uci -q get network.wan.wan_type)
+
+start()
+{
+    sleep 2
+    if [ "$wan_type" = "v6plus" ] || [ "$wan_type" = "dslite" ]; then
+        echo "not support dot in dslite or v6plus"
+    else
+        if [ "$dns_privacy" = "dot" ]; then
+            if [ ! -d "/tmp/stubby" ]; then
+                mkdir /tmp/stubby
+            else
+                echo "already existed!"
+            fi
+            rm -f $custom_config_path > /dev/null
+            cp $custom_config_template $custom_config_path
+            
+            {
+            if [ "$server1" != 'none' ]; then
+                local address1=$(dnslookup $server1 | head -1)
+                local retry_times_first=0
+                while [ -z "$address1" ] && [ $retry_times_first -le 3 ]; do
+                    sleep 5s
+                    retry_times_first=$(($retry_times_first+1))
+                    address1=$(dnslookup $server1 | head -1)
+                done
+                if [ -z "$address1" ]; then
+                    echo "invalid server address,ingrone" 
+                else
+                    echo -e "  - address_data: $address1" >> $custom_config_path
+                    echo -e "    tls_auth_name: \"$server1\"" >> $custom_config_path
+                fi
+            fi
+
+            if [ "$server2" != 'none' ]; then
+                local address2=$(dnslookup $server2 | head -1)
+                local retry_times_sec=0
+                while [ -z "$address2" ] && [ $retry_times_sec -le 3 ]; do
+                    sleep 5s
+                    retry_times_sec=$(($retry_times_sec+1))
+                    address2=$(dnslookup $server2 | head -1)
+                done
+                if [ -z "$address2" ]; then
+                    echo "invalid server address,ingrone" 
+                else
+                    echo -e "  - address_data: $address2" >> $custom_config_path
+                    echo -e "    tls_auth_name: \"$server2\"" >> $custom_config_path
+                fi
+            fi
+            if [ "$server3" != 'none' ]; then
+                local address3=$(dnslookup $server3 | head -1)
+                local retry_times_tri=0
+                while [ -z "$address3" ] && [ $retry_times_tri -le 3 ]; do
+                    sleep 5s
+                    retry_times_tri=$(($retry_times_tri+1))
+                    address3=$(dnslookup $server3 | head -1)
+                done
+                if [ -z "$address3" ]; then
+                    echo "invalid server address,ingrone" 
+                else
+                    echo -e "  - address_data: $address3" >> $custom_config_path
+                    echo -e "    tls_auth_name: \"$server3\"" >> $custom_config_path
+                fi
+            fi
+            #echo "$server_list" | while IFS= read -r server; do
+            #    local address=$(nslookup "$server" | awk '/^Address 1: / { print $3}')
+            #    echo -e "  - address_data: $address" >> $custom_config_path
+            #    echo -e "    tls_auth_name: \"$server\"" >> $custom_config_path
+            #done
+            service_start /usr/sbin/stubby -g -C ${custom_config_path}
+            
+            [ "${dns_mode}" = "default" ] && dot_server_check &
+            #close dnsproxy
+            ps | grep dnsproxy | grep -v grep | awk '{print $1}' | xargs kill >/dev/null 2>&1
+            
+            #delete iptables rules related to dnsproxy
+            iptables -t nat -D prerouting_rule_dns 1 >/dev/null 2>&1
+            iptables -t nat -D prerouting_rule_dns 1 >/dev/null 2>&1
+            }&
+        fi
+    fi
+    return 0
+}
+
+stop()
+{
+    ps | grep dot_server_check | grep -v grep | awk '{print $1}' | xargs kill >/dev/null 2>&1
+    service_stop /usr/sbin/stubby
+    return 0
+}

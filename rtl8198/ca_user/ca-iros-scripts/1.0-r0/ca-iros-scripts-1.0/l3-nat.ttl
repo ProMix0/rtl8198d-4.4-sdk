@@ -1,0 +1,115 @@
+;; L3 NAT test
+;; LAN2WAN, from port 0x1 to port 0x7
+;;   mac_sa = 00-c0-a8-12-34-56
+;;   mac_da = 00-c0-52-00-00-02
+;;   src = 192.168.1.10
+;;   dest = 192.168.100.10
+;;   sport = 63
+;;   dport = 63
+;;   NO vid
+;; WAN2LAN, from port 0x7 to port 0x1
+;;   mac_sa = 00-c0-a8-ab-cd-ef
+;;   mac_da = 00-13-25-00-00-01
+;;   src = 192.168.100.10
+;;   dest = 192.168.100.1
+;;   sport = 63
+;;   dport = 100
+;;   top_vid = 10
+
+sendln 'iros'
+wait 'ca-iros->'
+
+;; T2, NAT
+
+sendln 'cd /etc/cortina/iros/aal/hash'
+wait 'ca-iros->'
+
+sendln 'source add_hash_v4_lan2wan.tcl'
+wait 'ca-iros->'
+
+sendln 'source add_hash_v4_wan2lan.tcl'
+wait 'ca-iros->'
+
+;; T3, LPM
+
+sendln 'cd /etc/cortina/iros/aal/lpm'
+wait 'ca-iros->'
+
+sendln 'source set_default_t4ctrl.tcl'
+wait 'ca-iros->'
+
+sendln 'source set_default_route_v4.tcl'
+wait 'ca-iros->'
+
+sendln 'source add_lpm_v4_wan2lan.tcl'
+wait 'ca-iros->'
+
+;; T4, NextHop
+
+sendln 'cd /etc/cortina/iros/aal/hashlite'
+wait 'ca-iros->'
+
+sendln 'source add_hash_v4_lan2wan.tcl'
+wait 'ca-iros->'
+
+sendln 'source add_hash_v4_wan2lan.tcl'
+wait 'ca-iros->'
+
+sendln 'cd /'
+wait 'ca-iros->'
+sendln 'exit'
+wait 'root@OpenWrt:'
+
+;; IF Table
+
+sendln 'app-cli'
+wait 'Cortina>'
+sendln 'enable'
+wait 'Cortina#'
+sendln 'config'
+wait 'Cortina(config)#'
+sendln 'aal'
+wait 'Cortina(config-aal)#'
+sendln 'l3_if'
+wait 'Cortina(config-aal-l3_if)#'
+
+;; IF Table, entry 1 for port 0x1
+
+sendln 'l3_if ldpid_vld 1 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if ldpid 1 0x19'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if mac_sa_vld 1 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if mac_sa_an_sel 1 2'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if vlan_vld 1 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if vlan_cnt 1 0'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if deep_q 1 1'
+wait 'Cortina(config-aal-l3_if)#'
+
+;; IF Table, entry 7 for port 0x7
+
+sendln 'l3_if ldpid_vld 7 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if ldpid 7 0x7'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if mac_sa_vld 7 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if mac_sa_an_sel 7 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if vlan_vld 7 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if vlan_cnt 7 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if top_tpid_enc 7 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if top_vid 7 10'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if deep_q 7 1'
+wait 'Cortina(config-aal-l3_if)#'
+
+sendln 'logout'
+

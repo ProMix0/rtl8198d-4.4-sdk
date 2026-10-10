@@ -1,0 +1,489 @@
+PROJECT FILE VERSION 2
+$+project
+Device Profile
+Microsemi miSLIC Le9622 Multiline IB ABS - See Comments>>>>
+Profile_Index 0
+P2.7.0 0 0 1 ZL880 ZL88602 ZLR962282L_25_76_Realtek
+
+$-deviceProfile2
+Device Profile
+Device Configuration Data
+Profile_Index 0
+38880 0 0
+
+$+deviceProfile2
+DEV_PROFILE
+Device Configuration Data
+Profile_Index 0
+38880 0 0
+
+$-deviceProfile3
+Device Profile
+Device Configuration Data
+Profile_Index 0
+2048 1 1 0 5 0 0 0 1566
+
+$+deviceProfile3
+DEV_PROFILE
+Device Configuration Data
+Profile_Index 0
+2048 1 1 0 5 0 0 0 1566
+
+$-deviceProfile4
+Device Profile
+Device Configuration Data
+Profile_Index 0
+64 10 0 -30 -15 10
+
+$+deviceProfile4
+DEV_PROFILE
+Device Configuration Data
+Profile_Index 0
+64 10 0 -30 -15 10
+
+$-deviceProfile
+Device Profile
+Device Configuration Data
+Profile_Index 0
+8192 138 0 64 5.000000 2 0 0 0 4 4 1 0 DEV_PROFILE 178 0 177 0 176 64 116 64 152 64 192 64
+
+$+deviceProfile
+DEV_PROFILE
+Device Configuration Data
+Profile_Index 0
+8192 138 0 64 5.000000 2 0 0 0 4 4 1 0 DEV_PROFILE 178 0 177 0 176 64 116 64 152 64 192 64
+
+$+deviceProfile1
+Device Profile
+Device Configuration Data
+Profile_Index 0
+1 8192 8192 1 0 0 0 0 0 0 1 5 5 0
+
+$+deviceProfile1
+DEV_PROFILE
+Device Configuration Data
+Profile_Index 0
+1 8192 8192 1 0 0 0 0 0 0 1 5 5 0
+
+$+deviceProfileZL880ABSType
+Device Profile
+Device Configuration Data
+Profile_Index 0
+0 0 0 0 9 0 30 90 0 1 0 0
+
+$+deviceProfileZL880ABSType
+DEV_Master_PROFILE_25V_VBL
+Device Configuration Data - Dev 1
+Profile_Index 0
+5 0 0 0 3 1 25 76 2 1 2 2 1 1 1c 4 65 0 fc 52 fc 52 65 0 2c 40 2c 40 2c 40 25 20 0 2 IBÿMultilineÿ-ÿ300Khzÿ-ÿSWFS-00 0 1.000000 1 32 62 -1 0 12.000000 0 0 1 0
+
+$+deviceProfileZL880ABSType
+DEV_Master_PROFILE_76V_VBH
+Device Configuration Data  - Dev 2
+Profile_Index 0
+5 0 0 0 3 1 25 76 1 2 0 2 1 1 1c 4 65 0 d4 40 d4 40 65 0 2c 40 2c 40 2c 40 25 20 0 2 IBÿMultilineÿ-ÿ90Vÿ192KhzÿFSWÿ-ÿSWFW=10 0 1.000000 1 32 62 -1 10 12.000000 0 0 1 0
+
+$+deviceProfileZL880ABSType
+DEV_Slave_PROFILE_25V_76V
+Device Configuration Data - Dev 3 and up
+Profile_Index 0
+5 0 0 0 3 1 25 76 1 1 0 0 1 1 14 4 65 0 65 0 65 0 65 0 2c 40 2c 40 2c 40 5 0 0 2 IBÿMultiline 0 1.000000 2 32 62 -1 0 12.000000 0 0 1 0
+
+$+deviceProfileZL880TrackerType
+Device Profile
+Device Configuration Data
+Profile_Index 0
+0 0 0 0 9 0 0 0 0
+
+$+deviceProfileZL880TrackerType
+DEV_PROFILE
+Device Configuration Data
+Profile_Index 0
+0 0 0 0 9 0 0 0 0
+
+$+qslacSlicControl
+FXS_Control_Parameters
+(New) Add FXS Control Parameters
+Profile_Index 0
+
+
+$-qslacSlicControl
+LE79R79_FXS
+FXS Control For Le71HR0021 LM
+Profile_Index 0
+
+
+$+acProfile
+AC Profile
+(NEW) Add AC Coefficients
+Profile_Index 0
+
+
+$+acProfile
+AC_PROFILE
+600 ohms profile
+Profile_Index 0
+P:\SysApps\HardwareApps\LineModules_VOB\VE880 line modules\Coefficient Sets\VE880_LM_ZT47K5_RF14_CTR22nF\880_Series_LM_600.wsc
+/* AC Profile */ 0xA4, 0x00, 0xF4, 0x4C, 0x01, 0x49, 0xCA, 0xF5, 0x98, 0xAA, 0x7B, 0xAB, 0x2C, 0xA3, 0x25, 0xA5, 0x24, 0xB2, 0x3D, 0x9A, 0x2A, 0xAA, 0xA6, 0x9F, 0x01, 0x8A, 0x1D, 0x01, 0xA3, 0xA0, 0x2E, 0xB2, 0xB2, 0xBA, 0xAC, 0xA2, 0xA6, 0xCB, 0x3B, 0x45, 0x88, 0x2A, 0x20, 0x3C, 0xBC, 0x4E, 0xA6, 0x2B, 0xA5, 0x2B, 0x3E, 0xBA, 0x8F, 0x82, 0xA8, 0x71, 0x80, 0xA9, 0xF0, 0x50, 0x00, 0x86, 0x2A, 0x42, 0xA1, 0xCB, 0x1B, 0xA3, 0xA8, 0xFB, 0x87, 0xAA, 0xFB, 0x9F, 0xA9, 0xF0, 0x96, 0x2E, 0x01, 0x00
+
+$+acProfile1
+AC Profile
+(NEW) Add AC Coefficients
+Profile_Index 0
+0
+
+$-acProfile1
+AC_PROFILE
+(NEW) Add AC Coefficients
+Profile_Index 0
+0
+
+$+dcProfile
+DC Profile
+(NEW) Add DC Parameters
+Profile_Index 0
+None
+0
+
+$-dcProfile
+DC_PROFILE
+(NEW) Add DC Parameters
+Profile_Index 0
+None
+0
+
+$+dcProfileVP880Type
+DC Profile
+(NEW) Add DC Parameters
+Profile_Index 0
+18 26 3 16 8 0 42 78 1 11 26
+
+$-dcProfileVP880Type
+DC_PROFILE
+(NEW) Add DC Parameters
+Profile_Index 0
+18 26 3 16 8 0 42 78 1 11 26
+
+$+dcProfileZL880ABSType
+DC Profile
+(NEW) Add DC Parameters
+Profile_Index 0
+0 26 0 1 12 7 1 2 4 1 3 8 0 4 1
+
+$-dcProfileZL880ABSType
+DC_PROFILE_20ma
+DC Parameters
+Profile_Index 0
+2 20 0 1 12 7 1 2 4 1 3 8 0 4 1 7 0 10
+
+$+dcProfileZL880ABSType
+DC_PROFILE_25ma
+DC Parameters
+Profile_Index 0
+2 25 0 1 12 7 0 2 4 1 3 8 0 4 1 7 0 10
+
+$+dcProfileZL880TrackerType
+DC Profile
+(NEW) Add DC Parameters
+Profile_Index 0
+0 26 0 1 3 12 1 2 4 1 3 8 0 4 4 1 48.000000
+
+$+dcProfileZL880TrackerType
+DC_PROFILE
+DC Parameters
+Profile_Index 0
+0 26 0 1 3 12 1 2 4 1 3 8 0 4 4 1 48.000000
+
+$+dcProfileVP792Type
+DC Profile
+(NEW) Add DC Parameters
+Profile_Index 0
+50.000000 10.000000 100.000000 -10.000000 15.000000 3000 50.000000 1000.0000 50.000000 20.000000 10.501099 0.849152 1000
+
+$-dcProfileVP792Type
+DC_PROFILE
+DC Parameters
+Profile_Index 0
+50.000000 10.000000 100.000000 -10.000000 15.000000 3000 50.000000 1000.0000 50.000000 20.000000 10.501099 0.849152 1000
+
+$+ringProfile
+Ringing Profile
+(NEW) Enter Ring Parameters
+Profile_Index 0
+0 20 1.414210 90.000000 0.000000 0 0 1 0 1 0
+
+$+ringProfile
+RING_20HZ_SINE
+Ringing 20Hz, Sine Wave
+Profile_Index 0
+0 20 1.414210 90.000000 0.000000 0 0 1 0 1 0
+
+$+ring1Profile
+Ringing Profile
+(NEW) Enter Ring Parameters
+Profile_Index 0
+0 20 1.414210 90.000000 0.000000 65 30
+
+$+ring1Profile
+RING_20HZ_SINE
+Ringing 20Hz, Sine Wave
+Profile_Index 0
+0 20 1.414210 90.000000 0.000000 65 30
+
+$+ringProfileZL880Type
+Ringing Profile
+(NEW) Enter Ring Parameters
+Profile_Index 0
+0 0 20 70.0 0.0 1.414214 0 0 25.5 1 1 78 1 0
+
+$+ringProfileZL880Type
+RING_VE960_ABS100V_DEF
+Default Ringing 25Hz 50Vrms Fixed, AC Trip - Use for all countries unless country profile exists
+Profile_Index 0
+0 1 24.900000 70.699997 0.000000 1.414210 0 0 21.000000 1 0 54 0
+
+$+ring2Profile
+Ringing Profile
+(NEW) Enter Ring Parameters
+Profile_Index 0
+1 15.330000 4.670000 20.000000 82.864106 0 2 41.927434 50 8.000000 100.000000 0.000000 0.000000 0 20.000000 500.000000 10.000000 40.000000 430.000000 50.000000 80.000000 -60.000000 0 1.000000 0.055440 0.000000 0.000000 0.000040 0.000000 0 4 1000000000000.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0 1000000000000.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0 0 0 50.000000
+
+$+ring2Profile
+RING_20HZ_SINE
+Ringing 20Hz, Sine Wave, 40Vrms
+Profile_Index 0
+1 15.330000 4.670000 20.000000 82.864106 0 2 41.927434 50 8.000000 100.000000 0.000000 0.000000 0 20.000000 500.000000 10.000000 40.000000 430.000000 50.000000 80.000000 -60.000000 0 1.000000 0.055440 0.000000 0.000000 0.000040 0.000000 0 4 1000000000000.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0 1000000000000.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0 0 0 50.000000
+
+$+toneProfile
+Tone Profile
+(NEW) Enter Tones
+Profile_Index 0
+400 -13.000000 400 -13.000000
+
+$-toneProfile
+TONE_CLI
+Caller ID Alert Tone
+Profile_Index 0
+2130 -13.000000 2750 -13.000000 0 0.000000 0 0.000000
+
+$-toneProfile
+TONE_CALLWAIT
+Call Waiting Tone for Type II Caller ID
+Profile_Index 0
+440 -13.000000 0 -13.000000 0 0.000000 0 0.000000
+
+$-toneProfile
+T_US_DIAL
+US Dial Tone (C_CONT)
+Profile_Index 0
+350 -16.000000 400 -16.000000
+
+$-toneProfile
+T_US_RING
+US Ringback Tone (C_00)
+Profile_Index 0
+440 -16.000000 480 -16.000000
+
+$-toneProfile
+T_US_BUSY
+US Busy Tone (C_01)
+Profile_Index 0
+480 -16.000000 620 -16.000000
+
+$-toneProfile
+T_US_CONG
+US Congestion Tone (C_02)
+Profile_Index 0
+480 -16.000000 620 -16.000000
+
+$-toneProfile
+T_US_RECALL
+US Recall Dial Tone (C_03)
+Profile_Index 0
+350 -16.000000 440 -16.000000
+
+$-toneProfile
+T_US_WAITING
+US Call Waiting (on Hold) (C_04)
+Profile_Index 0
+440 -13.000000 0 -13.000000
+
+$+tone1Profile
+Tone Profile
+(NEW) Enter Tones
+Profile_Index 0
+0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000
+
+$-tone1Profile
+TONE_CLI
+Caller ID Alert Tone
+Profile_Index 0
+-13.000000 -13.000000 0.000000 0.000000 2130.000000 2750.000000 0.000000 0.000000
+
+$-tone1Profile
+TONE_CALLWAIT
+Call Waiting Tone for Type II Caller ID
+Profile_Index 0
+-13.000000 0.000000 0.000000 0.000000 440.000000 0.000000 0.000000 0.000000
+
+$-tone1Profile
+T_US_DIAL
+US Dial Tone (C_CONT)
+Profile_Index 0
+-16.000000 -16.000000 0.000000 0.000000 350.000000 400.000000 0.000000 0.000000
+
+$-tone1Profile
+T_US_RING
+US Ringback Tone
+Profile_Index 0
+-16.000000 -16.000000 0.000000 0.000000 440.000000 480.000000 0.000000 0.000000
+
+$-tone1Profile
+T_US_BUSY
+US Busy Tone
+Profile_Index 0
+-16.000000 -16.000000 0.000000 0.000000 480.000000 620.000000 0.000000 0.000000
+
+$-tone1Profile
+T_US_CONG
+US Congestion Tone
+Profile_Index 0
+-16.000000 -16.000000 0.000000 0.000000 480.000000 620.000000 0.000000 0.000000
+
+$-tone1Profile
+T_US_RECALL
+US Recall Dial Tone
+Profile_Index 0
+-16.000000 -16.000000 0.000000 0.000000 350.000000 440.000000 0.000000 0.000000
+
+$-tone1Profile
+T_US_WAITING
+US Call Waiting (on Hold)
+Profile_Index 0
+-13.000000 0.000000 0.000000 0.000000 440.000000 0.000000 0.000000 0.000000
+
+$+cadenceProfile
+Cadence Profile
+(NEW) Enter Cadence Parameters
+Profile_Index 0
+/* Cadence Profile */ 0x00, 0x03, 0x00, 0x08, 0x00, 0x00, 0x00, 0x04, 0x00, 0x8F, 0x20, 0x00
+
+$-cadenceProfile
+C_CONT
+Continuous ON Cadence
+Profile_Index 0
+/* Cadence Profile */ 0x00, 0x03, 0x00, 0x08, 0x00, 0x00, 0x00, 0x04, 0x00, 0x8F, 0x20, 0x00
+
+$+cadenceProfile1
+Cadence Profile
+(NEW) Enter Cadence Parameters
+Profile_Index 0
+0 0 0
+
+$+cadenceProfile1
+RINGING_STD
+Standard 2/4 Ringing Cadence
+Profile_Index 0
+5 0 0 5 4 0 2000 5 0 0 4000 4 0
+
+$+cadenceProfile1
+C_CONT
+Continuous ON Cadence
+Profile_Index 0
+1 1 0 3 15
+
+$+cadenceSimpleProfile
+Cadence Profile
+(NEW) Enter Cadence Parameters
+Profile_Index 0
+/* Cadence Profile */ 0x00, 0x08, 0x00, 0x06, 0x01, 0x00, 0x06, 0x02, 0x02, 0x80
+
+$+cadenceSimpleProfile
+RINGING_STD
+Standard 2/4 Ringing Cadence
+Profile_Index 0
+/* Cadence Profile */ 0x00, 0x08, 0x00, 0x08, 0x01, 0x02, 0x06, 0x03, 0x02, 0xA8, 0x50, 0x00
+
+$+cadenceSimpleProfile
+C_CONT
+Continuous ON Cadence
+Profile_Index 0
+/* Cadence Profile */ 0x00, 0x08, 0x00, 0x06, 0x01, 0x00, 0x06, 0x02, 0x02, 0x80
+
+$+testProfile
+Test_Definitions
+(NEW) Enter Test Parameters
+Profile_Index 0
+22, 0x00, 0x00, 0x00, 50, 0x00, 100, 0x08, 0xFF, 0x00, 100, 0x00, 10, 0x00, 100, 0x00, 6, 0x00, 0x100, 22, 128, 22, 128, 22, 128, 0x00, 15, 0x00, 0x00, 0xFF, 0xFF, 0x00, 17, 0x00, 20
+
+$-testProfile
+TEST_00
+GR909 Definitions
+Profile_Index 0
+22, 0x00, 0x00, 0x00, 50, 0x00, 100, 0x08, 0xFF, 0x00, 100, 0x00, 10, 0x00, 100, 0x00, 6, 0x00, 0x100, 22, 128, 22, 128, 22, 128, 0x00, 15, 0x00, 0x00, 0xFF, 0xFF, 0x00, 17, 0x00, 20 
+
+$+callerIdProfile
+Caller ID Profile
+US Caller ID
+Profile_Index 0
+
+
+$-callerIdProfile
+CID_TYPE2_US
+US Caller ID Type II
+Profile_Index 0
+1 1300 2100 -13.500000 9 1 1236936,1,3 300 TONE_CALLWAIT,4 10,3 80 TONE_CLI,6 160 13 16,4 100,8 70,9,2
+
+$-callerIdProfile
+CID_TYPE1_UK
+UK Caller ID Type I
+Profile_Index 0
+0 1300 2100 -7.000000 10 1 1236936,4 50,0,4 100,3 100 TONE_CLI,5 100 20,7 100,8 50,9,4 200,0
+
+$-callerIdProfile
+CLI_TYPE1_US
+US Caller ID (Type 1 - On-Hook)
+Profile_Index 0
+0 1200 2200 -7.000000 4 1 1236936,4 520,7 250,8 150,9
+
+$+meteringProfile
+Metering_Profile
+Metering
+Profile_Index 0
+0 0 3.535 707.1 100
+
+$-meteringProfile
+METER_1
+Metering Index 1
+Profile_Index 0
+0 0 3.535 707.1 100
+
+$+metering2Profile
+Metering_Profile
+Metering
+Profile_Index 0
+0 10 2000 50 200
+
+$-metering2Profile
+METER_1
+Metering Index 1
+Profile_Index 0
+0 10 2000 50 200
+
+$+fxoDialingProfile
+FXO_Dialing_Profile
+FXO/Dialing
+Profile_Index 0
+38 2 2 33 17 200 40 60 600 200 199
+
+$-fxoDialingProfile
+FXO_Dialing_Profile
+FXO/Dialing
+Profile_Index 0
+38 2 2 33 17 200 40 60 600 200 199
+
+$+comments
+MICROSEMI ZL88602 Multiline Inverting Boost 8 FXS %0D%0ADec 9, 2016 JLR%0D%0A%0D%0AThis profile defines the switcher parameters for the 8FXS design.%0D%0AIn this design Device one switcher Y is the master for the VBL supply%0D%0Abut switcher Z is a slave.  Device 2 swicher Z is the master for the%0D%0AVBH supply and switcher Y is a slave.  The control of the VBL and VBH%0D%0Aswitchers are spread across two devices.  This is to minimize loading%0D%0Aon each devices VDDSW supply which is powered from an internal%0D%0Acharge pump. %0D%0A%0D%0ADevice profiles also include softstart timing parameters.%0D%0AThis loads limited switcher timing for a specified period (50ms in this case)%0D%0Ato limit inrush current during start up. This can be modified if startup%0D%0Acurrent is too high.%0D%0A%0D%0AVBAT supplies are configured as follows:%0D%0A%0D%0AVBL device 1 SWY(master)- 25V, FSW= 300kHz, VDDSW=4.7V (device mode reg)%0D%0A             SWZ(slave) - 76V%0D%0A  I/O21_VS1 Analog- Open%0D%0A  I/O22_VS2 Analog - VSW sense%0D%0A  Softstart Enabled - 50ms%0D%0A  Overcurrent shutdown sense on VS1%0D%0A%0D%0AVBH device 2 SWY (slave) - 25V%0D%0A             SWZ (master) - 76V, Fsw 192kHz, VDDSW=5V (device mode reg)%0D%0A  I/O21_VS1 Analog - Open%0D%0A  I/O22_VS2 Digital - uncommitted %0D%0A  Softstart Enabled - 50ms %0D%0A  Overcurrent shutdown sense on VS1%0D%0A%0D%0AAll other devices: SWY (slave) - 25V%0D%0A                   SWZ (slave) - 76V%0D%0A  All I/Os digital and uncommitted%0D%0A%0D%0A%0D%0ADevice 1 I/O22_VS2 can be used to measure the VSW input supply.  This may%0D%0Abe important to support wide input supply voltages where alternate switcher%0D%0Aprofiles may need to be loaded.
+Dummy lines for backward compatibility
+Profile_Index 0
+Dummy lines for backward compatibility

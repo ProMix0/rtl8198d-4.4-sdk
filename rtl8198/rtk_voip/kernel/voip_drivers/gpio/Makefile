@@ -1,0 +1,28 @@
+obj-$(CONFIG_RTK_VOIP_DRIVERS_PCM8186) += gpio_8186.o
+obj-$(CONFIG_RTK_VOIP_DRIVERS_PCM8651) += gpio_8651bv.o
+obj-$(CONFIG_RTK_VOIP_DRIVERS_PCM8671) += gpio_8972.o
+obj-$(CONFIG_RTK_VOIP_DRIVERS_PCM865xC) += gpio_8952.o
+obj-$(CONFIG_RTK_VOIP_DRIVERS_PCM8672) += gpio_8672.o
+obj-$(CONFIG_RTK_VOIP_DRIVERS_PCM8676) += gpio_8676.o
+obj-$(CONFIG_RTK_VOIP_DRIVERS_PCM8972B_FAMILY) += gpio_8972b.o
+obj-$(CONFIG_RTK_VOIP_DRIVERS_PCM89xxC) += gpio_8954c.o
+obj-$(CONFIG_RTK_VOIP_DRIVERS_PCM89xxD) += gpio_8972d.o
+obj-$(CONFIG_RTK_VOIP_SOC_8686_CPU0) += gpio_8686.o
+ifeq ($(CONFIG_RTK_VOIP_DRIVERS_PCM8972B_FAMILY)$(CONFIG_RTK_VOIP_DRIVERS_PCM89xxC),y)
+#obj-$(CONFIG_RTK_VOIP_IPC_ARCH_IS_HOST) += gpio_smi.o
+endif
+obj-$(CONFIG_RTK_VOIP_LINUX_GPIO) += gpio_linux_wrapper.o
+
+ifeq ($(CONFIG_RTK_VOIP_PLATFORM_7742), y)
+ifneq ($(CONFIG_RTK_VOIP_LINUX_GPIO), y)
+obj-y += gpio_8686.o
+endif
+endif
+
+ifeq ($(CONFIG_LEDS_RTK_GPIO_LED), y)
+EXTRA_CFLAGS += -I$(DIR_LINUX)/drivers/soc/realtek/
+endif
+
+EXTRA_CFLAGS += -I$(DIR_VOIP)/include
+
+include $(DIR_VOIP)/rules.mak

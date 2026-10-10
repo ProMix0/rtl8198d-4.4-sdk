@@ -1,0 +1,275 @@
+/*
+ * dts file for Cortina Access Saturn Development Board
+ *
+ * Copyright (C) 2016, Cortina Access
+ */
+
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/reset/cortina,rst-mgr.h>
+#include "saturn_soc.dtsi"
+#include "saturn_spinand.dtsi"
+#include "saturn_sflash.dtsi"
+
+/* board specific and SoC overrides below */
+/ {
+	model = "Cortina Access Saturn SFP+";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	memory { /* 128MB */
+		device_type = "memory";
+		reg = <0x00000000 0x8000000>;
+	};
+	
+	ca_peri{
+		compatible = "cortina,ca-peri";
+		reg = <0xb2224018 0x1000>,
+		      <0xbc100000 0x60>;
+		interrupt-parent = <&per_ictl>;
+		interrupts = <2>;
+		interrupt-names = "TMR1";
+	};
+
+	qm_ictl: qm_ictl@bc100094 {     /* QM interrupt */
+		compatible = "cortina,per-ictl";
+		reg = <0xbc100094  0x8>;
+		interrupt-controller;
+		#interrupt-cells = <1>;
+		interrupt-parent = <&cpuintc>;
+		interrupts = <4>;
+	};
+
+	lso_fbm_ictl: lso_fbm_ictl@bc100080 {	/* LSO_FBM interrupt */
+		status = "disabled";
+		reg = <0xbc100084  0x8>;
+	};
+
+	dma_ssp_ictl0: dma_ssp_ictl@b400ae08 {     /* DMA_SSP0 interrupt */
+		status = "disabled";
+		compatible = "cortina,per-ictl";
+		reg = <0xb400ae08  0x8>;
+		interrupt-controller;
+		#interrupt-cells = <1>;
+		interrupt-parent = <&lso_fbm_ictl>;
+		interrupts = <8>;
+	};
+
+	gpio-controller@b2224280 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "cortina,ca77xx-gpio";
+		reg = <0xb2224280 0x90>,
+		      <0xbc100058 0x10>;
+		id = <0>;
+
+		/* bank 0 with an interrupt */
+		gpio0: bank@0 {
+			gpio-controller;
+			interrupt-controller;
+			reg = <0>;
+			ngpios = <32>;
+			#gpio-cells = <2>;
+			#interrupt-cells = <2>;
+			interrupt-parent = <&per_ictl>;
+			interrupts = <6>;
+			gpio-ranges = <&pinctrl 0 0 32>;
+		};
+
+		/* bank 1 with an interrupt */
+		gpio1: bank@1 {
+			gpio-controller;
+			interrupt-controller;
+			reg = <1>;
+			ngpios = <32>;
+			#gpio-cells = <2>;
+			#interrupt-cells = <2>;
+			interrupt-parent = <&per_ictl>;
+			interrupts = <7>;
+			gpio-ranges = <&pinctrl 0 32 32>;
+		};
+
+		/* bank 2 without interrupt */
+		gpio2: bank@2 {
+			gpio-controller;
+			interrupt-controller;
+			reg = <2>;
+			ngpios = <32>;
+			#gpio-cells = <2>;
+			#interrupt-cells = <2>;
+			interrupt-parent = <&per_ictl>;
+			interrupts = <8>;
+			gpio-ranges = <&pinctrl 0 64 32>;
+		};
+
+		/* bank 3 without interrupt */
+		gpio3: bank@3 {
+			gpio-controller;
+			interrupt-controller;
+			reg = <3>;
+			ngpios = <32>;
+			#gpio-cells = <2>;
+			#interrupt-cells = <2>;
+			interrupt-parent = <&per_ictl>;
+			interrupts = <9>;
+			gpio-ranges = <&pinctrl 0 96 32>;
+		};
+	};
+
+	pinctrl: pinctrl@0xbc100050 {
+		compatible = "cortina,saturn-pinctrl";
+		reg = <0xbc100050 0x18>;
+
+		uart1_default: uart1_active {
+			data_signals {
+				pins = "GPIO_000", "GPIO_001", "PMUX_003";
+				function = "multi-fn";
+			};
+		};
+
+		sflash4_ctrl_default: sflash4_enable_multi-io {
+			data_signals {
+				pins = "PMUX_024";
+				function = "multi-fn";
+			};
+		};
+	};
+
+	/* Driver for thermal sensor */
+	thermal: thermal@bc10017c {
+		compatible = "cortina,thermal-sensor";
+		reg = <0xbc10017c 0x10>;
+		status = "okay";
+	};
+
+	spi0: spi@b2224098 {
+		compatible = "cortina,ca77xx-spi";
+		reg = <0xb2224098 0x40>;
+		interrupt-parent = <&per_ictl>;
+		interrupts = <5>;
+		clocks = <&io_clk>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+#if 1
+		/* Si32183: channel_count = 1, with isi, mode spi-cpha
+		 * Si32285: channel_count = 2, with isi, mode spi-cpha
+		 */
+		proslic_spi0: proslic_spi0@0 {
+			compatible = "silabs,proslic_spi", "rohm,dh2228fv";
+			status = "okay";
+			spi-max-frequency = <2500000>;
+			isi;
+			reg = <0>;
+			spi-cpha;
+			channel_count = <2>;
+			debug_level = <7>;
+			reset-gpio = <&gpio0 3 GPIO_ACTIVE_LOW>;
+		};
+#endif
+
+
+	};
+
+
+
+
+
+       /* Reserver memory region for Hash/FBM/NE and etc.
+         * Fixme when NE team finalize size and offset
+         */
+        reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+                ranges;
+
+		ddr_cache_reserved: ddr_cache_buffer@0x03c48000 {
+                           reg = <0x03c48000 0x2000000>;    /* reserved memory area in DDR $-coherent */
+	    };
+        };
+
+
+        ethernet@0xd0000000 {
+                compatible = "cortina,ni-interface";
+
+                reg = <0xd0000000 0xa000>,       /* reserved memory area for HV NE(APB0) module registers */
+                      <0x4410009c 0x10>,         /* reserved memory area for Global Network Engine Interrupt registers */
+                      <0x522240d8 0x48>,         /* reserved memory area for MDIO registers */
+                      <0xf4500000 0x2000>,       /* reserved memory area for XRAM */
+                      <0xd000a000 0x900>,        /* reserved memory area for DMA LSO */
+                      <0x40000000 0x40000>,      /* reserved memory area in SRAM */
+                      <0x03c48000 0x2000000>,    /* reserved memory area in DDR $-coherent */
+                      <0x02c48000 0x1000000>,    /* reserved memory area in DDR non-$cable, no used in Saturn SFU */
+		      <0xd000b000 0x1000>,       /* reserved memory area for internal RTL8211 PHY registers */
+                      <0xd000c000 0x2124>,       /* reserved memory area for XFI registers */
+		      <0xd000e000 0x40>;         /* reserved memory area for PTP registers */
+
+                interrupt-parent=<&qm_ictl>;
+                interrupts=<8>, <9>, <10>, <11>, <12>, <13>, <14>, <15>, <16>, <17>;
+
+                resets = <&block_rst NI_RESET>, <&block_rst L2FE_RESET>, <&block_rst L2TM_RESET>, <&block_rst L3FE_RESET>, <&block_rst SDRAM_RESET>, <&block_rst TQM_RESET>, <&block_rst DMA_RESET>, <&block_rst FBM_RESET>, <&global_cfg EXT_RESET>;
+                reset-names = "ni_reset", "l2fe_reset", "l2tm_reset", "l3fe_reset", "sdram_reset", "tqm_reset", "dma_reset", "fbm_reset", "ext_reset";
+               memory-region = <&ddr_cache_reserved>;
+
+		dyinggasp-gpio = <&gpio0 1 GPIO_ACTIVE_LOW>;
+
+		eth0: ethernet@0 {
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};
+
+		eth1: ethernet@1 {
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};
+
+		eth2: ethernet@2 {
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};
+
+		eth3: ethernet@3 {
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};
+
+		pon: pon_ictl@0 {
+			interrupt-controller;
+			#interrupt-cells = <1>;
+			interrupt-parent = <&vecintc>;
+			interrupts = <2>;
+			};
+
+		ni_hv_ictl: ni_hv_ictl@0xd000435c {
+			compatible = "cortina,per-ictl";
+			interrupt-controller;
+			interrupt-parent = <&ne_ictl>;
+			interrupts = <0>;
+		};
+
+		ni_ptp: ni_ptp_ictl@0xd000433c {
+			compatible = "cortina,per-ictl";
+			interrupt-controller;
+			interrupt-parent = <&ne_ictl>;
+			interrupts = <16>;
+		};
+
+		ptp_stat: ptp_stat_ictl@0xd000433c  {
+			compatible = "cortina,per-ictl";
+			interrupt-controller;
+			interrupt-parent = <&ni_hv_ictl>;
+			interrupts = <27>;
+		};
+        };
+
+
+i2c: i2c@b2224120  {
+                  compatible = "cortina,ca77xx-i2c";
+                  reg = <0xb2224120 0x28>;
+                  interrupt-parent = <&per_ictl>;
+                  interrupts = <11>;
+                  device_type = "i2c";
+                  clocks = <&io_clk>;
+                  clock-frequency = <100000>;
+         };
+
+};
+
+

@@ -1,0 +1,267 @@
+#!/bin/sh
+
+. /lib/functions.sh
+. /lib/guest-eth/guest-eth.sh
+. /lib/iptv/iptv.sh
+. /lib/network/vlan_func.sh
+. /usr/lib/eth-encap/eth_encap.sh
+
+
+
+local used_vid
+local vid_p4
+local vid_p5
+used_vid=$(get_used_vlan)
+
+vlan_enable=$(uci get network.vlan.enable 2>/dev/null)
+vlan_id=$(uci get network.vlan.id 2>/dev/null)
+vlan_tag=$(uci get network.vlan.tag_802_1q 2>/dev/null)
+device_id=$(getfirm DEV_ID)
+role=$(uci get bind_device_list."$device_id".role 2>/dev/null)
+#mode=$(grep 'RE' /tmp/work_mode)
+
+local eth_num eth_num_seq
+eth_num=$(get_eth_port_num)
+eth_num_seq=$((eth_num-1))
+
+local all_eth_ifname=""
+all_eth_ifname=$(get_all_eth_names)
+
+guest_vlan_enable=$(uci get wifi.guest.vlan_enable -c /etc/config)
+guest_vlan_id=$(uci get wifi.guest.vlan_id -c /etc/config)
+
+config_load iptv_v2
+config_get iptv_enable info enable 0
+config_get iptv_vid info iptv_vid
+config_get iptv_prio info iptv_prio
+config_get iptv_type info iptv_type "normal"
+#config_get iptv_port "$device_id" port "other"
+config_get backhaul_id info iptv_backhaul_vid "491"
+config_clear
+
+count_self_iptv_ports "$device_id" iptv_port
+
+config_load sysmode
+config_get system_mode sysmode mode "Router"
+config_clear
+
+local isMobile=$(isMobile 2>/dev/null)
+local accessmode=
+if [ "$isMobile" = "yes" ]; then
+	config_load accessmode
+	config_get accessmode accessmode mode 'mobile'
+	config_clear
+fi
+
+local port_1=
+local port_2=
+
+if [ "$(which is ssdk_sh)" ]; then
+	port_1=4
+	port_2=5
+else
+	port_1=0
+	port_2=1
+fi
+
+local lock_vlan="/var/run/vlan.lock"
+lock $lock_vlan
+trap "" INT TERM ABRT QUIT ALRM 
+
+local is_change=0
+if [ "$vlan_enable" == "1" ]; then
+	[  "$role" == "AP" ] && {
+		[ "$ACTION" == "update" -a "$INTERFACE" == "lan" ]  && {
+			[ -n "$DEVICE" ] && {
+				
+				[ "$DEVICE" == "eth0 " ] && {
+                    if [ "$vlan_tag" == "0" ]; then
+                        __set_port${port_1}_wvid "$vlan_id" "u"
+                    else
+                        __set_port${port_1}_wvid "$vlan_id" "t"
+                    fi
+
+                    vid_p5=$(__set_port${port_2}_lvid "${used_vid}" "u")
+                    append used_vid "$vid_p5"
+                    echo "01_vlan_state: select p5: $vid_p5" > /dev/console
+                    is_change=1
+				} || {
+                    if [ "$vlan_tag" == "0" ]; then
+                        __set_port${port_2}_wvid "$vlan_id" "u"
+                    else
+                        __set_port${port_2}_wvid "$vlan_id" "t"
+                    fi
+
+                    vid_p4=$(__set_port${port_1}_lvid "${used_vid}" "u")
+                    append used_vid "$vid_p4"
+                    echo "01_vlan_state: select p4: $vid_p4" > /dev/console
+                    is_change=1
+				}
+			}
+		}
+
+		[ "$ACTION" == "clear" -a "$INTERFACE" == "lan" ]  && {
+
+            if [ "$vlan_tag" == "0" ]; then
+                __set_both_wvid_tag "$vlan_id" "u"
+            else
+                __set_both_wvid_tag "$vlan_id" "t"
+            fi
+            is_change=1
+
+		}
+
+	}
+else
+
+    vid_p4=$(__set_port${port_1}_lvid "${used_vid}" "u")
+    append used_vid "$vid_p4"
+    echo "01_vlan_state else: select p4: $vid_p4" > /dev/console
+
+    vid_p5=$(__set_port${port_2}_lvid "${used_vid}" "u")
+    append used_vid "$vid_p5"
+    echo "01_vlan_state else: select p5: $vid_p5" > /dev/console
+
+    is_change=1
+fi
+
+#iptv vlan set
+if [ "$iptv_enable" == "1" -a "$accessmode" != "mobile" ]; then
+	[  "$role" == "AP" ] && {
+		[ "$ACTION" == "update" -a "$INTERFACE" == "lan" ] && {
+			[ -n "$DEVICE" ] && {
+                for eth_name in $all_eth_ifname
+                do
+                    if ! list_contains DEVICE "$eth_name"; then
+                        port=$(get_port_by_eth $eth_name)
+                        __iptv_set_vlan "$port" "$iptv_vid"
+                        is_change=1
+
+                        delete_invalid_iptv_wan_iface "$eth_name" "$iptv_vid"
+
+                        if [[ "$system_mode" != "AP" ]]; then
+                            add_iptv_wan_iface "$eth_name" "$iptv_vid" "$iptv_prio"
+                        fi
+                    fi
+                done
+			}
+		}
+
+		[ "$ACTION" == "clear" -a "$INTERFACE" == "lan" ]  && {
+
+			if __iptv_clear_vlan; then
+				is_change=1
+			fi
+
+			delete_invalid_iptv_wan_iface "none" "$iptv_vid"
+		}
+	}
+else
+
+    if __iptv_clear_vlan; then
+        is_change=1
+    fi
+
+    delete_invalid_iptv_wan_iface "none" "$iptv_vid"
+fi
+
+if [ "$iptv_enable" == "1" -o "$iptv_type" == "bridge"  ]; then
+	[  "$role" == "AP" ] && {
+		add_fap_backhaul_eth "$backhaul_id" "$iptv_prio" "$iptv_type" "$iptv_port"
+	}
+fi
+
+if [ "$guest_vlan_enable" == "1" ]; then
+
+	[  "$role" == "AP" ] && {
+
+        [ "$ACTION" == "update" -a "$INTERFACE" == "lan" ]  && {
+            [ -n "$DEVICE" ] && {
+                echo "update $DEVICE port guest vlan_id br-lan" > /dev/console
+
+                port=$(get_port_by_eth $DEVICE)
+                __guest_set_vlan "$port" "$guest_vlan_id"
+                is_change=1
+                
+                del_invalid_guest_eth "lan" "$DEVICE"
+                if [[ "$system_mode" != "AP" ]]; then
+
+                    if [ "$iptv_port" != "other" ]; then
+                        local port_mask port_seq logic_port
+                        local iptv_eths
+        
+                        for i in $(seq 0 1 $eth_num_seq)
+                        do
+                            port_mask=$((1<<i))
+                            port_seq=$((i+1))
+                            logic_port=$(get_eth_by_seq $port_seq)
+
+                            if [ $((port_mask&iptv_port)) -gt 0 ]; then
+                                iptv_eths="$logic_port $iptv_eths"
+                            fi
+                        done
+                    fi
+                    echo "we get iptv eths:$iptv_eths" > /dev/console
+                    local guest_eths
+
+                    for eth_name in $DEVICE
+                    do
+                        eth_res=$(echo $iptv_eths | grep $eth_name)
+                        if [[ "$eth_res" == "" ]] ; then
+                           guest_eths="$eth_name $guest_eths"
+    
+                        fi
+                    done
+
+                    add_eth_guest "$guest_eths"
+                fi
+            }
+        }
+
+        [ "$ACTION" == "clear" -a "$INTERFACE" == "lan" ]  && {
+            echo "clear lan guest vlan id" > /dev/console
+            if __guest_clear_vlan; then
+                is_change=1
+            fi
+            del_invalid_guest_eth "lan" "none"
+
+        }
+    }
+
+	[ "$role" == "RE" ] && {
+        [ "$ACTION" == "update" -a "$INTERFACE" == "lan" ]  && {
+            [ -n "$DEVICE" ] && {
+                echo "update eth0 eth1 port guest vlan_id br-lan" > /dev/console
+
+                __guest_set_both_vlan
+                is_change=1
+                
+                del_invalid_guest_eth "lan" "$all_eth_ifname"
+                if [[ "$system_mode" != "AP" ]]; then
+                    add_eth_guest "$all_eth_ifname"
+                fi
+
+            }
+        }
+    }
+else
+
+    if __guest_clear_vlan; then
+        is_change=1
+    fi
+
+    del_invalid_guest_eth "lan" "none"
+fi
+
+if [ "$is_change" == 1 ]; then
+    uci commit -c /etc/vlan.d
+    switch_name=$(uci -c /etc/vlan.d get vlan.@switch[0].name)
+    echo "hotplug config vlan ==============" > /dev/console 
+    vlan_support=$(get_switch_vlan_enable)
+    if [ "$vlan_support" == "yes" ]; then
+        swconfig dev $switch_name load /etc/vlan.d/vlan
+    fi
+fi
+
+trap - INT TERM ABRT QUIT ALRM 
+lock -u $lock_vlan

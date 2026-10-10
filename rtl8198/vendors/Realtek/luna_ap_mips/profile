@@ -1,0 +1,9 @@
+TERM=linux
+LINES=
+COLUMNS=
+export LINES COLUMNS 
+if [ -d "/usr/lib/jvm/java-1.8.0-openjdk-mips/jre/bin" ] ; then
+    PATH="/usr/lib/jvm/java-1.8.0-openjdk-mips/jre/bin:$PATH"
+fi
+export PATH
+

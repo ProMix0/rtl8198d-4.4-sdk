@@ -1,0 +1,128 @@
+#ifndef OPENWRT_BUILD
+#include "../../../config/autoconf.h"
+#else
+#endif
+
+
+//support RUSSIAN tone
+#define CUSTOMER_COUNTRY_RUSSIAN
+#define COUNTRY_EXT1 "RUSSIAN"
+//#define CUSTOMER_COUNTRY_GUATEMALA
+//#define CUSTOMER_COUNTRY_SPAIN
+/*
+#if defined (CUSTOMER_COUNTRY_RUSSIAN)
+	#if defined (CONFIG_USER_BOA_WITH_MULTILANG_ZH_TW)
+		#define COUNTRY_EXT1 "‰øÑÁ???
+	#elif defined (CONFIG_USER_BOA_WITH_MULTILANG_ZH_CN)
+		#define COUNTRY_EXT1 "‰øÑÁ???
+	#else
+		#define COUNTRY_EXT1 "RUSSIAN"
+	#endif
+#elif defined (CUSTOMER_COUNTRY_GUATEMALA)
+	#if defined (CONFIG_USER_BOA_WITH_MULTILANG_ZH_TW)
+		#define COUNTRY_EXT1 "?úÂú∞È¶¨Ê?"
+	#elif defined (CONFIG_USER_BOA_WITH_MULTILANG_ZH_CN)
+		#define COUNTRY_EXT1 "?úÂú∞È©¨Ê?"
+	#else
+		#define COUNTRY_EXT1 "GUATEMALA"
+	#endif
+
+#elif defined (CUSTOMER_COUNTRY_SPAIN)
+        #if defined (CONFIG_USER_BOA_WITH_MULTILANG_ZH_TW)
+                #define COUNTRY_EXT1 "Ë•øÁè≠??
+        #elif defined (CONFIG_USER_BOA_WITH_MULTILANG_ZH_CN)
+                #define COUNTRY_EXT1 "Ë•øÁè≠??
+        #else
+                #define COUNTRY_EXT1 "SPAIN"
+        #endif
+
+#else
+	#if defined (CONFIG_USER_BOA_WITH_MULTILANG_ZH_TW)
+		#define COUNTRY_EXT1 "È°çÂ??ãÂÆ∂"
+	#elif defined (CONFIG_USER_BOA_WITH_MULTILANG_ZH_CN)
+		#define COUNTRY_EXT1 "È¢ùÂ??ΩÂÆ∂"
+	#else
+		#define COUNTRY_EXT1 "EXT1"
+	#endif
+#endif
+*/
+
+//#ifndef __RCM_CUSTOMIZE_H
+#define __RCM_CUSTOMIZE_H
+
+#undef CONFIG_RTK_VOIP_IVR
+
+
+//codec support list 
+
+#undef CONFIG_RTK_VOIP_RTK_VOIP_SPEEX_NB
+#undef CONFIG_RTK_VOIP_GSMFR
+#undef CONFIG_RTK_VOIP_ILBC
+#undef CONFIG_RTK_VOIP_G726
+//#undef CONFIG_RTK_VOIP_G722
+#if defined(CONFIG_CMCC) || defined(CONFIG_CU)
+#else
+#undef CONFIG_RTK_VOIP_G7231
+#endif
+
+
+
+
+
+#if defined(CONFIG_CMCC) || defined(CONFIG_CU)
+#define DE_JITTER_DELAY 40
+#define DE_MAX_JITTER_DELAY 200
+#define DEF_RFC_FLAGS (SIP_SERVER_REDUNDANCY|SIP_DATE|SIP_P_ASSERTED_IDENTITY|SIP_USER_EQUAL_PHONE|SIP_PROXY_IS_OUTBOUND|SIP_REG_SERVER_ADDR_FOR_PROXY|SIP_DIGIT_MAP_MODE_MIN)
+#define INTER_DIGIT_TIMER_LONG 20
+#define REGISTER_RETRY_INTERVAL 30
+#define M_DEFAULT_PRECEDENACE_LIST 	\
+	2, 1, 3, 4, 0, 5, 6, 7, 8, 9, 10, 11, 12, 13
+#define DEF_BUSY_TONE_TIMER 60
+#define REGISTER_EXPIRES 600
+#define DEF_SIP_DSCP 0
+#define DEF_HEARTBEAT_CYCLE 900
+#define DEF_RTP_DSCP 0
+#define DEF_RTCP_INTERVAL 5
+#else
+#define DE_JITTER_DELAY 4
+#define DE_MAX_JITTER_DELAY 20
+#define DEF_RFC_FLAGS (SIP_SERVER_REDUNDANCY|SIP_DATE|SIP_P_ASSERTED_IDENTITY|SIP_USER_EQUAL_PHONE|SIP_ENABLE_POUND_KEY_TO_ASCII)
+#define INTER_DIGIT_TIMER_LONG 16
+#define REGISTER_RETRY_INTERVAL 120
+#define M_DEFAULT_PRECEDENACE_LIST 	\
+	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+#define DEF_BUSY_TONE_TIMER 40
+#define REGISTER_EXPIRES 3600
+#define DEF_SIP_DSCP 26
+#define DEF_HEARTBEAT_CYCLE 60
+#define DEF_RTP_DSCP 46
+#define DEF_RTCP_INTERVAL 10
+#endif
+
+#if defined(CONFIG_CU)
+#define DIAL_DTMF_CONFIRM_NUMBER  ""
+#define FLASH_HOOKTIME 300
+#define FLASH_HOOKTIME_MIN 100
+#else
+#define DIAL_DTMF_CONFIRM_NUMBER  "#"
+#define FLASH_HOOKTIME 500
+#define FLASH_HOOKTIME_MIN 90
+#endif
+
+#define DEF_FXSPORT_FLAG 0
+#define DEF_CALL_WAITING_ENABLE 1
+#define DEF_DTMF_MODE DTMF_INBAND
+#define SERVER_TYPE IMS_SIP
+#define DEF_OFF_HOOK_ALARM 15
+#define INTER_DIGIT_TIMER_SHORT 5 
+#define DEF_HANGING_REMINDER_TONE_TIMER 60 
+#define DEF_NOANSWER_TIMER 60
+#define DEF_HEARTBEAT_COUNT 3
+#define SESSION_UPDATE_TIMER 1800
+#define OFFHOOKWARNING 1
+#define FAX_G711_CODEC 1
+
+#define RING_RING_VOLTAGE_FREQ 70
+
+
+//#endif

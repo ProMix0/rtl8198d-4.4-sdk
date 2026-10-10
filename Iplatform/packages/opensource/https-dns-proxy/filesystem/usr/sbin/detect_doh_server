@@ -1,0 +1,25 @@
+#!/bin/sh
+
+local doh_server=$1
+local request_base64_encode="?dns=uGkBAAABAAAAAAAAB2FsaWJhYmEDY29tAAABAAE"
+local request_url=$doh_server$request_base64_encode
+#echo $request_url
+local filename=$(echo -n "$doh_server" | md5sum | cut -d' ' -f1)
+
+if [ -e "/tmp/detect_dohdot_server/$filename" ]; then
+    exit 2
+else
+    touch "/tmp/detect_dohdot_server/$filename"
+    echo "touch file '$filename' "
+fi
+
+local result=$(curl --connect-timeout 5 -k -s -w "%{http_code}" -o /dev/null $request_url)
+echo $result
+if [ $result -eq 200 ]; then
+    result=1
+else
+    result=0
+fi
+echo "$result" > /tmp/detect_dohdot_server/$filename
+
+#flock -x /tmp/$1.test -c "echo $($?) > /tmp/$1.test"

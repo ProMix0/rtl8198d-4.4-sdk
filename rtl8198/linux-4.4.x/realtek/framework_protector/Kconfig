@@ -1,0 +1,71 @@
+menu "Realtek Framework Protector"
+
+config YUEME_TMPFS_FEATURE
+	bool "TMPFS FILE SIZE LIMITION"
+	default n
+	help
+        Limit the size of single file under TMPFS directory!(tmpfs)
+
+config YUEME_TMPFS_FILE_SIZE
+	depends on YUEME_TMPFS_FEATURE
+	int "TMPFS MAX FILE Size(MB)"
+	default 128
+	help
+		Max Size of single file for YUEME.
+		User can set the size by write some value into /proc/luna_yueme/tmpfs_file_size.
+
+config YUEME_TMPFS_SIZE_FEATURE
+        depends on YUEME && TMPFS
+        int "TMPFS_FS MAX Size"
+        default 0
+        help
+                FS /tmp and /var are limited at the value(MB) by mnt_tmpfs.sh on rc2.
+                By default 0, the limitaion is 40% of Total System Mem.
+
+config YUEME_APP_FORK_LIMIT_FEATURE
+        depends on YUEME && CGROUP_SCHED
+        bool "YUEME App Framework Fork Limit FEATURE"
+        default n
+        help
+             Limit the fork number of appframework!
+
+config YUEME_APP_FORK_LIMIT_NUM
+        int "YUEME_APP_FORK_LIMIT_NUM"
+        depends on YUEME_APP_FORK_LIMIT_FEATURE && YUEME && CGROUP_SCHED
+        default 100
+        help
+                Appframework'app can't fork over this value.
+
+config YUEME_APP_THREAD_LIMIT_NUM
+        int "YUEME_APP_THREAD_LIMIT_NUM"
+        depends on YUEME_APP_FORK_LIMIT_FEATURE
+        default 300
+        help
+                Appframework'app can't create thread over this value.
+	
+config YUEME_APP_FORK_LIMIT_KILLER
+        bool "YUEME Appframework Limit Killer"
+        depends on YUEME_APP_FORK_LIMIT_FEATURE
+        default n
+        help
+             Every 120(s), Kthread(appf_m) will try to kill the process
+             which forked over YUEME_APP_FORK_LIMIT_NUM.
+
+config YUEME_FS_CHECK_FEATURE
+        bool "YUEME App Framework FS Write Check"
+        depends on (YAFFS_FS || UBIFS_FS) && YUEME && CGROUP_SCHED
+        default n
+        help
+             Avoid the application of AppFramework write fully the FS(YAFFS_FS) for Flash Partition.
+
+config YUEME_FS_LIMIT_PERCENTAGE
+        int "YUEME App Framework FS Write Allow Percentage"
+        depends on YUEME_FS_CHECK_FEATURE
+        range 0 100
+        default 90
+        help
+             This option will inhibit the write operation into YAFFS_FS when FS_usage is higher than threshold.
+             the FS is higher than CONFIG_YUEME_FS_LIMIT_PERCENTAGE%, the system does not allow this write operation.
+             The system will try to kill this process.
+
+endmenu

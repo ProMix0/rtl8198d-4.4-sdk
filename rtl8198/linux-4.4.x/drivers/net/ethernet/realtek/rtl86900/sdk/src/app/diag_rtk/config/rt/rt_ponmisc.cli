@@ -1,0 +1,66 @@
+//
+// Copyright (C) 2019 Realtek Semiconductor Corp.
+// All Rights Reserved.
+//
+// This program is the proprietary software of Realtek Semiconductor
+// Corporation and/or its licensors, and only be used, duplicated,
+// modified or distributed under the authorized license from Realtek.
+//
+// ANY USE OF THE SOFTWARE OTHER THAN AS AUTHORIZED UNDER
+// THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+//
+// $Revision: $
+// $Date: $
+//
+// Purpose : Define diag shell commands for pon misc.
+//
+// Feature : The file have include the following module and sub-modules
+//           1) pon misc commands.
+//
+
+//rt_ponmisc table configuration
+//init configuration
+rt_ponmisc init
+
+//rt_ponmisc table configuration
+//get configuration
+//mode configuration
+rt_ponmisc get mode
+
+//rt_ponmisc table configuration
+//get configuration
+//sid configuration
+//sid index
+rt_ponmisc get sid <INT:sid>
+
+//rt_ponmisc table configuration
+//set configuration
+//sid configuration
+//sid index
+//state configuration
+//disable
+//enable
+//destination port configuration
+//destination port number
+//priroity configuration
+//priroity number
+//flowid configuration
+//flowid index
+//deep queue flag
+//disable
+//enable
+rt_ponmisc set sid <INT:sid> state ( disable | enable ) dpn <INT:dpn> pri <INT:pri> flowid <INT:flowid> dq ( disable | enable )
+
+//rt_ponmisc configuration
+//get configuration
+//transceiver configuration
+//vendor-name
+//sn
+//part-number
+//temperature
+//voltage
+//bias-current
+//tx-power
+//rx-power
+rt_ponmisc get transceiver ( vendor-name | sn | part-number | temperature | voltage | bias-current | tx-power | rx-power )
+

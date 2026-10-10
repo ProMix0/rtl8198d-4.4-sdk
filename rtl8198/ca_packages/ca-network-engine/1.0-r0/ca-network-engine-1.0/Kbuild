@@ -1,0 +1,296 @@
+
+# sub-directory
+
+ifeq ($(CONFIG_NE_HAVE_DOT_CONFIG),)
+include $(M)/.config
+endif
+
+include $(M)/dir.mk
+
+ccflags-y :=	-I$(M)/include \
+		-I$(M)/$(COMMON_DIR)/include \
+		-I$(M)/$(AAL_DIR)/include \
+		-I$(M)/$(API_DIR)/include \
+		-I$(M)/$(ADAPT_DIR) \
+		-I$(srctree)/include \
+		-include generated/ca_ne_autoconf.h
+
+# all object files
+
+COMMON_OBJS	= $(COMMON_DIR)/ca_mut.o
+COMMON_OBJS	+= $(COMMON_DIR)/ca_api_proc.o $(ADAPT_DIR)/ca_adapt_proc.o
+
+AAL_OBJS	= $(AAL_DIR)/aal_init.o \
+		  $(AAL_DIR)/aal_common.o \
+		  $(AAL_DIR)/aal_table.o \
+		  $(AAL_DIR)/aal_ni.o \
+		  $(AAL_DIR)/aal_ni_l2.o \
+		  $(AAL_DIR)/aal_port.o \
+		  $(AAL_DIR)/aal_l2_vlan.o \
+		  $(AAL_DIR)/aal_phy.o \
+		  $(AAL_DIR)/aal_fbm.o \
+		  $(AAL_DIR)/aal_l2_cls.o \
+		  $(AAL_DIR)/aal_fdb.o \
+		  $(AAL_DIR)/aal_mir.o \
+		  $(AAL_DIR)/aal_arb.o \
+		  $(AAL_DIR)/aal_l2_tm.o \
+		  $(AAL_DIR)/aal_l2_te.o \
+		  $(AAL_DIR)/aal_l2_qm.o \
+		  $(AAL_DIR)/aal_l2_tm_cb.o \
+		  $(AAL_DIR)/aal_mcast.o \
+		  $(AAL_DIR)/aal_l2_specpkt.o \
+		  $(AAL_DIR)/aal_l2_qos.o \
+		  $(AAL_DIR)/aal_l3qm.o \
+		  $(AAL_DIR)/ca_aal.o \
+		  $(AAL_DIR)/ca_aal_proc.o \
+		  $(AAL_DIR)/aal_sa_id.o \
+		  $(AAL_DIR)/aal_idx4pe.o \
+		  $(AAL_DIR)/aal_l3fe.o \
+		  $(AAL_DIR)/aal_l3_pe.o \
+		  $(AAL_DIR)/aal_l3_cam.o \
+		  $(AAL_DIR)/aal_l3_if.o \
+		  $(AAL_DIR)/aal_hashlite.o \
+		  $(AAL_DIR)/aal_hashlite_init.o \
+		  $(AAL_DIR)/aal_l3_tm.o \
+		  $(AAL_DIR)/aal_l3_te.o \
+		  $(AAL_DIR)/aal_l3_te_cb.o \
+		  $(AAL_DIR)/aal_l3_specpkt.o \
+		  $(AAL_DIR)/aal_l3_qos.o \
+		  $(AAL_DIR)/aal_l3_cls.o \
+		  $(AAL_DIR)/aal_ptp.o
+
+ifeq ($(CONFIG_CA_NE_AAL_L3_DDOS), y)
+AAL_OBJS        += $(AAL_DIR)/aal_l3_ddos.o
+endif
+
+ifeq ($(CONFIG_ARCH_CORTINA_SATURN_SFU), y)
+AAL_OBJS	+= $(AAL_DIR)/aal_uni_macsec.o \
+ 		   $(AAL_DIR)/aal_uni_macsec_intr.o \
+		   $(AAL_DIR)/aal_ptp_sfu.o \
+		   $(AAL_DIR)/aal_fdb_ipc.o
+else ifeq ($(CONFIG_ARCH_CORTINA_G3HGU), y)
+AAL_OBJS	+= $(AAL_DIR)/aal_ptp_sfu.o \
+		   $(AAL_DIR)/aal_hash.o \
+		   $(AAL_DIR)/aal_lpm.o
+else # ! CONFIG_ARCH_CORTINA_SATURN_SFU and ! CONFIG_ARCH_CORTINA_G3HGU
+AAL_OBJS	+= $(AAL_DIR)/aal_hash.o \
+		   $(AAL_DIR)/aal_lpm.o
+endif
+
+ifeq ($(CONFIG_ARCH_REALTEK_TAURUS), y)
+NI_DRV_OBJS     = $(NI_DRV_DIR)/ca_ni.o $(NI_DRV_DIR)/ca_phy.o \
+                  $(NI_DRV_DIR)/ca_ni_rx.o $(NI_DRV_DIR)/ca_ni_tx.o \
+                  $(NI_DRV_DIR)/ca_ethtool.o $(NI_DRV_DIR)/ca_ni_proc.o \
+                  $(NI_DRV_DIR)/ca_ni_dump.o
+else
+NI_DRV_OBJS	= $(NI_DRV_DIR)/ca_ni.o $(NI_DRV_DIR)/ca_phy.o \
+		  $(NI_DRV_DIR)/ca_ni_rx.o $(NI_DRV_DIR)/ca_ni_tx.o \
+		  $(NI_DRV_DIR)/ca_ethtool.o $(NI_DRV_DIR)/ca_ni_proc.o \
+		  $(NI_DRV_DIR)/ca_ni_netlink.o \
+		  $(NI_DRV_DIR)/ca_ni_dump.o
+endif
+
+ifeq ($(CONFIG_CORTINA_CPU_TAG), y)
+NI_DRV_OBJS += $(NI_DRV_DIR)/ca_ni_cpu_tag.o
+else ifeq ($(CONFIG_ARCH_RTL8198F), y)
+NI_DRV_OBJS     += $(NI_DRV_DIR)/ca_ni_cpu_tag.o
+endif
+
+#RealTek
+ifeq ($(CONFIG_ARCH_RTL8198F), y)
+NI_DRV_OBJS += $(NI_DRV_DIR)/rtk_serdes.o
+endif
+
+ifeq ($(CONFIG_RTK_NIC_RX_HOOK), y)
+NI_DRV_OBJS     += ca-ne-rtk/ca_ext.o
+NI_DRV_OBJS     += ca-ne-rtk/ethctl_implement.o
+else ifeq ($(CONFIG_RTK_NIC_TX_HOOK), y)
+NI_DRV_OBJS     += ca-ne-rtk/ca_ext.o
+NI_DRV_OBJS     += ca-ne-rtk/ethctl_implement.o
+endif
+
+ifeq ($(CONFIG_RTK_CA_NE_SKB_LIMIT), y)
+NI_DRV_OBJS	+= ca-ne-rtk/rtk_skb_limit.o
+endif
+# RealTek End #
+
+ifeq ($(CONFIG_ARCH_REALTEK_TAURUS), y)
+API_OBJS        = $(API_DIR)/api_common.o \
+                        $(API_DIR)/sys.o
+
+else
+API_OBJS	= $(API_DIR)/api_common.o \
+			$(API_DIR)/l2_cls_mid_lay.o \
+			$(API_DIR)/cpu_port.o \
+			$(API_DIR)/eth_port.o \
+			$(API_DIR)/l2.o \
+			$(API_DIR)/mcast.o \
+			$(API_DIR)/mirror.o \
+			$(API_DIR)/port.o \
+			$(API_DIR)/qos.o \
+			$(API_DIR)/special_packet.o \
+			$(API_DIR)/vlan.o \
+			$(API_DIR)/ptp.o \
+			$(API_DIR)/queue.o \
+			$(API_DIR)/rate.o \
+			$(API_DIR)/classifier.o \
+			$(API_DIR)/macsec.o \
+			$(API_DIR)/sys.o
+endif
+
+ifeq ($(CONFIG_ARCH_CORTINA_SATURN_SFU), y)
+API_OBJS	+= $(API_DIR)/flow_sfu.o \
+		   $(API_DIR)/hw_macsec.o
+else ifeq ($(CONFIG_ARCH_CORTINA_G3HGU), y)
+API_OBJS	+= $(API_DIR)/route.o \
+		   $(API_DIR)/nat.o \
+		   $(API_DIR)/flow.o \
+		   $(API_DIR)/tunnel.o \
+		   $(API_DIR)/hw_macsec.o
+else ifeq ($(CONFIG_ARCH_REALTEK_TAURUS), y)
+
+else ifeq ($(CONFIG_ARCH_CORTINA_VENUS), y)
+API_OBJS	+= $(API_DIR)/route.o \
+		   $(API_DIR)/nat.o \
+		   $(API_DIR)/flow.o \
+		   $(API_DIR)/tunnel.o \
+		   $(API_DIR)/hw_macsec.o
+else # ! CONFIG_ARCH_CORTINA_SATURN_SFU
+API_OBJS	+= $(API_DIR)/route.o \
+		   $(API_DIR)/nat.o \
+		   $(API_DIR)/flow.o \
+		   $(API_DIR)/tunnel.o 
+endif
+
+ifeq ($(CONFIG_CORTINA_IPC2RCPU), y)
+API_OBJS       += $(API_DIR)/tunnel_ipc.o
+endif
+
+
+obj-m += ca-ne.o
+ifeq ($(CONFIG_ARCH_REALTEK_TAURUS), y)
+# TODO: remove COMMON_OBJS API_OBJS
+ca-ne-y += $(COMMON_OBJS) $(AAL_OBJS) $(NI_DRV_OBJS) $(API_OBJS)
+else
+ca-ne-y += $(COMMON_OBJS) $(AAL_OBJS) $(NI_DRV_OBJS) $(API_OBJS)
+endif
+
+ifeq ($(CONFIG_RTK_NI_TEST), y)
+ifeq ($(NI_DRV_DIR), ni-drv-gen1)
+NI_DRV_OBJS	+= ca-ne-rtk/rtk-ni-test/platform/rl6473_ca8277a_test.o
+else ifeq ($(NI_DRV_DIR), ni-drv-gen2)
+NI_DRV_OBJS	+= ca-ne-rtk/rtk-ni-test/platform/rl6562_ca8277b_test.o
+else ifeq ($(NI_DRV_DIR), ni-drv-77c)
+NI_DRV_OBJS	+= ca-ne-rtk/rtk-ni-test/platform/rl6706_rtl8277c_test.o
+endif
+obj-m += ca-ne-rtk/rtk-ni-test/rtk_ni_test.o
+ccflags-y += -I$(M)/ca-ne-rtk/rtk-ni-test/platform
+ccflags-y += -I$(M)/ca-ne-rtk/rtk-ni-test
+ccflags-y += -I$(M)/ca-ne-rtk
+endif
+
+ca-ne-$(CONFIG_NE_L2FP) += $(ADAPT_DIR)/l2fp/ca_l2fp.o
+ccflags-$(CONFIG_NE_L2FP) += -I$(M)/$(NI_DRV_DIR) -I$(M)/$(ADAPT_DIR)/l2fp/
+
+ca-ne-$(CONFIG_NE_L3COS) += $(ADAPT_DIR)/l3cos/ca_l3cos.o
+ccflags-$(CONFIG_NE_L3COS) += -I$(M)/$(ADAPT_DIR)/l3cos/
+
+ca-ne-$(CONFIG_NE_ARP_FLOODING) += $(ADAPT_DIR)/arp_ctrl/ca_arp_ctrl.o
+ccflags-$(CONFIG_NE_ARP_FLOODING) += -I$(M)/$(NI_DRV_DIR) -I$(M)/$(ADAPT_DIR)/arp_ctrl/
+
+ca-ne-$(CONFIG_NE_AAL_XFI) += $(AAL_DIR)/aal_xfi.o
+ca-ne-$(CONFIG_NE_EXTERNAL_SERDES) += $(AAL_DIR)/ca_serdes.o  \
+                                      $(AAL_DIR)/serdes_file.o
+
+ca-ne-$(CONFIG_NE_CPU256) += $(AAL_DIR)/aal_l3qm_cpu256.o \
+                             $(NI_DRV_DIR)/ca_ni_cpu256.o \
+                             $(NI_DRV_DIR)/ca_ni_cpu256_rx.o \
+
+ca-ne-$(CONFIG_NE_AUTO_TEST_MODE) += $(NI_DRV_DIR)/ca_ni_auto_test.o
+
+ca-ne-$(CONFIG_NE_SW_SHAPER) += $(API_DIR)/sw_shaper.o
+ca-ne-$(CONFIG_NE_US_RATE_MANAGER) += $(API_DIR)/ca_us_rate_manager.o
+ca-ne-$(CONFIG_NE_TPUT_TEST) += $(API_DIR)/tput.o
+
+ca-ne-$(CONFIG_NE_VIRTUAL_NI) += $(NI_DRV_DIR)/ca_virt_ni.o
+
+ca-ne-$(CONFIG_NE_WELL_KNOWN_MULTICAST) += $(API_DIR)/well_known_mcast_flooding.o
+
+ca-ne-$(CONFIG_CORTINA_CPU_TAG) += $(NI_DRV_DIR)/ca_ni_cpu_tag.o
+
+ccflags-$(CONFIG_NE_PON) += -I$(M)/$(PLOAM_DIR)/adapt/include \
+                            -I$(M)/$(PLOAM_DIR)/cmn \
+                            -I$(M)/$(PLOAM_DIR)/std/include
+
+ca-ne-$(CONFIG_NE_PON) += $(AAL_DIR)/aal_puc.o \
+                          $(AAL_DIR)/aal_pdc.o \
+                          $(AAL_DIR)/aal_idp.o \
+                          $(AAL_DIR)/aal_xcvr.o \
+                          $(AAL_DIR)/aal_psds.o \
+                          $(AAL_DIR)/aal_pon.o \
+                          $(PON_DRV_DIR)/ca_pon.o \
+                          $(PON_DRV_DIR)/ca_pon_proc.o \
+                          $(API_DIR)/onu.o \
+                          $(API_DIR)/epon.o \
+                           $(AAL_DIR)/aal_epon.o \
+                           $(AAL_DIR)/aal_epon_mac.o \
+                           $(AAL_DIR)/aal_epon_fec.o \
+                           $(AAL_DIR)/aal_epon_crypto.o \
+                           $(AAL_DIR)/aal_mpcp.o \
+                           $(AAL_DIR)/aal_epon_intr.o \
+                           $(API_DIR)/gpon.o \
+                           $(API_DIR)/xgpon_aes.o \
+                           $(API_DIR)/xgpon.o \
+                           $(PLOAM_DIR)/adapt/saturn/ploam_adapt.o \
+                           $(PLOAM_DIR)/std/ploam_gpon.o \
+                           $(PLOAM_DIR)/std/ploam_main.o \
+                           $(PLOAM_DIR)/std/ploam_ngpon2.o \
+                           $(PLOAM_DIR)/std/ploam_pkt.o \
+                           $(AAL_DIR)/aal_ploam.o \
+                           $(AAL_DIR)/aal_gpon.o \
+                           $(AAL_DIR)/aal_gpon_intr.o \
+                           $(AAL_DIR)/aal_xgpon.o \
+                           $(AAL_DIR)/aal_xgpon_actp.o \
+                           $(AAL_DIR)/aal_xgpon_fec.o \
+                           $(AAL_DIR)/aal_xgpon_intr.o \
+                           $(AAL_DIR)/aal_xgpon_actfsm.o
+
+ifeq ($(CONFIG_ARCH_CORTINA_VENUS), y)
+ca-ne-$(CONFIG_NE_PON) += $(AAL_DIR)/aal_l2fe.o
+endif
+
+ca-ne-$(CONFIG_NE_KERNEL_HOOK) += \
+	$(KHOOK_DIR)/ca_kernel_hook.o \
+	$(KHOOK_DIR)/ca_kernel_hook_arp.o \
+	$(KHOOK_DIR)/ca_kernel_hook_dslite.o  \
+	$(KHOOK_DIR)/ca_kernel_hook_map_e.o  \
+	$(KHOOK_DIR)/ca_kernel_hook_gateway.o  \
+	$(KHOOK_DIR)/ca_kernel_hook_interface.o  \
+	$(KHOOK_DIR)/ca_kernel_hook_mcast.o \
+	$(KHOOK_DIR)/ca_kernel_hook_nat.o \
+	$(KHOOK_DIR)/ca_kernel_hook_pppoe.o \
+	$(KHOOK_DIR)/ca_kernel_hook_bypass_portlist.o \
+	$(KHOOK_DIR)/ca_kernel_hook_proc.o \
+	$(KHOOK_DIR)/ca_kernel_hook_route.o \
+	$(KHOOK_DIR)/ca_kernel_hook_tunnel.o \
+	$(KHOOK_DIR)/ca_kernel_hook_ipsec.o \
+	$(KHOOK_DIR)/ca_kernel_hook_util.o \
+	$(KHOOK_DIR)/ca_kernel_hook_vlan.o
+
+ccflags-$(CONFIG_NE_KERNEL_HOOK)	+=	-I$(M)/$(KHOOK_DIR)
+
+ifdef CONFIG_IPV6_SIT_6RD
+ca-ne-$(CONFIG_NE_KERNEL_HOOK) += $(KHOOK_DIR)/ca_kernel_hook_6rd.o
+endif
+
+ca-ne-$(CONFIG_NE_PTP_CLOCK) += $(NI_DRV_DIR)/ca_ni_ptp.o
+
+# RTK R0.7.29.0 workaround
+#ifeq ($(CONFIG_LUNA_G3_SERIES), y)
+#ccflags-$(CONFIG_LUNA_G3_SERIES) += -I$(M)/$(RTK_FPGA_DIR)
+### RTK FPGA TEST ###
+#ca-ne-y += $(RTK_FPGA_DIR)/rtk_basic_init.o
+#ca-ne-y += $(RTK_FPGA_DIR)/rtk_venus_proc.o
+#ca-ne-y += $(RTK_FPGA_DIR)/rtk_venus_testCase.o
+#endif
+

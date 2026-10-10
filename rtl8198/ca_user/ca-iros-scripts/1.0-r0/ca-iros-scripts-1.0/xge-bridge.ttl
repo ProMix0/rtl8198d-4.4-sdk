@@ -1,0 +1,71 @@
+;; XGE bridge test
+;;
+;; *** IMPORTANT ***
+;;   Before using this script, mac_da_match_en of STG0 profile#0 must be 0.
+;;   Otherwise, only MyMAC packets can enter L3FE.
+;;   See aal/aal_l3fe.c::aal_l3fe_stg0_init() for some info.
+;;
+;; LAN2WAN, from port 0x1 to port 0x7
+;;   sip = 192.168.1.10
+;;   dip = 192.168.1.20
+;; WAN2LAN, from port 0x7 to port 0x1
+;;   sip = 192.168.1.20
+;;   dip = 192.168.1.10
+
+;; app-cli
+
+sendln 'app-cli'
+wait 'Cortina>'
+sendln 'enable'
+wait 'Cortina#'
+sendln 'config'
+wait 'Cortina(config)#'
+sendln 'aal'
+wait 'Cortina(config-aal)#'
+
+;; T1, CLS, WAN2LAN
+
+sendln 'l3_cls'
+wait 'Cortina(config-aal-l3_cls)#'
+
+sendln 'key_clean 0 0'
+wait 'Cortina(config-aal-l3_cls)#'
+
+;;enable the key
+sendln 'if_id_key cls_key_valid 0 1'
+wait 'Cortina(config-aal-l3_cls)#'
+sendln 'if_id_key cls_pri 0 0'
+wait 'Cortina(config-aal-l3_cls)#'
+sendln 'if_id_key cls_rslt_type 0 1'
+wait 'Cortina(config-aal-l3_cls)#'
+
+;;clean fib 0 fields in fib table index 0
+sendln 'fib_clean 0 0'
+wait 'Cortina(config-aal-l3_cls)#'
+
+;;set the fib to bypass t2, t3 and t4
+sendln 'fib_0 t2_ctrl 0 0xf'
+wait 'Cortina(config-aal-l3_cls)#'
+sendln 'fib_0 t2_ctrl_vld 0 1'
+wait 'Cortina(config-aal-l3_cls)#'
+sendln 'fib_0 t3_ctrl 0 0xf'
+wait 'Cortina(config-aal-l3_cls)#'
+sendln 'fib_0 t3_ctrl_vld 0 1'
+wait 'Cortina(config-aal-l3_cls)#'
+sendln 'fib_0 t4_ctrl 0 0xf'
+wait 'Cortina(config-aal-l3_cls)#'
+sendln 'fib_0 t4_ctrl_vld 0 1'
+wait 'Cortina(config-aal-l3_cls)#'
+
+;;set the fib to lookup L2 FE at T5, apply L2 lookup results
+sendln 'fib_0 t5_ctrl 0 0'
+wait 'Cortina(config-aal-l3_cls)#'
+sendln 'fib_0 t5_ctrl_vld 0 1'
+wait 'Cortina(config-aal-l3_cls)#'
+
+sendln 'exit'
+wait 'Cortina(config-aal)#'
+
+
+sendln 'logout'
+

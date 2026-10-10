@@ -1,0 +1,1 @@
+/ext_disc_1/baoguo_du/linux_code/YOUR/DEV/luna_g3_cu_dbus/vendors/Realtek/luna/./conf44/9607C_spi_nand_demo_cu_dbus_fc/rps.sh

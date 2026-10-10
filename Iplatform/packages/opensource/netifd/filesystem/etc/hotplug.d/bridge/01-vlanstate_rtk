@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo "====== iptv reload ====" > /dev/console
+/etc/init.d/iptv reload
+    
+echo "====== guest_eth reload ====" > /dev/console
+/etc/init.d/guest_eth reload bind
+

@@ -1,0 +1,10 @@
+#
+# RLX Linux Platform BSP
+#
+platform-$(CONFIG_RTK_SOC_RTL8198D)	+= rtl8198d/
+cflags-$(CONFIG_RTK_SOC_RTL8198D)	+= -I$(srctree)/arch/mips/rtl8198d
+load-$(CONFIG_RTK_SOC_RTL8198D)		= 0x80010000
+
+platform-$(CONFIG_RTK_SOC_RTL9607C)	+= bsp_rtl9607c/
+cflags-$(CONFIG_RTK_SOC_RTL9607C)	+= -I$(srctree)/arch/mips/bsp_rtl9607c -I$(srctree)/arch/mips/include/asm/mach-rtl960xc/
+load-$(CONFIG_RTK_SOC_RTL9607C)		= 0x80010000

@@ -1,0 +1,25 @@
+config CA_NE_AAL_PORT_NUM_ETH
+        int "Ethernet Port Number"
+	---help---
+         Number of Ethernet Port
+
+config CA_NE_AAL_XFI
+	bool "XFI Support"
+        default n
+	---help---
+	  This is a AAL XFI module to support the XFI interface with ASIC.
+	  When there is XFI interfaces supportted in our ASIC, the AAL XFI module should be turned on.
+
+config CA_NE_EXTERNAL_SERDES
+	bool "External SERDES Support"
+        default y if CA_NE_AAL_XFI
+        default n
+	---help---
+          This is for external serdes configuration setting.
+          Because of phy, serdes configuration in each board may be different.
+
+config CA_NE_AAL_L3_DDOS
+	bool "L3 DDOS Support"
+        default n
+	---help---
+         Support L3 distributed denial-of-service(DDoS) attack.

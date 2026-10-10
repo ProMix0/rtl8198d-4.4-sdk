@@ -1,0 +1,67 @@
+<Config_Information_File_8671>
+	<Value Name="DEVICE_TYPE" Value="2"/>
+	<Value Name="PREFIXINFO_DELEGATED_WANCONN" Value="130816"/>
+	<Value Name="TOTAL_BANDWIDTH" Value="1000000"/>
+	<Value Name="WAN_PHY_PORT_MASK" Value="8"/>
+	<chain chainName="ATM_VC_TBL"> <!--index=0-->
+		<Value Name="AddrMode" Value="1"/>
+		<Value Name="Ipv6Dhcp" Value="1"/>
+		<Value Name="Ipv6DhcpRequest" Value="2"/>
+	</chain>
+        <chain chainName="WLAN_MBSSIB_TBL"> <!--index=0-->
+                 <Value Name="wpaPSK" Value="12345678"/>
+		 <Value Name="is_ax_support" Value="1"/>
+        </chain>
+        <chain chainName="WLAN_MBSSIB_TBL"> <!--index=1-->
+                 <Value Name="wpaPSK" Value="12345678"/>
+		 <Value Name="is_ax_support" Value="1"/>
+        </chain>
+        <chain chainName="WLAN_MBSSIB_TBL"> <!--index=2-->
+                 <Value Name="wpaPSK" Value="12345678"/>
+		 <Value Name="is_ax_support" Value="1"/>
+        </chain>
+        <chain chainName="WLAN_MBSSIB_TBL"> <!--index=3-->
+                 <Value Name="wpaPSK" Value="12345678"/>
+		 <Value Name="is_ax_support" Value="1"/>
+        </chain>
+        <chain chainName="WLAN_MBSSIB_TBL"> <!--index=4-->
+                 <Value Name="wpaPSK" Value="12345678"/>
+		 <Value Name="is_ax_support" Value="1"/>
+        </chain>
+        <chain chainName="WLAN_MBSSIB_TBL"> <!--index=5-->
+                 <Value Name="wpaPSK" Value="12345678"/>
+		 <Value Name="is_ax_support" Value="1"/>
+        </chain>
+
+        <chain chainName="WLAN1_MBSSIB_TBL"> <!--index=0-->
+                 <Value Name="wpaPSK" Value="12345678"/>
+		 <Value Name="is_ax_support" Value="0"/>
+                 <Value Name="wlanBand" Value="11"/>
+        </chain>
+        <chain chainName="WLAN1_MBSSIB_TBL"> <!--index=1-->
+                 <Value Name="wpaPSK" Value="12345678"/>
+		 <Value Name="is_ax_support" Value="0"/>
+                 <Value Name="wlanBand" Value="11"/>
+        </chain>
+        <chain chainName="WLAN1_MBSSIB_TBL"> <!--index=2-->
+                 <Value Name="wpaPSK" Value="12345678"/>
+		 <Value Name="is_ax_support" Value="0"/>
+                 <Value Name="wlanBand" Value="11"/>
+        </chain>
+        <chain chainName="WLAN1_MBSSIB_TBL"> <!--index=3-->
+                 <Value Name="wpaPSK" Value="12345678"/>
+		 <Value Name="is_ax_support" Value="0"/>
+                 <Value Name="wlanBand" Value="11"/>
+        </chain>
+        <chain chainName="WLAN1_MBSSIB_TBL"> <!--index=4-->
+                 <Value Name="wpaPSK" Value="12345678"/>
+		 <Value Name="is_ax_support" Value="0"/>
+                 <Value Name="wlanBand" Value="11"/>
+        </chain>
+        <chain chainName="WLAN1_MBSSIB_TBL"> <!--index=5-->
+                 <Value Name="wpaPSK" Value="12345678"/>
+		 <Value Name="is_ax_support" Value="0"/>
+                 <Value Name="wlanBand" Value="11"/>
+        </chain>
+
+</Config_Information_File_8671>

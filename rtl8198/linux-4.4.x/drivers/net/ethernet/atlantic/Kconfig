@@ -1,0 +1,10 @@
+#
+# aQuantia device configuration
+#
+
+config NET_VENDOR_ATLANTIC
+	tristate "aQuantia AQtion(tm) Support"
+	depends on PCI
+	default n
+	---help---
+	  This enables the support for the aQuantia AQtion(tm) Ethernet card.

@@ -1,0 +1,3 @@
+#!/bin/sh
+/etc/rc_voip_module
+/etc/rc_boot_dsp

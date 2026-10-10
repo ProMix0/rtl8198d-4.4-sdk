@@ -1,0 +1,424 @@
+include $(CONFIG_CONFIG)
+include $(LINUX_CONFIG)
+.EXPORT_ALL_VARIABLES:
+#### image ########################################################
+ifdef CONFIG_USE_RSDK_WRAPPER
+LSTRIP = $(CROSS_COMPILE)lstrip
+LSTRIPPED = $(ROMFSDIR)/.lstripped
+SSTRIP = $(CROSS_COMPILE)sstrip
+STRIP = $(CROSS_COMPILE)strip
+endif #CONFIG_USE_RSDK_WRAPPER
+LINUXDIR ?= linux-4.4.x
+$(info LINUXDIR=$(LINUXDIR))
+
+
+ifdef CONFIG_SQUASHFS
+RUN_SQUASHFS_SCRIPT=y
+else
+ifdef CONFIG_BLK_DEV_INITRD
+RUN_SQUASHFS_SCRIPT=y
+endif
+endif
+
+ifdef CONFIG_INITRAMFS_SOURCE
+ifneq (,$(findstring romfs,$(CONFIG_INITRAMFS_SOURCE)))
+INITRAMFS_ENABE=y
+else
+INITRAMFS_ENABE=n
+endif
+else
+INITRAMFS_ENABE=n
+endif
+
+FWU_VER_FILE:=$(LINUXDIR)/fwu_ver
+SOFTWARE_VER="$(VERSIONPKG) --  `date`"
+SVN_VERSION=$(ROOTDIR)/tools/svn_version.h
+IMAGE_ROOTFS=$(ROMFSDIR)
+DEPLOY_DIR_IMAGE=$(IMAGEDIR)
+IMAGE_NAME=rootfs
+vname=_G3_
+IMAGE_NAME_SUFFIX=1
+
+ifeq (.UBIFS_ARGSCFG,$(wildcard .UBIFS_ARGSCFG))
+include .UBIFS_ARGSCFG
+$(info ------Use .UBIFS_ARGSCFG -----------)
+$(info MKUBIFS_ARGS = $(MKUBIFS_ARGS))
+$(info UBINIZE_ARGS = $(UBINIZE_ARGS))
+$(info ------------------------------------)
+else
+$(info ------Use default UBFS ARGS--------)
+MKUBIFS_ARGS = --min-io-size=4096 --leb-size=253952 --max-leb-cnt=2118 -U -x zlib --space-fixup
+UBINIZE_ARGS = --min-io-size=4096 --peb-size=256KiB --sub-page-size=4096
+$(info MKUBIFS_ARGS = $(MKUBIFS_ARGS))
+$(info UBINIZE_ARGS = $(UBINIZE_ARGS))
+$(info ------------------------------------)
+endif
+
+UBINIZE_CFG = $(ROOTDIR)/tools/ubinize-g3-eng.cfg
+UBINIZE_CFG2 = $(ROOTDIR)/tools/ubinize-g3-eng_ubi.cfg
+DEVICE_CFG = $(ROOTDIR)/tools/device_ubinize.cfg
+MKUBIFS_98F_ARGS = --min-io-size=2048 --leb-size=126976 --max-leb-cnt=157 -U -x zlib --space-fixup
+UBINIZE_98F_ARGS = --min-io-size=2048 --peb-size=128KiB --sub-page-size=2048
+UBINIZE_98F_CFG = $(ROOTDIR)/tools/ubinize-98f-eng.cfg
+UBINIZE_98D_ARGS = --min-io-size=2048 --peb-size=128KiB --sub-page-size=2048
+UBINIZE_98D_CFG = $(ROOTDIR)/tools/ubinize-98d-eng.cfg
+UBINIZE_LUNA_ARGS = --min-io-size=2048 --peb-size=128KiB --sub-page-size=2048
+UBINIZE_LUNA_CFG = $(ROOTDIR)/tools/ubinize-luna-eng.cfg
+LBITS = $(shell getconf LONG_BIT)
+ifeq ($(LBITS),32)
+MAKEUBIFS = mkfs.ubifs
+UNINIZE = ubinize
+else
+MAKEUBIFS = $(ROOTDIR)/tools/mkfs.ubifs
+UNINIZE = $(ROOTDIR)/tools/ubinize
+endif
+############Device Tree Blob ##############################################
+##### luna_g3: ca7774-engboard or ca8279 #########################
+DTB_FILE = ca7774-engboard.dtb
+DTB_SBU_PATH = cortina
+ifdef CONFIG_ARCH_CORTINA_G3HGU
+DTB_FILE = ca8279-engboard.dtb
+endif
+ifdef CONFIG_ARCH_CORTINA_VENUS
+DTB_FILE = ca8277-fpga.dtb
+endif
+### Realtek's demo board : DeviceTree Image Selection##############
+## ifdef CONFIG_BOARD_REALTEK_TYPE use rtk dts, not ca
+ifdef CONFIG_BOARD_REALTEK_TYPE
+DTB_FILE = ca8279-engboard.dtb
+
+ifdef CONFIG_ARCH_REALTEK_TAURUS
+DTB_FILE = rtl8277C-engboard.dtb
+ifdef CONFIG_REALTEK_BOARD_FPGA
+DTB_FILE = rtl8277C-fpga.dtb
+endif # FPGA
+endif #TAURUS
+
+ifdef CONFIG_ARCH_CORTINA_VENUS
+ifdef CONFIG_CORTINA_BOARD_FPGA
+DTB_FILE = ca8277-fpga.dtb
+else
+DTB_FILE = ca8277B-engboard.dtb
+endif #FPGA
+endif #VENUS
+
+DTB_SBU_PATH = realtek
+endif
+export DTB_FILE
+#############  Targets ######################
+progimages_loader:
+ifdef CONFIG_ARCH_CORTINA_VENUS
+	@sh ./tools/gen_programmer_images_venus.sh ONLY_BOOTLOADER
+else
+	@export ONLY_BOOTLOADER=1 && sh ./tools/gen_raw_images_g3.sh COMB
+endif
+
+progimages_fullcombined:
+ifdef CONFIG_ARCH_CORTINA_VENUS
+	@sh ./tools/gen_programmer_images_venus.sh
+else
+	@export ONLY_BOOTLOADER=0 && sh ./tools/gen_raw_images_g3.sh COMB 
+endif
+	
+bimage:
+	@if [ ! -d $(IMAGEDIR) ]; then \
+                mkdir $(IMAGEDIR); \
+        fi
+ifeq ($(CONFIG_ARCH_CORTINA_VENUS), y)
+	@echo "VENUS"
+	@if [ -d $(BOOTLOADER_PATH)/image ]; then \
+                rm -f $(IMAGEDIR)/*loader.img; \
+                cp $(BOOTLOADER_PATH)/image/uboot-env-*.bin  $(IMAGEDIR) ;\
+                if [ "$(shell ls -A $(BOOTLOADER_PATH)/image/*loader.img)" ]; then \
+                  cp -a $(BOOTLOADER_PATH)/image/*loader.img  $(IMAGEDIR) ; \
+                fi ;\
+                echo $(IMAGEDIR)/$(UBOOTENVF).bin; \
+                if [ -f $(IMAGEDIR)/$(UBOOTENVF).bin ]; then \
+                        cp $(IMAGEDIR)/$(UBOOTENVF).bin  $(IMAGEDIR)/uboot-env.bin; \
+                fi \
+        fi
+else
+	@if [ -d $(BOOTLOADER_PATH)/image ]; then \
+                rm -f $(IMAGEDIR)/*gpt-nandinfo.img; \
+                rm -f $(IMAGEDIR)/*loader.img; \
+                cp  -a $(BOOTLOADER_PATH)/image/*gpt-nandinfo.img  $(IMAGEDIR) ;\
+                cp $(BOOTLOADER_PATH)/image/uboot-env-*.bin  $(IMAGEDIR) ;\
+                if [ "$(shell ls -A $(BOOTLOADER_PATH)/image/*loader.img)" ]; then \
+                  cp -a $(BOOTLOADER_PATH)/image/*loader.img  $(IMAGEDIR) ; \
+                fi ;\
+                echo $(IMAGEDIR)/$(UBOOTENVF).bin; \
+                if [ -f $(IMAGEDIR)/$(UBOOTENVF).bin ]; then \
+                        cp $(IMAGEDIR)/$(UBOOTENVF).bin  $(IMAGEDIR)/uboot-env.bin; \
+                fi \
+        fi
+endif
+
+
+dtbimg:
+	cp $(KERNEL_DIR)/arch/$(ARCH)/boot/dts/$(DTB_SBU_PATH)/$(DTB_FILE) $(IMAGEDIR)
+
+image:
+	[ -d $(IMAGEDIR) ] || mkdir -p $(IMAGEDIR)
+	@echo $(ver)
+	@echo VERSIONPKG=$(VERSIONPKG)
+	@echo $(VERSIONPKG) > $(FWU_VER_FILE)
+	@echo "$(SOFTWARE_VER)"
+	@echo "$(SOFTWARE_VER)" > $(ROMFSDIR)/etc/version
+	@echo $(LSTRIP)
+	@if [ -f $(LSTRIPPED) ]; then \
+                echo; \
+                echo "Cannot lstrip twice on romfs/, please run make romfs image or make all"; \
+                echo; \
+                exit 1; \
+         fi
+ifneq ($(CONFIG_USER_CTC_EOS_MIDDLEWARE),)
+	@if [ -f $(LSTRIP) ]; then \
+	touch $(LSTRIPPED); \
+	fi
+else
+	@if [ -f $(LSTRIP) ]; then \
+	$(LSTRIP) $(ROMFSDIR); \
+	touch $(LSTRIPPED); \
+	fi
+endif
+ifneq ($(findstring asdk,$(CONFIG_RSDK_DIR)),asdk)
+	find $(ROMFSDIR)/bin -type f -exec $(SSTRIP) {} \;
+	[ ! -d $(ROMFSDIR)/lib/modules ] || find $(ROMFSDIR)/lib/modules/ -name *.ko -exec $(STRIP) --strip-debug {} \;
+ifndef CONFIG_RTK_USE_ONE_UBI_DEVICE
+	$(MAKEUBIFS) -r ${IMAGE_ROOTFS} -o ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}${vname}${IMAGE_NAME_SUFFIX}.ubifs ${MKUBIFS_ARGS}
+	$(UNINIZE) -o ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}${vname}${IMAGE_NAME_SUFFIX}.ubi ${UBINIZE_ARGS} $(UBINIZE_CFG)
+endif
+endif
+ifdef CONFIG_RESTRICT_PROCESS_PERMISSION
+	chmod 4775 $(ROMFSDIR)/bin/brctl
+	chmod 4775 $(ROMFSDIR)/bin/xtables-multi
+	chmod 4775 $(ROMFSDIR)/bin/ebtables
+	chmod 4775 $(ROMFSDIR)/bin/udhcpd
+	chmod 4775 $(ROMFSDIR)/bin/udhcpc
+	chmod 4775 $(ROMFSDIR)/bin/dhcpd
+	chmod 4775 $(ROMFSDIR)/bin/dhcp6ctl
+	chmod 4775 $(ROMFSDIR)/bin/vsntp
+	chmod 4775 $(ROMFSDIR)/bin/dnsmasq
+	chmod 4775 $(ROMFSDIR)/bin/ip
+	chmod 4775 $(ROMFSDIR)/bin/tc
+	chmod 4775 $(ROMFSDIR)/bin/ethctl
+	chmod 4775 $(ROMFSDIR)/bin/radvd
+	chmod 4775 $(ROMFSDIR)/bin/upnpctrl
+	chmod 4775 $(ROMFSDIR)/bin/igmpproxy	
+	chmod 4775 $(ROMFSDIR)/bin/mini_upnpd
+	chmod 4775 $(ROMFSDIR)/bin/routed
+	chmod 4775 $(ROMFSDIR)/bin/loopback
+	chmod 4775 $(ROMFSDIR)/bin/busybox
+	chmod 4775 $(ROMFSDIR)/bin/iwpriv
+	chmod 4775 $(ROMFSDIR)/bin/slogd
+endif
+ifeq ($(CONFIG_CMCC),y)
+	$(LINUXDIR)/mksquashfs $(ROMFSDIR) rootfs -comp xz -noappend -pf $(VENDDIR)/squashfs-pf.list -e $(ROMFSDIR)/usr/local/* -always-use-fragments -all-root
+	mkdir -p $(IMAGEDIR)/osgi
+	$(LINUXDIR)/mksquashfs $(ROMFSDIR)/usr/local osgi.img -comp xz -noappend -always-use-fragments -all-root
+	cp osgi.img $(IMAGEDIR)/osgi
+	rm -rf $(ROMFSDIR)/usr/local/class/prebundle
+	$(LINUXDIR)/mksquashfs $(ROMFSDIR)/usr/local osgi_noPreBundle.img -comp xz -noappend -always-use-fragments -all-root
+	cp osgi_noPreBundle.img $(IMAGEDIR)/osgi
+else
+ifeq ($(CONFIG_CU_BASEON_CMCC),y)
+	$(LINUXDIR)/mksquashfs $(ROMFSDIR) rootfs -comp xz -noappend -pf $(VENDDIR)/squashfs-pf.list -e $(ROMFSDIR)/usr/local/* -always-use-fragments -all-root
+	mkdir -p $(IMAGEDIR)/osgi
+	$(LINUXDIR)/mksquashfs $(ROMFSDIR)/usr/local osgi.img -comp xz -noappend -always-use-fragments -all-root
+	cp osgi.img $(IMAGEDIR)/osgi
+	rm -rf $(ROMFSDIR)/usr/local/class/prebundle
+	$(LINUXDIR)/mksquashfs $(ROMFSDIR)/usr/local osgi_noPreBundle.img -comp xz -noappend -always-use-fragments -all-root
+	cp osgi_noPreBundle.img $(IMAGEDIR)/osgi
+else
+	$(LINUXDIR)/mksquashfs $(ROMFSDIR) rootfs -comp xz -noappend -pf $(VENDDIR)/squashfs-pf.list -always-use-fragments -all-root
+endif
+endif
+	cp rootfs $(IMAGEDIR)
+ifeq ($(CONFIG_USER_DBUS),y)
+	@if [ -f framework.img ]; then \
+	cp framework.img $(IMAGEDIR)/framework.img; \
+	fi
+endif
+
+#Expect to use u-boot-2018, UBI
+#Product: uImage with sha1,RSA2048
+fit_vmimg: #Expect to use u-boot-2018, UBI
+	cp $(KERNEL_DIR)/arch/$(ARCH)/boot/Image $(IMAGEDIR)
+	cp $(KERNEL_DIR)/arch/$(ARCH)/boot/dts/$(DTB_SBU_PATH)/$(DTB_FILE) $(IMAGEDIR)
+	@cd  $(IMAGEDIR) && ln -fs $(DTB_FILE) dtb.img
+	@tools/luna_g3_image_lzma.sh $(IMAGEDIR) Image && \
+	tools/gen_u2018_fit_uImage.sh ${ROOTDIR} && \
+	tools/luna_g3_image_align.sh $(IMAGEDIR) uImage
+	@cd $(IMAGEDIR) && ../tools/mkrom_vmimg_g3.sh -ubifs
+	@cd tools && sh ./gen_fwu_img_g3.sh -ubifs
+	[ -f $(DEVICE_CFG) ] || ln -s $(UBINIZE_CFG2) $(DEVICE_CFG)
+	$(UNINIZE) -o ${DEPLOY_DIR_IMAGE}/G3_ubi_device.ubi ${UBINIZE_ARGS} $(DEVICE_CFG)
+
+
+vmimg:
+ifneq ($(findstring asdk,$(CONFIG_RSDK_DIR)),asdk)
+	cp $(KERNEL_DIR)/arch/$(ARCH)/boot/uImage $(IMAGEDIR)
+	$(UNINIZE) -o ${DEPLOY_DIR_IMAGE}/ubi_device_img.ubi ${UBINIZE_LUNA_ARGS} $(DEVICE_CFG)
+	@cd tools && sh ./gen_fwu_img_luna.sh
+	@cd $(IMAGEDIR) && ../tools/mkrom_vmimg_luna.sh
+else
+ifeq ($(INITRAMFS_ENABE),y)
+	-rm -f $(KERNEL_DIR)/usr/initramfs_data.cpio.xz
+	-rm -f $(KERNEL_DIR)/usr/*.o
+	[ -d $(IMAGEDIR) ] && cd $(ROMFSDIR) && ln -sf bin/busybox init
+	cd $(ROOTDIR)
+	make linux
+endif
+ifeq ($(CONFIG_UBOOT_SIGNATURE_FIT),y)
+	make -f Makefile.image fit_vmimg
+else
+	cp $(KERNEL_DIR)/arch/$(ARCH)/boot/Image $(IMAGEDIR)
+	cp $(KERNEL_DIR)/arch/$(ARCH)/boot/dts/$(DTB_SBU_PATH)/$(DTB_FILE) $(IMAGEDIR)
+	@cd  $(IMAGEDIR) && ln -fs $(DTB_FILE) dtb.img
+	@tools/luna_g3_image_lzma.sh $(IMAGEDIR) Image
+	@tools/luna_g3_image_align.sh $(IMAGEDIR) $(DTB_FILE)
+	@tools/luna_g3_image_align.sh $(IMAGEDIR) Image
+	@tools/luna_g3_image_align.sh $(IMAGEDIR) Image.lzma
+ifdef CONFIG_RTK_USE_ONE_UBI_DEVICE
+	@cd $(IMAGEDIR) && ../tools/mkrom_vmimg_g3.sh -ubifs
+	@cd tools && sh ./gen_fwu_img_g3.sh -ubifs
+	[ -f $(DEVICE_CFG) ] || ln -s $(UBINIZE_CFG2) $(DEVICE_CFG)
+	$(UNINIZE) -o ${DEPLOY_DIR_IMAGE}/G3_ubi_device.ubi ${UBINIZE_ARGS} $(DEVICE_CFG)
+else
+	@cd $(IMAGEDIR) && ../tools/mkrom_vmimg_g3.sh
+	@cd tools && sh ./gen_fwu_img_g3.sh
+endif #CONFIG_RTK_USE_ONE_UBI_DEVICE
+endif #CONFIG_UBOOT_SIGNATURE_FIP
+endif
+	rm -rf $(IMAGEDIR)/img_tar
+	rm -rf $(IMAGEDIR)/.tmp	
+
+### $(PRODUCT_XDSL) ###########################################################
+xdsl_image:
+	[ -d $(IMAGEDIR) ] || mkdir -p $(IMAGEDIR)
+	@echo $(ver)
+	@echo VERSIONPKG=$(VERSIONPKG)
+	@echo $(VERSIONPKG) > $(FWU_VER_FILE)
+	@echo "$(SOFTWARE_VER)"
+	@echo "$(SOFTWARE_VER)" > $(ROMFSDIR)/etc/version
+	@cd tools && sh ./mksvnver && cd -
+	@if [ -f $(SVN_VERSION) ]; then \
+		cp $(SVN_VERSION) $(ROMFSDIR)/etc/version1; \
+	fi
+	@echo $(LSTRIP)
+	@if [ -f $(LSTRIPPED) ]; then \
+                echo; \
+                echo "Cannot lstrip twice on romfs/, please run make romfs image or make all"; \
+                echo; \
+                exit 1; \
+         fi
+ifdef CONFIG_SQUASHFS
+ifdef CONFIG_STATIC_CONFIG
+	cp $(ROOTDIR)/images/mksquashfs  $(ROMFSDIR)/bin	# copy bin to romfs/bin to avoid lib symbol be striped.
+endif
+	$(LSTRIP) $(ROMFSDIR)
+ifdef CONFIG_STATIC_CONFIG
+	rm $(ROMFSDIR)/bin/mksquashfs	# remove bin
+endif
+	touch $(LSTRIPPED)
+	$(LINUXDIR)/mksquashfs $(ROMFSDIR) rootfs -comp xz -noappend -pf $(VENDDIR)/squashfs-pf.list -always-use-fragments -all-root
+	cp rootfs $(IMAGEDIR)
+
+ifndef CONFIG_USER_BOA_SRC_BOA
+	@printf "Now the image you are compiling is  for:\33[0;31mNo BOA\n\33[0m"
+else
+ifeq ($(CONFIG_DEFAULT_WEB),y)
+	@printf "Now the image you are compiling is  for:\33[0;31mDefault Web\n\33[0m"
+endif
+ifeq ($(CONFIG_GUI_WEB),y)
+	@printf "Now the image you are compiling is  for:\33[0;31mGUI menu\n\33[0m"
+endif
+ifeq ($(CONFIG_GENERAL_WEB),y)
+	@printf "Now the image you are compiling is  for:\33[0;31mGeneral Web\n\33[0m"
+endif
+endif	#CONFIG_USER_BOA_SRC_BOA
+endif	#CONFIG_SQUASHFS
+	#TODO
+
+xdsl_vmimg:
+ifeq ($(CONFIG_UBOOT_CONF), "xdsl-nand")
+	@cd $(CONFIG_LINUXDIR) && ../tools/xdsl/mkrom_lzma.sh
+	@cd $(CONFIG_LINUXDIR) && ../tools/xdsl/gen_fwu_img.sh
+else
+	@cd $(CONFIG_LINUXDIR) && ../tools/xdsl/mkrom.sh
+endif
+
+### $(PRODUCT_AP) ###########################################################
+ap_image:
+	[ -d $(IMAGEDIR) ] || mkdir -p $(IMAGEDIR)
+	@echo $(ver)
+	@echo VERSIONPKG=$(VERSIONPKG)
+	@echo $(VERSIONPKG) > $(FWU_VER_FILE)
+	@echo "$(SOFTWARE_VER)"
+	@echo "$(SOFTWARE_VER)" > $(ROMFSDIR)/etc/version
+	@cd tools && sh ./mksvnver && cd -
+	@if [ -f $(SVN_VERSION) ]; then \
+		cp $(SVN_VERSION) $(ROMFSDIR)/etc/version1; \
+	fi
+	@echo $(LSTRIP)
+	@if [ -f $(LSTRIPPED) ]; then \
+                echo; \
+                echo "Cannot lstrip twice on romfs/, please run make romfs image or make all"; \
+                echo; \
+                exit 1; \
+         fi
+ifeq ($(CONFIG_USER_CTC_EOS_MIDDLEWARE)$(CONFIG_USER_AHSAPD),)
+	$(LSTRIP) $(ROMFSDIR)
+endif
+	touch $(LSTRIPPED)
+	$(LINUXDIR)/mksquashfs $(ROMFSDIR) rootfs -comp xz -noappend -pf $(VENDDIR)/squashfs-pf.list -always-use-fragments -all-root
+	cp rootfs $(IMAGEDIR)
+	#TODO
+
+gen_imgtar:
+	@rm -f $(IMAGEDIR)/squashfs.rootfs
+ifeq ($(CONFIG_SQUASHFS),y)
+	@$(ROOTDIR)/user/squashfs4.2/squashfs-tools/mksquashfs $(ROMFSDIR) $(IMAGEDIR)/squashfs.rootfs -comp xz
+endif
+ifeq ($(CONFIG_UBIFS_FS),y)
+	@$(MAKEUBIFS) -r ${ROMFSDIR} -o ${IMAGEDIR}/image.ubifs ${MKUBIFS_98F_ARGS}
+	@$(UNINIZE) -o ${IMAGEDIR}/image.ubi ${UBINIZE_98F_ARGS} $(UBINIZE_98F_CFG)
+endif
+	@cd tools && ./gen_fwu_img_98f_eng.sh && cd -
+
+ap_vmimg:
+##rm initramfs data to let kernel contain romfs
+ifeq ($(INITRAMFS_ENABE),y)
+	-rm -f $(KERNEL_DIR)/usr/initramfs_data.cpio.xz
+	-rm -f $(KERNEL_DIR)/usr/*.o
+	[ -d $(IMAGEDIR) ] && cd $(ROMFSDIR) && ln -sf bin/busybox init
+	cd $(ROOTDIR)
+endif
+	make -C $(KERNEL_DIR) uImage
+	cp $(KERNEL_DIR)/arch/$(ARCH)/boot/uImage $(IMAGEDIR)
+	$(UNINIZE) -o ${DEPLOY_DIR_IMAGE}/98D_ubi_device.ubi ${UBINIZE_98D_ARGS} $(UBINIZE_98D_CFG)
+	@cd tools && sh ./gen_fwu_img_luna.sh
+	@cd $(IMAGEDIR) && ../tools/mkrom_vmimg_luna.sh
+
+## They want nfjrom, so be it.
+ifeq ($(CONFIG_PRODUCT), luna_ap_arm)
+ifeq ($(INITRAMFS_ENABE),y)
+	cat $(KERNEL_DIR)/arch/arm/boot/zImage \
+		$(LINUX_DTS_DIR)/rtl8198f-engboard.dtb \
+		> $(KERNEL_DIR)/arch/arm/boot/zImage-dtb
+	$(KERNEL_DIR)/scripts/mkuboot.sh -A arm -O linux -C none  -T kernel -a 0x00008000 -e 0x00008000 \
+		-n 'Linux-4.4.3' -d \
+		$(KERNEL_DIR)/arch/arm/boot/zImage-dtb \
+		$(KERNEL_DIR)/arch/arm/boot/uImage-dtb
+	cp $(KERNEL_DIR)/arch/arm/boot/uImage-dtb $(IMAGEDIR)/nfjrom
+else
+	cp $(KERNEL_DIR)/arch/$(ARCH)/boot/uImage $(IMAGEDIR)
+	cp $(LINUX_DTS_DIR)/rtl8198f-engboard.dtb $(IMAGEDIR)
+	make -f Makefile.image gen_imgtar
+endif
+else
+ifeq ($(CONFIG_PRODUCT), luna_ap_mips)
+	cp $(KERNEL_DIR)/arch/$(ARCH)/boot/uImage $(IMAGEDIR)
+endif
+endif 
+

@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+echo Please enter parameters path [ex: /tmp/PARA_DBG_MODE]
+read path
+
+if [[ -z "$path" ]]; then
+    path="/tmp/PARA_DBG_MODE"
+fi
+
+if [[ ! -e "$path" ]]; then
+    mkdir -p $path
+fi
+
+cd $path
+sleep 1
+tftp 192.168.1.66 -r PHY_REG.txt -g
+sleep 1
+tftp 192.168.1.66 -r RadioA.txt -g
+sleep 1
+tftp 192.168.1.66 -r RadioB.txt -g
+sleep 1
+tftp 192.168.1.66 -r TXPWR_ByRate.txt -g
+sleep 1
+tftp 192.168.1.66 -r TXPWR_LMT.txt -g
+sleep 1
+tftp 192.168.1.66 -r TXPWR_LMT_RU.txt -g
+sleep 1
+tftp 192.168.1.66 -r TXPWR_TrackTSSI.txt -g
+sleep 1
+cd /
+sleep 1
+iwpriv wlan1 load_para $path
+sleep 1
+ifconfig wlan1 down
+sleep 1
+ifconfig wlan1 up
+sleep 2

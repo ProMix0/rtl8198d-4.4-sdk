@@ -1,0 +1,113 @@
+#!/bin/sh
+#############################################################################
+#
+#	This script gets called in two ways,  the first is to set the
+#	default config up.  The second "final" pass is to save any settings
+#	back to the vendors directory for permanent inclusion.
+#
+#	Copyright (C) 2001       Lineo    <davidm@snapgear.com>
+#	Copyright (C) 2001-2002  SnapGear <davidm@snapgear.com>
+#
+#############################################################################
+#
+# Some basic starting points
+#
+BOOTLOADER_CONF=./bootloader/bootloader.conf
+
+CONFIG=.config
+
+if [ -f ./.config ]; then
+	. ./.config
+else
+	echo "Can not find .config!"
+	echo 1
+fi
+
+PASS="$1"
+VENDOR=""
+PRODUCT=""
+LINUXDIR=""
+PRD_SIG=`ls ./*_loaded | cut -d '_' -f2`
+PRJ_SIG=`ls ./*_loaded | cut -d '_' -f3- | head -c -8`
+
+#############################################################################
+#
+# this code closely matches that in mkconfig,  it has to !
+#
+
+# $(CROSS_COMPILE) stands for prefix of your own toolkt.
+# Modify it so $(CROSS_COMPILE)gcc points to your compiler,
+# and rename `toolkit_path.in.sample' to `toolkit_path.in.cfg'.
+#
+# Since content of otto.cfg differs from users to users,
+# ** THOU SHALL NOT COMMIT toolkit_path.in TO REPOSITORY! **
+# Example:
+#  CROSS_COMPILE?=/share/rlx/asdk-5.4.1-a53-EL-4.4-g2.23-a64nut-170801-r1/bin/aarch64-linux-
+
+#CROSS_COMPILE?=/share/rlx/asdk-5.4.1-a53-EL-4.4-g2.23-a64nut-170801-r1/bin/aarch64-linux-
+#PROJECT_NAME=luna_g3
+#BOARD_NAME=g3_eng
+#your u-boot env. Like upr, upk ....
+#U-BOOT-ENV-FILE=uboot-env-g3-eng.txt
+#u-boot config. Under ./u-boot-2015.04/configs
+#U-BOOT-CONF=cortina_presidio-asic-bch16_defconfig
+#Cortina prebuild image. Like otto preloader.
+#ARM_TRUSTED_FIRMWARE=arm-trusted-firmware-1.0
+
+
+#############################################################################
+#
+# The override config option is always turned off when we are done so that
+# someone doesn't get all upset that they lost their config files.
+#
+# Always add the VENDOR/PRODUCT dir for the build to work
+#
+PROJ_NAME=${PRD_SIG}_${PRJ_SIG}
+echo $PROJECT_NAME
+if [ "$PASS" = "NewConf" ]; then
+
+if [ "x$CONFIG_UBOOT_ENVFILE" != "x" ] && [ "x$CONFIG_UBOOT_CONF" != "x" ] && [ "x$CONFIG_ARM_TRUSTED_FIRMWARE" != "x" ] ; then
+printf "%s\n" '# $(CROSS_COMPILE) stands for prefix of your own toolkt.'  > $BOOTLOADER_CONF
+printf "%s\n" '# Modify it so $(CROSS_COMPILE)gcc points to your compiler,' >> $BOOTLOADER_CONF
+printf "%s\n" '# Example:' >> $BOOTLOADER_CONF
+printf "%s\n" '#  CROSS_COMPILE?=/share/rlx/asdk-5.4.1-a53-EL-4.4-g2.23-a64nut-170801-r1/bin/aarch64-linux-' >>$BOOTLOADER_CONF 
+printf "%s\n" "CROSS_COMPILE?=$CROSS_COMPILE" >>$BOOTLOADER_CONF
+printf "%s\n" "PROJECT_NAME=$PROJ_NAME" >>$BOOTLOADER_CONF
+printf "%s\n" "BOARD_NAME=g3_eng"  >>$BOOTLOADER_CONF
+printf "%s\n" "#your u-boot env. Like upr, upk ...." >>$BOOTLOADER_CONF
+printf "%s\n" "U-BOOT-ENV-FILE=$CONFIG_UBOOT_ENVFILE" >>$BOOTLOADER_CONF
+printf "%s\n" "#u-boot config. Under ./u-boot-2015.04/configs" >>$BOOTLOADER_CONF
+printf "%s\n" "U-BOOT-CONF=$CONFIG_UBOOT_CONF" >>$BOOTLOADER_CONF
+printf "%s\n" "#Cortina prebuild image. Like otto preloader." >>$BOOTLOADER_CONF
+printf "%s\n" "ARM_TRUSTED_FIRMWARE=$CONFIG_ARM_TRUSTED_FIRMWARE" >>$BOOTLOADER_CONF
+printf "%s\n" "CONFIG_UBOOT_FLASH_TYPE=$UBOOT_FLASH_TYPE" >>$BOOTLOADER_CONF
+printf "%s\n" "CONFIG_UBOOT_VER=$CONFIG_UBOOT_VER" >>$BOOTLOADER_CONF
+printf "%s\n" "CONFIG_UBOOT_SIGNATURE_FIT=$CONFIG_UBOOT_SIGNATURE_FIT" >>$BOOTLOADER_CONF
+  
+else
+  echo "Not overwirte bootloader.conf"
+fi
+
+fi
+
+################ For UBIFS ARGS ##########################
+if [ "$PASS" = "UBIFSConf" ]; then
+rm .UBIFS_ARGSCFG
+
+if [ -f ${BOOTLOADER_PATH}/Flash_and_DDR_Support.txt ];then
+MKUBIFS_ARGS=`cat  ${BOOTLOADER_PATH}/Flash_and_DDR_Support.txt | grep -v "^#" | grep MKUBIFS_ARGS `
+UBINIZE_ARGS=`cat  ${BOOTLOADER_PATH}/Flash_and_DDR_Support.txt | grep -v "^#" | grep UBINIZE_ARGS `
+	if [ "x${MKUBIFS_ARGS}" != "x" ] ;then
+	   echo ${MKUBIFS_ARGS} >> .UBIFS_ARGSCFG
+	fi
+	if [ "x${UBINIZE_ARGS}" != "x" ] ;then
+	   echo ${UBINIZE_ARGS} >> .UBIFS_ARGSCFG
+	fi
+else
+	echo "Not found .UBIFS_ARGSCFG! Use default UBIFS ARGS."
+fi #Flash_and_DDR_Support.txt
+
+fi
+
+#############################################################################
+exit 0

@@ -1,0 +1,32 @@
+config ARCH_HAS_RESET_CONTROLLER
+	bool
+
+menuconfig RESET_CONTROLLER
+	bool "Reset Controller Support"
+	default y if ARCH_HAS_RESET_CONTROLLER
+	help
+	  Generic Reset Controller support.
+
+	  This framework is designed to abstract reset handling of devices
+	  via GPIOs or SoC-internal reset controller modules.
+
+	  If unsure, say no.
+
+if RESET_CONTROLLER
+
+config GPIO_RESET_CONTROLLER
+	tristate "GPIO reset controller"
+	help
+	  Reset controller using GPIO lines
+
+	  There are two main methods of using this controller:
+	  * As a reset controller within the reset framework allowing device
+	  drivers to request a hardware reset of their devices.
+	  * As a standalone driver performing reset at boot or upon userspace
+	  request (via sysfs)
+	  The second method is suitable for devices on discoverable busses
+	  (SDIO, USB)+config GPIO_RESET_CONTROLLER
+
+endif
+
+source "drivers/reset/sti/Kconfig"

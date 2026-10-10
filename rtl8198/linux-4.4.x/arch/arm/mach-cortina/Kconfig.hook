@@ -1,0 +1,91 @@
+menu "RTK 98F Selection"
+config RTK_SOC
+        bool "RTK SoC Drivers Support"
+        default n
+        help
+          Build drivers/soc/realtek folder.
+
+config OPENWRT_SDK
+	bool "Openwrt support"
+	default n
+	help
+		Openwrt build config.
+
+config RTK_PROC_GPIO_FILES
+        bool "RTK proc gpio files Support"
+        depends on RTK_SOC
+        default n
+        help
+          Build drivers/soc/realtek folder.
+
+config WIFI_LED_USE_SOC_GPIO
+        bool "Support using SoC gpio for WIFI LED"
+        depends on RTK_PROC_GPIO_FILES
+	default n
+	help
+		WIFI LED.
+
+config WPS_LED
+	bool "Support WPS LED"
+	default n
+	depends on RTK_PROC_GPIO_FILES
+	help
+		WPS LED Support.
+
+config ONE_WPS_LED
+	bool "Only one WPS LED"
+	default y
+	depends on WPS_LED
+	help
+		If target board has only one LED, must choose this config.
+
+config RTK_RESET_WPS_SHARE_LED
+	bool "WPS led shared with System led"
+	depends on WPS_LED
+	default n
+	help
+		This config used for the WPS/System share led board.
+
+config RTK_RESET_WPS_SHARE_BUTTON
+	bool "WPS pin shared with RESET button"
+	depends on RTK_PROC_GPIO_FILES
+	default n
+	help
+		This config used for the WPS/RESET share button board.
+
+endmenu
+
+config CORTINA_KERNEL_HOOK
+	bool "G3Lite Kernel Hook Support"
+	depends on ARCH_CORTINA
+	select NETFILTER
+	default n
+	help
+	  This enables kernel hook support for NI driver hardware acceleration.
+	  If you would like to have NI driver hardware acceleration support, say 'Y'.
+
+config RTK_NIC_RX_HOOK
+        bool "RTK NIC RX Hook Support"
+        depends on ARCH_CORTINA
+        select NETFILTER
+        default n
+        help
+          This enables kernel support for NI driver rx hook function.
+          If you would like to have NI driver rx hook support, say 'Y'.
+
+config RTK_NIC_TX_HOOK
+        bool "RTK NIC TX Hook Support"
+        depends on ARCH_CORTINA
+        select NETFILTER
+        default n
+        help
+          This enables kernel support for NI driver tx hook function.
+          If you would like to have NI driver tx hook support, say 'Y'.
+
+config RTL_MULTI_LAN_DEV
+        bool "RTK NIC multi LAN device port mapping"
+        default n
+        help
+          Support Virtual Network Interface Port Mapping (ex. eth0.2, eth0.3, ..., etc) in Cortina
+          NE driver.
+

@@ -1,0 +1,68 @@
+config ARCH_CORTINA
+	bool 
+	depends on RTK_MIPS
+
+choice
+	prompt "Cortina machine Type"
+	depends on RTK_MIPS
+	default ARCH_CORTINA_SATURN_SFU
+	help
+	  Choose the Saturn sfu arch type
+	  
+config ARCH_CORTINA_SATURN_SFU
+	bool "Saturn SFU"
+	select CPU_RLX5281
+	select SYS_HAS_CPU_RLX
+	select GENERIC_IRQ_CHIP
+	select SYS_SUPPORTS_LITTLE_ENDIAN
+	select DMA_NONCOHERENT
+	select HAS_DMA
+	select USE_OF 
+	select COMMON_CLK
+	select DTC
+	select ARCH_CORTINA
+	select ARCH_WANT_OPTIONAL_GPIOLIB
+	select PINCTRL
+	select PINCTRL_CORTINA
+	help
+	  This enables support for Cortina Access Saturn Family of SoCs.
+
+config ARCH_CORTINA_SATURN_SFP_PLUS
+	bool "Saturn SFP+"
+        depends on ARCH_CORTINA_SATURN_SFU
+	help
+	  This enables support for Cortina Access Saturn Family of SoCs.
+
+endchoice
+
+choice
+	prompt "Board Type"
+	depends on ARCH_CORTINA_SATURN_SFU
+	default CORTINA_BOARD_FPGA
+	help
+	  Choose the Saturn sfu board type
+	  
+config CORTINA_BOARD_FPGA
+	bool "FPGA Board"
+	help
+	  Cortina FPGA Board
+	  
+config CORTINA_BOARD_SATURN_SFU_ENG
+	bool "Saturn SFU Engineering Board"
+	help
+	  Cortina Saturn SFU Engineering Board
+  
+config CORTINA_BOARD_SATURN_SFP_PLUS_ENG
+	bool "Saturn SFP+ Engineering Board"
+        depends on ARCH_CORTINA_SATURN_SFP_PLUS
+	help
+	  Cortina Saturn SFP+ Engineering Board
+
+config CORTINA_BOARD_SATURN_SFU_TITAN
+	bool "Titan FPGA Board"
+	help
+	  Cortina Titan FPGA Board
+
+endchoice
+
+

@@ -1,0 +1,21 @@
+menu "SPI NAND controller drivers"
+	depends on MTD_SPI_NAND
+
+config GENERIC_SPI_NAND
+	tristate "SPI-NAND with generic SPI bus Support"
+	depends on SPI
+	help
+	  This is to support SPI NAND device with generic SPI bus.
+
+config CORTINA_SPI_NAND
+    tristate "SPI NAND with Cortina SPI-NAND Controller"
+    help
+      This is to support SPI NAND device with Cortina SPI-NAND Controller.
+
+
+config CORTINA_SPI_NAND_VENUS
+    tristate "Venus SPI NAND driver with Cortina SPI-NAND Controller"
+    help
+      This is to support Venus SPI NAND device with Cortina SPI-NAND Controller.
+
+endmenu

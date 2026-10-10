@@ -1,0 +1,61 @@
+
+# sub-directory
+
+UTIL_DIR = osal/util
+COMN_DIR = osal/osal
+KERN_DIR = osal/osal/linux_kernel
+EVENT_DIR = event
+LOG_DIR = log
+PERI_DIR = peri
+PAL_DIR = pal
+
+EXTRA_CFLAGS += -Werror -I$(M)/inc \
+            -I$(M)/osal/include \
+            -I$(M)/osal/osal/linux_kernel \
+            -I$(M)/event/ \
+            -I$(M)/log/ \
+            -I$(M)/peri/
+
+# all object files
+
+UTIL_OBJS	= $(UTIL_DIR)/tlv_parser.o \
+			$(UTIL_DIR)/util_bitmap.o \
+			$(UTIL_DIR)/util_rbtree.o \
+			$(UTIL_DIR)/util_list.o \
+			$(UTIL_DIR)/util_table.o \
+			$(UTIL_DIR)/util_misc.o \
+			$(UTIL_DIR)/util_aes.o
+
+COMN_OBJS	= $(COMN_DIR)/osal_cmn.o \
+			$(COMN_DIR)/osal_file.o \
+			$(COMN_DIR)/osal_mem.o \
+			$(COMN_DIR)/osal_mutex.o \
+			$(COMN_DIR)/osal_queue.o \
+			$(COMN_DIR)/osal_sem.o \
+			$(COMN_DIR)/osal_spinlock.o \
+			$(COMN_DIR)/osal_thread.o \
+			$(COMN_DIR)/osal_timer.o \
+			$(COMN_DIR)/osal_workqueue.o \
+			$(COMN_DIR)/osal_misc.o
+
+
+KERN_OBJS	= $(KERN_DIR)/os_core.o \
+			$(KERN_DIR)/osal_export_symbol.o 
+
+EVENT_OBJS  = $(EVENT_DIR)/event_core.o $(EVENT_DIR)/ca_event.o
+
+PAL_OBJS  = $(PAL_DIR)/pal_comm.o
+
+LOG_OBJS    = $(LOG_DIR)/log.o
+
+PERI_OBJS   = $(PERI_DIR)/aal_peri.o \
+                    $(PERI_DIR)/peri.o
+
+obj-m += ca-plat-kernel.o
+ca-plat-kernel-objs := $(COMN_OBJS) \
+                           $(UTIL_OBJS) \
+                           $(KERN_OBJS) \
+                           $(EVENT_OBJS) \
+                           $(LOG_OBJS) \
+                           $(PAL_OBJS) \
+                           $(PERI_OBJS)

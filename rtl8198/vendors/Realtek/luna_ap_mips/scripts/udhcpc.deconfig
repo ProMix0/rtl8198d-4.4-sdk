@@ -1,0 +1,20 @@
+#!/bin/sh
+eval `mib get LAN_IP_ADDR`
+eval `mib get LAN_SUBNET`
+eval `mib get LAN_ENABLE_IP2`
+eval `mib get LAN_IP_ADDR2`
+if [ "$interface" == "br0" ]; then
+	if [ "$LAN_ENABLE_IP2" == "1" -a "$LAN_IP_ADDR" == "$LAN_IP_ADDR2" ]; then
+            ifconfig br0:0 | grep "$LAN_IP_ADDR"
+            if [ $? -eq 0 ]; then
+                ifconfig br0:0 down
+            fi
+        fi
+        ifconfig $interface $LAN_IP_ADDR netmask $LAN_SUBNET
+	ip ro del default dev $interface
+else
+	ifconfig $interface | grep UP | grep RUNNING
+	if [ $? -eq 0 ]; then
+		ifconfig $interface 0.0.0.0
+	fi
+fi

@@ -1,0 +1,606 @@
+#
+# Realtek device configuration
+#
+
+config NET_VENDOR_REALTEK
+	bool "Realtek devices"
+	default y
+	---help---
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+
+	  Note that the answer to this question doesn't directly affect the
+	  kernel: saying N will just cause the configurator to skip all
+	  the questions about Realtek devices. If you say Y, you will be asked for
+	  your specific card in the following questions.
+
+if NET_VENDOR_REALTEK
+
+config ATP
+	tristate "AT-LAN-TEC/RealTek pocket adapter support"
+	depends on PARPORT && X86
+	select CRC32
+	---help---
+	  This is a network (Ethernet) device which attaches to your parallel
+	  port. Read the file <file:drivers/net/ethernet/realtek/atp.c>
+	  if you want to use this.  If you intend to use this driver, you
+	  should have said N to the "Parallel printer support", because the two
+	  drivers don't like each other.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called atp.
+
+config 8139CP
+	tristate "RealTek RTL-8139 C+ PCI Fast Ethernet Adapter support"
+	depends on PCI
+	select CRC32
+	select MII
+	---help---
+	  This is a driver for the Fast Ethernet PCI network cards based on
+	  the RTL8139C+ chips. If you have one of those, say Y here.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called 8139cp.  This is recommended.
+
+config 8139TOO
+	tristate "RealTek RTL-8129/8130/8139 PCI Fast Ethernet Adapter support"
+	depends on PCI
+	select CRC32
+	select MII
+	---help---
+	  This is a driver for the Fast Ethernet PCI network cards based on
+	  the RTL 8129/8130/8139 chips. If you have one of those, say Y here.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called 8139too.  This is recommended.
+
+config 8139TOO_PIO
+	bool "Use PIO instead of MMIO"
+	default y
+	depends on 8139TOO
+	---help---
+	  This instructs the driver to use programmed I/O ports (PIO) instead
+	  of PCI shared memory (MMIO).  This can possibly solve some problems
+	  in case your mainboard has memory consistency issues.  If unsure,
+	  say N.
+
+config 8139TOO_TUNE_TWISTER
+	bool "Support for uncommon RTL-8139 rev. K (automatic channel equalization)"
+	depends on 8139TOO
+	---help---
+	  This implements a function which might come in handy in case you
+	  are using low quality on long cabling. It is required for RealTek
+	  RTL-8139 revision K boards, and totally unused otherwise.  It tries
+	  to match the transceiver to the cable characteristics. This is
+	  experimental since hardly documented by the manufacturer.
+	  If unsure, say Y.
+
+config 8139TOO_8129
+	bool "Support for older RTL-8129/8130 boards"
+	depends on 8139TOO
+	---help---
+	  This enables support for the older and uncommon RTL-8129 and
+	  RTL-8130 chips, which support MII via an external transceiver,
+	  instead of an internal one.  Disabling this option will save some
+	  memory by making the code size smaller.  If unsure, say Y.
+
+config 8139_OLD_RX_RESET
+	bool "Use older RX-reset method"
+	depends on 8139TOO
+	---help---
+	  The 8139too driver was recently updated to contain a more rapid
+	  reset sequence, in the face of severe receive errors.  This "new"
+	  RX-reset method should be adequate for all boards.  But if you
+	  experience problems, you can enable this option to restore the
+	  old RX-reset behavior.  If unsure, say N.
+
+config R8169
+	tristate "Realtek 8169 gigabit ethernet support"
+	depends on PCI
+	select FW_LOADER
+	select CRC32
+	select MII
+	---help---
+	  Say Y here if you have a Realtek 8169 PCI Gigabit Ethernet adapter.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called r8169.  This is recommended.
+
+config RTL8686NIC
+        tristate "Realtek RTL8686 NIC Ethernet support"
+        select CRC32
+        select MII
+        help
+          Say Y if your machine has this type of Ethernet network card.
+
+if ARCH_RTL8198F
+
+choice
+        prompt "8198F WAN port"
+        default RTK_WANPORT_AT_PORT4
+        help
+          Choose wan port.
+
+config RTK_WANPORT_AT_PORT0
+		bool "Port0"
+
+config RTK_WANPORT_AT_PORT1
+		bool "Port1"
+
+config RTK_WANPORT_AT_PORT4
+                bool "Port4"
+
+endchoice
+
+choice
+        prompt "External Giga Switch"
+        default RTL_ESW_NONE
+        help
+          Choose the external Giga switch.
+
+config RTL_ESW_NONE
+        bool "None"
+
+config RTL_8367R_SUPPORT
+        bool "Enable RTL8367R Support"
+        help
+          Support for RTL8367R.
+
+config RTL_8367S_SUPPORT
+        bool "Enable RTL8367S Support"
+        help
+          Support for RTL8367S.
+
+endchoice
+
+config RTL_83XX_SUPPORT
+        bool
+        default y if RTL_8367R_SUPPORT || RTL_8367S_SUPPORT
+        help
+          This enables support for systems based on RTL83XX external Giga switch.
+
+choice
+        prompt "Choose RTL83XX Management Interface"
+        depends on RTL_83XX_SUPPORT
+        default RTL83XX_MDIO_ASIC
+
+config RTL83XX_MDIO_ASIC
+	bool "Use ASIC MDC/MDIO to control RTL83XX switch"
+	help
+	  For Realtek RTL83XX controlled by ASIC MDC/MDIO.
+
+config RTL83XX_MDIO_GPIO
+	bool "Use GPIO lib-based MDC/MDIO to control RTL83XX switch"
+        select MDIO_BITBANG
+        select MDIO_GPIO
+	help
+	  For Realtek RTL83XX controlled by MDC/MDIO which is simulated by GPIO.
+
+config RTL83XX_I2C
+	bool "Use I2C protocol to control RTL83XX switch"
+	help
+	  For Realtek RTL83XX controlled by I2C which is simulated by GPIO.
+
+endchoice
+
+config RTK_PE_FC_SUPPORT
+		bool "Realtek PE FC support"
+		default n
+		depends on HWNAT_FLEETCONNTRACK
+
+endif # ARCH_RTL8198F
+
+config RTL_8226_SUPPORT
+        bool "Enable Realtek RTL8226 support"
+        default n
+        help
+          This enables support for systems based on RTL8226 external Giga PHY.
+
+if RTL_8226_SUPPORT
+
+config RTL_8226_USE_PORT0
+       bool "Realtek RTL8226 using port0"
+       default n
+       depends on ARCH_RTL8198F
+       help
+          Setup PHY on port0
+	  Note that it would conflict with RTL_8367S_SUPPORT
+
+config RTL_8226_USE_PORT1
+       bool "Realtek RTL8226 using port1"
+       default y if RTL_8226_SUPPORT
+       depends on ARCH_RTL8198F
+       help
+          Setup PHY on port1
+
+endif #RTL_8226_SUPPORT
+
+config RTL_8226B_SUPPORT
+        bool "Enable Realtek RTL8226B support"
+        default n
+        help
+          This enables support for RTL8226B external 2.5 Giga PHY.
+
+config RTL_8226B_MODULE
+        tristate "Add RTL8226B Module"
+        depends on RTL_8226B_SUPPORT
+        default n
+        help
+          Add init module for RTL8226B and proc driver for debugging
+
+config RTL_8226B_DEVICE_0
+        bool "Enable Realtek RTL8226B Device 0"
+        depends on RTL_8226B_MODULE
+        default n
+        help
+          Add RTL8226B Device 0.
+
+config RTL_8226B_DEVICE_0_MDIO_SET
+        int "RTL8226B Device 0 on MDIO Set"
+        range 0 1
+        depends on RTL_8226B_DEVICE_0
+        default "0"
+        help
+          MDIO Set for RTL8226B
+
+config RTL_8226B_DEVICE_0_PHY_ADDR
+        int "RTL8226B Device 0 PHY Address (C45)"
+        range 0 31
+        depends on RTL_8226B_DEVICE_0
+        default "0"
+        help
+          IEEE 802.3 PHY Address (5 bits)
+
+config RTL_8226B_DEVICE_1
+        bool "Enable Realtek RTL8226B Device 1"
+        depends on RTL_8226B_MODULE
+        default n
+        help
+          Add RTL8226B Device 1.
+
+config RTL_8226B_DEVICE_1_MDIO_SET
+        int "RTL8226B Device 1 on MDIO Set"
+        range 0 1
+        depends on RTL_8226B_DEVICE_1
+        default "0"
+        help
+          MDIO Set for RTL8226B
+
+config RTL_8226B_DEVICE_1_PHY_ADDR
+        int "RTL8226B Device 1 PHY Address (C45)"
+        range 0 31
+        depends on RTL_8226B_DEVICE_1
+        default "0"
+        help
+          IEEE 802.3 PHY Address (5 bits)
+
+config RTL_8221B_SUPPORT
+        bool "Enable Realtek RTL8221B support"
+        default n
+        help
+          This enables support for RTL8221B external 2.5 Giga PHY.
+
+config RTL_8221B_MODULE
+        tristate "Add RTL8221B Module"
+        depends on RTL_8221B_SUPPORT
+        default n
+        help
+          Add init module for RTL8221B and proc driver for debugging
+
+config RTL_8221B_DEVICE_0
+        bool "Enable Realtek RTL8221B Device 0"
+        depends on RTL_8221B_MODULE
+        default n
+        help
+          Add RTL8221B Device 0.
+
+config RTL_8221B_DEVICE_0_MDIO_SET
+        int "RTL8221B Device 0 on MDIO Set"
+        range 0 1
+        depends on RTL_8221B_DEVICE_0
+        default "0"
+        help
+          MDIO Set for RTL8221B
+
+config RTL_8221B_DEVICE_0_PHY_ADDR
+        int "RTL8221B Device 0 PHY Address (C45)"
+        range 0 31
+        depends on RTL_8221B_DEVICE_0
+        default "0"
+        help
+          IEEE 802.3 PHY Address (5 bits)
+
+config RTL_8221B_DEVICE_1
+        bool "Enable Realtek RTL8221B Device 1"
+        depends on RTL_8221B_MODULE
+        default n
+        help
+          Add RTL8221B Device 1.
+
+config RTL_8221B_DEVICE_1_MDIO_SET
+        int "RTL8221B Device 1 on MDIO Set"
+        range 0 1
+        depends on RTL_8221B_DEVICE_1
+        default "0"
+        help
+          MDIO Set for RTL8221B
+
+config RTL_8221B_DEVICE_1_PHY_ADDR
+        int "RTL8221B Device 1 PHY Address (C45)"
+        range 0 31
+        depends on RTL_8221B_DEVICE_1
+        default "0"
+        help
+          IEEE 802.3 PHY Address (5 bits)
+
+menu "Chip series selec"
+
+config RTL9600_SERIES
+        bool "Realtek RTL9600 series support "
+
+config RTL9601B_SERIES
+        bool "Realtek RTL9601B series support "
+        select SFU
+
+config RTL9602C_SERIES
+        bool "Realtek RTL9602C series support "
+
+config RTL9607C_SERIES
+        bool "Realtek RTL9607C series support "
+
+config RTL9603CVD_SERIES
+        bool "Realtek RTL9603CVD series support "
+
+config CA8279_SERIES
+        bool "Realtek CA8279 series support "
+
+config CA8277B_SERIES
+        bool "Realtek CA8277B series support "
+
+config RTL8198F_SERIES
+        bool "Realtek RTL8198F series support "
+
+endmenu
+
+config LUNA_G3_SERIES
+        bool "Realtek LUNA_G3 series support "
+	help
+	  For Realtek LUNA G3 series.
+
+config QOS_SUPPORT_8_QUEUES
+        bool 'QoS support 8 queues' 
+
+config GMAC1_USABLE
+	bool "Enable GMAC1"
+	depends on RTL9607C_SERIES
+
+config GMAC2_USABLE
+	bool "Enable GMAC2"
+	depends on RTL9607C_SERIES	
+
+config RX_WIFI_FF_AGG
+	bool "Support Rx Wifi FastForward Aggregation"
+	depends on RTL8686NIC
+	default n
+	help
+		Support Rx aggregate Wifi FastForward packets
+
+config RTL865X_ETH_PRIV_SKB
+	bool "Private Allocate Skbuff for RTL9600 Series Chip"
+
+config RTW_MEMPOOL
+        bool "Realtek Memory Pool"
+        default n
+#
+# Apollo Switch Driver configuration
+#
+menuconfig RTL8686_SWITCH
+        default y if UML
+        bool "Apollo switch driver support"
+        ---help---
+          You'll have to say Y if your machine contains a switch device that
+          you want to use.
+
+# All the following symbols are dependent on RTL8686_SWITCH - do not repeat
+# that for each of the symbols.
+if RTL8686_SWITCH
+source "drivers/net/ethernet/realtek/rtl86900/sdk/Kconfig"
+source "drivers/net/ethernet/realtek/rtl86900/tr142/Kconfig"
+source "drivers/net/ethernet/realtek/rtl86900/RT_API_demo/Kconfig"
+endif # RTL8686_SWITCH
+
+config ETHWAN
+	bool "ETHWAN"
+	default y
+#	depends on EXT_SWITCH || RTL_8676HWNAT || RTL8686NIC || 
+	help
+	ETH_WAN setting
+
+config AUTO_DHCP_CHECK
+	bool "Auto DHCP Check"
+	default n
+config RTL_IGMP_SNOOPING
+        bool "RTL_IGMP_SNOOPING"
+        default y
+config RTL_IGMP_PROXY
+        bool "RTL_IGMP_PROXY"
+        default y
+config RTK_TRAP_USER_GROUP_PS
+		bool "RTK_TRAP_USER_GROUP_PS"
+		default n
+# Realtek IGMP Module configuration
+config RTK_IGMP_MLD_SNOOPING_MODULE
+	tristate "Realtek IGMP/MLD Snooping Module"
+	help
+	    Say M or Y if you want to enable Realtek IGMP/MLD Snooping Module.
+
+config RTL_MLD_SNOOPING
+        bool "RTL_MLD_SNOOPING"
+        default n
+        depends on IPV6 && RTL_IGMP_SNOOPING
+
+config BOLOCK_IPTV_FROM_LAN_SERVER
+       bool "BLOCK_LAN_OR_WLAN_PORT_AS_IPTV_SERVER"
+       default n
+
+config RTL_MULTI_LAN_DEV
+        bool "Multi lan device"
+        default y if RTL_8676HWNAT
+        default n if RTL8686NIC
+        depends on (RTL_819X || RTL_8676HWNAT || RTL8686NIC)
+        help
+                support multi lan device
+config RTL_MULTI_ETH_WAN
+	bool "Multi WAN support"
+        default y
+        select RTL_MULTI_WAN
+        ---help---
+        support multi wan device and smux function(for luna)
+
+config RTL_MULTI_PHY_ETH_WAN
+	bool "Multi Physical WAN support"
+        default n
+        depends on RTL_MULTI_ETH_WAN
+        ---help---
+        support multi physical wan port(for luna)
+
+config RTL_BRIDGE_VLAN_SPECIAL_SUPPORT
+	bool "Bridge WAN special support"
+        default n
+
+config RTL_ETH_DEVICE_NAME_REFINE
+	bool "wan port change and device name change support"
+        default y
+        ---help---
+        wan port change and device name change support(for luna)
+
+config RTK_APP_PORT_BINDING_SUPPORT
+	bool "Support applications port binding function"
+        default y
+        depends on RTL_MULTI_ETH_WAN
+        ---help---
+        support applications port binding function
+#choice
+#        prompt "smux selection"
+#        default RTL_SMUX_LEGACY   
+#        depends on RTL_MULTI_ETH_WAN   
+        
+#config RTL_SMUX_LEGACY
+#        bool "Realtek smux function "
+       
+#config RTL_SMUX_DEV
+#        bool "Realtek smuxdev function "
+        
+#endchoice
+	
+config RTL_MULTI_WAN
+        bool
+
+config RTK_MULTI_WAN_NAME
+	string "Multi WAN interface name prefix"
+	default "nas"
+	---help---
+	Change the naming prefix of multi name device
+	NOTE: The maximum length of name is 16
+
+config RTL_SMUX_TXMARK_STREAMID
+		bool "RTL_SMUX_TXMARK_STREAMID"
+		depends on RTL_MULTI_ETH_WAN
+
+choice
+        prompt "Realtek HWNAT selection"
+        default HWNAT_RG
+
+config HWNAT_RG_ROMEDRIVER
+        bool "Realtek romeDriver"
+        select RTK_L34_ENABLE
+        ---help---
+          If unsure, say Y.
+
+config HWNAT_FLEETCONNTRACK
+        bool "Realtek Fleet Conntrack Driver"
+        select RTK_L34_FLEETCONNTRACK_ENABLE
+        ---help---
+          Cache the forwarding decision decided by Linux kernel.
+
+config HWNAT_NONE
+        bool "Disable"
+        ---help---
+          Disable HWNAT.
+endchoice
+
+
+if HWNAT_RG_ROMEDRIVER
+
+config HWNAT_RG
+        tristate "Realtek romeDriver"
+		default y
+        ---help---
+          If unsure, say Y.
+
+menuconfig RTK_L34_ENABLE
+        bool "HWNAT romeDriver"
+        source "drivers/net/ethernet/realtek/rtl86900/romeDriver/Kconfig"
+endif
+
+config RTL_83XX_QOS_SUPPORT
+        bool "83XX HW QoS Support"
+        default n
+        depends on RTK_DEV_AP && RTL_83XX_SUPPORT && RTK_L34_FLEETCONNTRACK_ENABLE
+        ---help---
+        support 83xx hw qos feature
+
+config RTL_G3LITE_QOS_SUPPORT
+        bool "G3-Lite HW QoS Support"
+        default n
+        depends on RTK_DEV_AP && ARCH_RTL8198F && RTL_8226_SUPPORT 
+
+config RTK_VLAN_PASSTHROUGH_SUPPORT
+        bool "Support transparent transmission vlan feature"
+        default n
+        depends on RTK_L34_FLEETCONNTRACK_ENABLE
+        ---help---
+        support vlan passthrough feature
+
+config RTK_VLAN_BINDING_SUPPORT
+        bool "Support vlan binding for multiple wan"
+        default n
+        depends on RTL_MULTI_ETH_WAN
+        ---help---
+        support vlan binding feature
+
+config RTK_LINUX_VLAN_SUPPORT
+	bool "Support rtl linux vlan"
+	default n
+
+config RTK_TEST_FILTER
+	bool "Test yunme filter case"
+	default n
+
+config RTK_CTCAPD_FILTER_SUPPORT
+        bool "Enable url and dns filter for ctcapd"
+        default n
+        depends on RTL9607C_SERIES
+
+config RTK_DNS_TRAP
+        bool "Enable domain name access of AP"
+        default n
+        ---help---
+        If you say Y here, then you can visit the webpage of AP via domain name
+        such as wifi.example.com instead of IP address
+
+config RTK_BI_COLOR_LED_SUPPORT
+        bool "Enable Bi-color LED Support"
+        default n
+        depends on RTK_SOC_RTL8198D
+
+config RTK_SINGLE_RX_RING
+        bool "Enable Single Rx Ring Support"
+        default n
+        depends on RTK_SOC_RTL8198D
+
+config RTK_WFOAX
+        bool "Enable WFO AX Support"
+        default n
+        depends on RTK_SOC_RTL8198D
+
+endif # NET_VENDOR_REALTEK

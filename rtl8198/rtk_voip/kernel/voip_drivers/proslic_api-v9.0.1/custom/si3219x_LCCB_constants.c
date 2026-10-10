@@ -1,0 +1,1076 @@
+/*
+** Copyright (c) 2017 Silicon Laboratories, Inc.
+** 2017-05-05 18:43:13
+**
+** Si3219x ProSLIC API Configuration Tool Version 4.1.0
+** Last Updated in API Release: 9.0.0
+** source XML file: si3219x_LCCB_constants.xml
+**
+** Auto generated file from configuration tool.
+*/
+
+
+#include "proslic.h"
+#include "si3219x.h"
+
+Si3219x_General_Cfg Si3219x_General_Configuration  = {
+0x85,                       /* DEVICE_KEY */
+BO_DCDC_LCCB,               /* BOM_OPT */
+VDC_4P5_16P0,               /* VDC_RANGE_OPT */
+AUTO_ZCAL_ENABLED,          /* ZCAL_ENABLE */
+BO_STD_BOM,                 /* PM_BOM */
+0x00000000L,                /* DCDC_OITHRESH_LO */
+0x01A00000L,                /* DCDC_OITHRESH_HI */
+0x00A00000L,                /* DCDC_OVTHRESH */
+5000L,                      /* DCDC_UVTHRESH */
+1000L,                      /* DCDC_UVHYST */
+0x00000000L,                /* DCDC_FSW_VTHLO */
+0x00000000L,                /* DCDC_FSW_VHYST */
+0x0048D15BL,                /* P_TH_HVIC */
+0x07FEB800L,                /* COEF_P_HVIC */
+0x00083120L,                /* BAT_HYST */
+0x03D70A20L,                /* VBATH_EXPECT (60.00V) */
+0x06666635L,                /* VBATR_EXPECT (100.00V) */
+0x0FFF0000L,                /* PWRSAVE_TIMER */
+0x01999A00L,                /* OFFHOOK_THRESH */
+0x00F00000L,                /* VBAT_TRACK_MIN */
+0x00F00000L,                /* VBAT_TRACK_MIN_RNG */
+0x0ADD5500L,                /* DCDC_ANA_SCALE */
+0x00800000L,                /* THERM_DBI */
+0x00FFFFFFL,                /* VOV_DCDC_SLOPE */
+0x00A18937L,                /* VOV_DCDC_OS */
+0x00A18937L,                /* VOV_RING_BAT_DCDC */
+0x00E49BA5L,                /* VOV_RING_BAT_MAX */
+0x01018900L,                /* DCDC_VERR */
+0x0080C480L,                /* DCDC_VERR_HYST */
+0x00400000L,                /* PD_UVLO */
+0x00400000L,                /* PD_OVLO */
+0x00200000L,                /* PD_OCLO */
+0x00400000L,                /* PD_SWDRV */
+0x00000000L,                /* DCDC_UVPOL */
+0x00200000L,                /* DCDC_RNGTYPE */
+0x00180000L,                /* DCDC_ANA_TOFF */
+0x00100000L,                /* DCDC_ANA_TONMIN */
+0x012FC000L,                /* DCDC_ANA_TONMAX */
+0x50,                       /* IRQEN1 */
+0x13,                       /* IRQEN */
+0x03,                       /* IRQEN3 */
+0x00,                       /* IRQEN4 */
+0x30,                       /* ENHANCE */
+0x3F,                       /* AUTO */
+};
+
+Si3219x_audioGain_Cfg Si3219x_audioGain_Presets [] = {
+{0x1377080L,0, 0x0L, 0x0L, 0x0L, 0x0L},
+{0x80C3180L,0, 0x0L, 0x0L, 0x0L, 0x0L}
+};
+
+Si3219x_Ring_Cfg Si3219x_Ring_Presets[] ={
+{
+/*
+	Loop = 500.0 ft @ 0.044 ohms/ft, REN = 3, Rcpe = 600 ohms
+	Rprot = 54 ohms, Type = LPR, Waveform = SINE
+*/ 
+0x00050000L,	/* RTPER */
+0x07EFE000L,	/* RINGFR (20.000 Hz) */
+0x0021C28EL,	/* RINGAMP (55.000 vrms)  */
+0x00000000L,	/* RINGPHAS */
+0x00000000L,	/* RINGOF (0.000 vdc) */
+0x15E5200EL,	/* SLOPE_RING (100.000 ohms) */
+0x006C94D6L,	/* IRING_LIM (70.000 mA) */
+0x0FFFFFFFL,	/* RTACTH (450.000 mA) */
+0x0FFFFFFFL,	/* RTDCTH (450.000 mA) */
+0x00006000L,	/* RTACDB (75.000 ms) */
+0x00006000L,	/* RTDCDB (75.000 ms) */
+0x0051EB82L,	/* VOV_RING_BAT (5.000 v) */
+0x00000000L,	/* VOV_RING_GND (0.000 v) */
+0x05EA7148L,	/* VBATR_EXPECT (92.434 v) */
+0x80,			/* RINGTALO (2.000 s) */
+0x3E,			/* RINGTAHI */
+0x00,			/* RINGTILO (4.000 s) */
+0x7D,			/* RINGTIHI */
+0x00000000L,	/* ADAP_RING_MIN_I */
+0x00003000L,	/* COUNTER_IRING_VAL */
+0x00051EB8L,	/* COUNTER_VTR_VAL */
+0x00000000L,	/* CONST_028 */
+0x00000000L,	/* CONST_032 */
+0x00000000L,	/* CONST_038 */
+0x00000000L,	/* CONST_046 */
+0x00000000L,	/* RRD_DELAY */
+0x00000000L,	/* RRD_DELAY2 */
+0x01893740L,	/* VBAT_TRACK_MIN_RNG */
+0x80,			/* RINGCON */
+0x00,			/* USERSTAT */
+0x02F538A4L,	/* VCM_RING (44.967 v) */
+0x02F538A4L,	/* VCM_RING_FIXED */
+0x003126E8L,	/* DELTA_VCM */
+0x00200000L,	/* DCDC_RNGTYPE */
+},  /* DEFAULT_RINGING_55V_20HZ */
+{
+/*
+	Loop = 500.0 ft @ 0.044 ohms/ft, REN = 5, Rcpe = 600 ohms
+	Rprot = 30 ohms, Type = LPR, Waveform = SINE
+*/ 
+0x00050000L,	/* RTPER */
+0x07EFE000L,	/* RINGFR (20.000 Hz) */
+0x001B9F2EL,	/* RINGAMP (45.000 vrms)  */
+0x00000000L,	/* RINGPHAS */
+0x00000000L,	/* RINGOF (0.000 vdc) */
+0x15E5200EL,	/* SLOPE_RING (100.000 ohms) */
+0x006C94D6L,	/* IRING_LIM (70.000 mA) */
+0x0068E9B4L,	/* RTACTH (57.936 mA) */
+0x0FFFFFFFL,	/* RTDCTH (450.000 mA) */
+0x00006000L,	/* RTACDB (75.000 ms) */
+0x00006000L,	/* RTDCDB (75.000 ms) */
+0x0051EB82L,	/* VOV_RING_BAT (5.000 v) */
+0x00000000L,	/* VOV_RING_GND (0.000 v) */
+0x04E5FBDEL,	/* VBATR_EXPECT (76.537 v) */
+0x80,			/* RINGTALO (2.000 s) */
+0x3E,			/* RINGTAHI */
+0x00,			/* RINGTILO (4.000 s) */
+0x7D,			/* RINGTIHI */
+0x00000000L,	/* ADAP_RING_MIN_I */
+0x00003000L,	/* COUNTER_IRING_VAL */
+0x00051EB8L,	/* COUNTER_VTR_VAL */
+0x00000000L,	/* CONST_028 */
+0x00000000L,	/* CONST_032 */
+0x00000000L,	/* CONST_038 */
+0x00000000L,	/* CONST_046 */
+0x00000000L,	/* RRD_DELAY */
+0x00000000L,	/* RRD_DELAY2 */
+0x01893740L,	/* VBAT_TRACK_MIN_RNG */
+0x80,			/* RINGCON */
+0x00,			/* USERSTAT */
+0x0272FDEFL,	/* VCM_RING (37.019 v) */
+0x0272FDEFL,	/* VCM_RING_FIXED */
+0x003126E8L,	/* DELTA_VCM */
+0x00200000L,	/* DCDC_RNGTYPE */
+},  /* 45V_20HZ */
+{
+/*
+	Loop = 500.0 ft @ 0.044 ohms/ft, REN = 5, Rcpe = 600 ohms
+	Rprot = 30 ohms, Type = LPR, Waveform = SINE
+*/ 
+0x00050000L,	/* RTPER */
+0x07EFE000L,	/* RINGFR (20.000 Hz) */
+0x001D7698L,	/* RINGAMP (48.000 vrms)  */
+0x00000000L,	/* RINGPHAS */
+0x00000000L,	/* RINGOF (0.000 vdc) */
+0x15E5200EL,	/* SLOPE_RING (100.000 ohms) */
+0x006C94D6L,	/* IRING_LIM (70.000 mA) */
+0x006FE837L,	/* RTACTH (61.799 mA) */
+0x0FFFFFFFL,	/* RTDCTH (450.000 mA) */
+0x00006000L,	/* RTACDB (75.000 ms) */
+0x00006000L,	/* RTDCDB (75.000 ms) */
+0x0051EB82L,	/* VOV_RING_BAT (5.000 v) */
+0x00000000L,	/* VOV_RING_GND (0.000 v) */
+0x05341F18L,	/* VBATR_EXPECT (81.306 v) */
+0x80,			/* RINGTALO (2.000 s) */
+0x3E,			/* RINGTAHI */
+0x00,			/* RINGTILO (4.000 s) */
+0x7D,			/* RINGTIHI */
+0x00000000L,	/* ADAP_RING_MIN_I */
+0x00003000L,	/* COUNTER_IRING_VAL */
+0x00051EB8L,	/* COUNTER_VTR_VAL */
+0x00000000L,	/* CONST_028 */
+0x00000000L,	/* CONST_032 */
+0x00000000L,	/* CONST_038 */
+0x00000000L,	/* CONST_046 */
+0x00000000L,	/* RRD_DELAY */
+0x00000000L,	/* RRD_DELAY2 */
+0x01893740L,	/* VBAT_TRACK_MIN_RNG */
+0x80,			/* RINGCON */
+0x00,			/* USERSTAT */
+0x029A0F8CL,	/* VCM_RING (39.403 v) */
+0x029A0F8CL,	/* VCM_RING_FIXED */
+0x003126E8L,	/* DELTA_VCM */
+0x00200000L,	/* DCDC_RNGTYPE */
+},  /* 48V_20HZ */
+{
+/*
+	Loop = 500.0 ft @ 0.044 ohms/ft, REN = 5, Rcpe = 600 ohms
+	Rprot = 30 ohms, Type = LPR, Waveform = SINE
+*/ 
+0x00040000L,	/* RTPER */
+0x07E6C000L,	/* RINGFR (25.000 Hz) */
+0x0024DF0DL,	/* RINGAMP (48.000 vrms)  */
+0x00000000L,	/* RINGPHAS */
+0x00000000L,	/* RINGOF (0.000 vdc) */
+0x15E5200EL,	/* SLOPE_RING (100.000 ohms) */
+0x006C94D6L,	/* IRING_LIM (70.000 mA) */
+0x0059D242L,	/* RTACTH (62.003 mA) */
+0x0FFFFFFFL,	/* RTDCTH (450.000 mA) */
+0x00008000L,	/* RTACDB (75.000 ms) */
+0x00008000L,	/* RTDCDB (75.000 ms) */
+0x0051EB82L,	/* VOV_RING_BAT (5.000 v) */
+0x00000000L,	/* VOV_RING_GND (0.000 v) */
+0x0534A05AL,	/* VBATR_EXPECT (81.337 v) */
+0x80,			/* RINGTALO (2.000 s) */
+0x3E,			/* RINGTAHI */
+0x00,			/* RINGTILO (4.000 s) */
+0x7D,			/* RINGTIHI */
+0x00000000L,	/* ADAP_RING_MIN_I */
+0x00003000L,	/* COUNTER_IRING_VAL */
+0x00066666L,	/* COUNTER_VTR_VAL */
+0x00000000L,	/* CONST_028 */
+0x00000000L,	/* CONST_032 */
+0x00000000L,	/* CONST_038 */
+0x00000000L,	/* CONST_046 */
+0x00000000L,	/* RRD_DELAY */
+0x00000000L,	/* RRD_DELAY2 */
+0x01893740L,	/* VBAT_TRACK_MIN_RNG */
+0x80,			/* RINGCON */
+0x00,			/* USERSTAT */
+0x029A502DL,	/* VCM_RING (39.419 v) */
+0x029A502DL,	/* VCM_RING_FIXED */
+0x003126E8L,	/* DELTA_VCM */
+0x00200000L,	/* DCDC_RNGTYPE */
+},  /* 48V_25HZ */
+{
+/*
+	Loop = 500.0 ft @ 0.044 ohms/ft, REN = 5, Rcpe = 600 ohms
+	Rprot = 30 ohms, Type = LPR, Waveform = SINE
+*/ 
+0x00040000L,	/* RTPER */
+0x079BC000L,	/* RINGFR (50.000 Hz) */
+0x004A3E1CL,	/* RINGAMP (48.000 vrms)  */
+0x00000000L,	/* RINGPHAS */
+0x00000000L,	/* RINGOF (0.000 vdc) */
+0x15E5200EL,	/* SLOPE_RING (100.000 ohms) */
+0x006C94D6L,	/* IRING_LIM (70.000 mA) */
+0x005A3880L,	/* RTACTH (62.279 mA) */
+0x0FFFFFFFL,	/* RTDCTH (450.000 mA) */
+0x00008000L,	/* RTACDB (75.000 ms) */
+0x00008000L,	/* RTDCDB (75.000 ms) */
+0x0051EB82L,	/* VOV_RING_BAT (5.000 v) */
+0x00000000L,	/* VOV_RING_GND (0.000 v) */
+0x05354EEBL,	/* VBATR_EXPECT (81.379 v) */
+0x80,			/* RINGTALO (2.000 s) */
+0x3E,			/* RINGTAHI */
+0x00,			/* RINGTILO (4.000 s) */
+0x7D,			/* RINGTIHI */
+0x00000000L,	/* ADAP_RING_MIN_I */
+0x00003000L,	/* COUNTER_IRING_VAL */
+0x000CCCCCL,	/* COUNTER_VTR_VAL */
+0x00000000L,	/* CONST_028 */
+0x00000000L,	/* CONST_032 */
+0x00000000L,	/* CONST_038 */
+0x00000000L,	/* CONST_046 */
+0x00000000L,	/* RRD_DELAY */
+0x00000000L,	/* RRD_DELAY2 */
+0x04E36369L,	/* VBAT_TRACK_MIN_RNG */
+0x80,			/* RINGCON */
+0x00,			/* USERSTAT */
+0x029AA775L,	/* VCM_RING (39.439 v) */
+0x029AA775L,	/* VCM_RING_FIXED */
+0x003126E8L,	/* DELTA_VCM */
+0x00200000L,	/* DCDC_RNGTYPE */
+}   /* RING_F20_45VRMS_0VDC_LPR */
+};
+
+Si3219x_DCfeed_Cfg Si3219x_DCfeed_Presets[] = {
+{
+0x1C8A024CL,	/* SLOPE_VLIM */
+0x1F909679L,	/* SLOPE_RFEED */
+0x0040A0E0L,	/* SLOPE_ILIM */
+0x1D5B21A9L,	/* SLOPE_DELTA1 */
+0x1DD87A3EL,	/* SLOPE_DELTA2 */
+0x05A38633L,	/* V_VLIM (48.000 v) */
+0x050D2839L,	/* V_RFEED (43.000 v) */
+0x03FE7F0FL,	/* V_ILIM  (34.000 v) */
+0x00B4F3C3L,	/* CONST_RFEED (15.000 mA) */
+0x005D0FA6L,	/* CONST_ILIM (20.000 mA) */
+0x002D8D96L,	/* I_VLIM (0.000 mA) */
+0x005B0AFBL,	/* LCRONHK (10.000 mA) */
+0x006D4060L,	/* LCROFFHK (12.000 mA) */
+0x00008000L,	/* LCRDBI (5.000 ms) */
+0x0048D595L,	/* LONGHITH (8.000 mA) */
+0x003FBAE2L,	/* LONGLOTH (7.000 mA) */
+0x00008000L,	/* LONGDBI (5.000 ms) */
+0x000F0000L,	/* LCRMASK (150.000 ms) */
+0x00080000L,	/* LCRMASK_POLREV (80.000 ms) */
+0x00140000L,	/* LCRMASK_STATE (200.000 ms) */
+0x00140000L,	/* LCRMASK_LINECAP (200.000 ms) */
+0x01BA5E35L,	/* VCM_OH (27.000 v) */
+0x0051EB85L,	/* VOV_BAT (5.000 v) */
+0x00418937L,	/* VOV_GND (4.000 v) */
+},  /* DCFEED_48V_20MA */
+{
+0x1C8A024CL,	/* SLOPE_VLIM */
+0x1EE08C11L,	/* SLOPE_RFEED */
+0x0040A0E0L,	/* SLOPE_ILIM */
+0x1C940D71L,	/* SLOPE_DELTA1 */
+0x1DD87A3EL,	/* SLOPE_DELTA2 */
+0x05A38633L,	/* V_VLIM (48.000 v) */
+0x050D2839L,	/* V_RFEED (43.000 v) */
+0x03FE7F0FL,	/* V_ILIM  (34.000 v) */
+0x01241BC9L,	/* CONST_RFEED (15.000 mA) */
+0x0074538FL,	/* CONST_ILIM (25.000 mA) */
+0x002D8D96L,	/* I_VLIM (0.000 mA) */
+0x005B0AFBL,	/* LCRONHK (10.000 mA) */
+0x006D4060L,	/* LCROFFHK (12.000 mA) */
+0x00008000L,	/* LCRDBI (5.000 ms) */
+0x0048D595L,	/* LONGHITH (8.000 mA) */
+0x003FBAE2L,	/* LONGLOTH (7.000 mA) */
+0x00008000L,	/* LONGDBI (5.000 ms) */
+0x000F0000L,	/* LCRMASK (150.000 ms) */
+0x00080000L,	/* LCRMASK_POLREV (80.000 ms) */
+0x00140000L,	/* LCRMASK_STATE (200.000 ms) */
+0x00140000L,	/* LCRMASK_LINECAP (200.000 ms) */
+0x01BA5E35L,	/* VCM_OH (27.000 v) */
+0x0051EB85L,	/* VOV_BAT (5.000 v) */
+0x00418937L,	/* VOV_GND (4.000 v) */
+},  /* DCFEED_48V_25MA */
+{
+0x1E655196L,	/* SLOPE_VLIM */
+0x001904EFL,	/* SLOPE_RFEED */
+0x0040A0E0L,	/* SLOPE_ILIM */
+0x1B4CAD9EL,	/* SLOPE_DELTA1 */
+0x1BB0F47CL,	/* SLOPE_DELTA2 */
+0x05A38633L,	/* V_VLIM (48.000 v) */
+0x043AA4A6L,	/* V_RFEED (36.000 v) */
+0x025977EAL,	/* V_ILIM  (20.000 v) */
+0x0068B19AL,	/* CONST_RFEED (18.000 mA) */
+0x005D0FA6L,	/* CONST_ILIM (20.000 mA) */
+0x002D8D96L,	/* I_VLIM (0.000 mA) */
+0x005B0AFBL,	/* LCRONHK (10.000 mA) */
+0x006D4060L,	/* LCROFFHK (12.000 mA) */
+0x00008000L,	/* LCRDBI (5.000 ms) */
+0x0048D595L,	/* LONGHITH (8.000 mA) */
+0x003FBAE2L,	/* LONGLOTH (7.000 mA) */
+0x00008000L,	/* LONGDBI (5.000 ms) */
+0x000F0000L,	/* LCRMASK (150.000 ms) */
+0x00080000L,	/* LCRMASK_POLREV (80.000 ms) */
+0x00140000L,	/* LCRMASK_STATE (200.000 ms) */
+0x00140000L,	/* LCRMASK_LINECAP (200.000 ms) */
+0x01BA5E35L,	/* VCM_OH (27.000 v) */
+0x0051EB85L,	/* VOV_BAT (5.000 v) */
+0x00418937L,	/* VOV_GND (4.000 v) */
+},  /* DCFEED_PSTN_DET_1 */
+{
+0x1A10433FL,	/* SLOPE_VLIM */
+0x1C206275L,	/* SLOPE_RFEED */
+0x0040A0E0L,	/* SLOPE_ILIM */
+0x1C1F426FL,	/* SLOPE_DELTA1 */
+0x1EB51625L,	/* SLOPE_DELTA2 */
+0x041C91DBL,	/* V_VLIM (35.000 v) */
+0x03E06C43L,	/* V_RFEED (33.000 v) */
+0x038633E0L,	/* V_ILIM  (30.000 v) */
+0x022E5DE5L,	/* CONST_RFEED (10.000 mA) */
+0x005D0FA6L,	/* CONST_ILIM (20.000 mA) */
+0x0021373DL,	/* I_VLIM (0.000 mA) */
+0x005B0AFBL,	/* LCRONHK (10.000 mA) */
+0x006D4060L,	/* LCROFFHK (12.000 mA) */
+0x00008000L,	/* LCRDBI (5.000 ms) */
+0x0048D595L,	/* LONGHITH (8.000 mA) */
+0x003FBAE2L,	/* LONGLOTH (7.000 mA) */
+0x00008000L,	/* LONGDBI (5.000 ms) */
+0x000F0000L,	/* LCRMASK (150.000 ms) */
+0x00080000L,	/* LCRMASK_POLREV (80.000 ms) */
+0x00140000L,	/* LCRMASK_STATE (200.000 ms) */
+0x00140000L,	/* LCRMASK_LINECAP (200.000 ms) */
+0x01BA5E35L,	/* VCM_OH (27.000 v) */
+0x0051EB85L,	/* VOV_BAT (5.000 v) */
+0x00418937L,	/* VOV_GND (4.000 v) */
+}   /* DCFEED_PSTN_DET_2 */
+};
+
+Si3219x_Impedance_Cfg Si3219x_Impedance_Presets[] ={
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=600_0_0 rprot=30 rfuse=0 emi_cap=10*/
+{
+{0x07F46C00L, 0x000E4600L, 0x00008580L, 0x1FFD6100L,    /* TXACEQ */
+ 0x07EF5000L, 0x0013F580L, 0x1FFDE000L, 0x1FFCB280L},   /* RXACEQ */
+{0x0027CB00L, 0x1F8A8880L, 0x02801180L, 0x1F625C80L,    /* ECFIR/ECIIR */
+ 0x0314FB00L, 0x1E6B8E80L, 0x00C5FF00L, 0x1FC96F00L,
+ 0x1FFD1200L, 0x00023C00L, 0x0ED29D00L, 0x192A9400L},
+{0x00810E00L, 0x1EFEBE80L, 0x00803500L, 0x0FF66D00L,    /* ZSYNTH */
+ 0x18099080L, 0x59}, 
+ 0x088E0D80L,   /* TXACGAIN */
+ 0x01456D80L,   /* RXACGAIN */
+ 0x07ABE580L, 0x18541B00L, 0x0757CB00L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_600_0_0_30_0 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=900_0_0 rprot=30 rfuse=0 emi_cap=0*/
+{
+{0x06D02E00L, 0x1FF63500L, 0x00048200L, 0x1FFE7E00L,    /* TXACEQ */
+ 0x0802A480L, 0x1FF42A00L, 0x0002B480L, 0x1FFB1300L},   /* RXACEQ */
+{0x1FED3700L, 0x00A98800L, 0x00D7A880L, 0x0340E180L,    /* ECFIR/ECIIR */
+ 0x00BB8580L, 0x1FE84500L, 0x00CFEC00L, 0x1EF2AE00L,
+ 0x00E8E600L, 0x1F112A00L, 0x017D2880L, 0x0642F580L},
+{0x006A8600L, 0x1F458F80L, 0x00500C00L, 0x0C4A0500L,    /* ZSYNTH */
+ 0x1BB3FD80L, 0x39}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x01022180L,   /* RXACGAIN */
+ 0x07B3F800L, 0x184C0880L, 0x0767F080L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_900_0_0_30_0 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=600_INF_2160 rprot=30 rfuse=24 emi_cap=10*/
+{
+{0x07F77B80L, 0x00083180L, 0x00009300L, 0x1FFC2780L,    /* TXACEQ */
+ 0x08033980L, 0x00134A00L, 0x00008A80L, 0x1FFDE300L},   /* RXACEQ */
+{0x1FF94B00L, 0x0064FA00L, 0x00854680L, 0x0281DD00L,    /* ECFIR/ECIIR */
+ 0x00105880L, 0x00EA5480L, 0x1FD77700L, 0x003EB800L,
+ 0x00289A00L, 0x1FDBB600L, 0x0F238300L, 0x18DA7C00L},
+{0x0069F500L, 0x1F296F80L, 0x006C9D00L, 0x0FF4D600L,    /* ZSYNTH */
+ 0x180B2780L, 0x60}, 
+ 0x08E28C80L,   /* TXACGAIN */
+ 0x01520180L,   /* RXACGAIN */
+ 0x077A1C80L, 0x1885E400L, 0x06F43880L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_600_INF_2160_30_24_10 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=200_560_100 rprot=30 rfuse=0 emi_cap=10*/
+{
+{0x07B53100L, 0x1FCCEE80L, 0x00048B80L, 0x1FFD3A80L,    /* TXACEQ */
+ 0x09562C80L, 0x1DDD4C80L, 0x00544380L, 0x1FE66D80L},   /* RXACEQ */
+{0x000E5780L, 0x00064900L, 0x00D56800L, 0x01BEC580L,    /* ECFIR/ECIIR */
+ 0x01210680L, 0x00A6B700L, 0x00873A80L, 0x1F7DA700L,
+ 0x00905900L, 0x1F6A5F00L, 0x02B04D00L, 0x052DD380L},
+{0x011EBD00L, 0x1CF39680L, 0x01ED7300L, 0x0A135500L,    /* ZSYNTH */
+ 0x1DEA4180L, 0x95}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x011FFC00L,   /* RXACGAIN */
+ 0x07B81580L, 0x1847EB00L, 0x07702B80L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_200_560_100_30_10 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=200_680_100 rprot=30 rfuse=0 emi_cap=10*/
+{
+{0x07365D80L, 0x1FC64180L, 0x00022980L, 0x1FFCE300L,    /* TXACEQ */
+ 0x09C28580L, 0x1D1FD880L, 0x0071A280L, 0x1FDF7500L},   /* RXACEQ */
+{0x1FF15A00L, 0x005C0600L, 0x00828200L, 0x01B11D00L,    /* ECFIR/ECIIR */
+ 0x027BB800L, 0x1EE9F200L, 0x028BAB80L, 0x1E57BE80L,
+ 0x01007580L, 0x1EF8B780L, 0x0556EE80L, 0x028DFB80L},
+{0x014F2C00L, 0x1C7A1180L, 0x02369A00L, 0x0A138100L,    /* ZSYNTH */
+ 0x1DEA2280L, 0x8E}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x010C7E80L,   /* RXACGAIN */
+ 0x07BB2500L, 0x1844DB80L, 0x07764980L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_200_680_100_30_0 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=220_820_120 rprot=30 rfuse=0 emi_cap=10*/
+{
+{0x06E2A580L, 0x1FD1DF80L, 0x00068880L, 0x1FFCE200L,    /* TXACEQ */
+ 0x0A7AFB00L, 0x1BC11F80L, 0x009C4E80L, 0x1FD60300L},   /* RXACEQ */
+{0x002C9880L, 0x1F530400L, 0x02CF4D80L, 0x1E895880L,    /* ECFIR/ECIIR */
+ 0x055F7200L, 0x1E034600L, 0x023B9080L, 0x1FB01780L,
+ 0x00339380L, 0x1FC98F80L, 0x0B7EA900L, 0x1C760400L},
+{0x022C8200L, 0x1A9F3E80L, 0x03332100L, 0x0A0D4700L,    /* ZSYNTH */
+ 0x1DEBC480L, 0x8D}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x01013A80L,   /* RXACGAIN */
+ 0x07BEF980L, 0x18410700L, 0x077DF280L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_220_820_120_30_0 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=220_820_115 rprot=30 rfuse=0 emi_cap=10*/
+{
+{0x06D56400L, 0x1FDF1780L, 0x00095A80L, 0x1FFDA880L,    /* TXACEQ */
+ 0x0A596300L, 0x1C067880L, 0x0095EF00L, 0x1FD7AF00L},   /* RXACEQ */
+{0x00164300L, 0x1FD81880L, 0x0150CC80L, 0x0151BB80L,    /* ECFIR/ECIIR */
+ 0x01DA1A00L, 0x0142CB80L, 0x0027DE80L, 0x0076A180L,
+ 0x0012F980L, 0x1FEAE000L, 0x0CC70C80L, 0x1B2DF000L},
+{0x00246300L, 0x1E5E0580L, 0x017D2300L, 0x0A138100L,    /* ZSYNTH */
+ 0x1DEA2280L, 0xA7}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x01009500L,   /* RXACGAIN */
+ 0x07BBEE80L, 0x18441200L, 0x0777DD80L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_220_820_115_30_0 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=400_500_50 rprot=30 rfuse=0 emi_cap=10*/
+{
+{0x06D9A880L, 0x1FF71200L, 0x00034080L, 0x1FFEAC80L,    /* TXACEQ */
+ 0x08492D80L, 0x1F8AC980L, 0x0011AA00L, 0x1FF78680L},   /* RXACEQ */
+{0x1FF6AA00L, 0x0069A500L, 0x00D57400L, 0x02D2E300L,    /* ECFIR/ECIIR */
+ 0x012CB380L, 0x002B6780L, 0x00991180L, 0x1F416580L,
+ 0x00A0A600L, 0x1F56EB80L, 0x01C40B80L, 0x06155700L},
+{0x0060FC00L, 0x1F442D80L, 0x005AEB00L, 0x0CBDC100L,    /* ZSYNTH */
+ 0x1B404E80L, 0x43}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x0103A100L,   /* RXACGAIN */
+ 0x07B56D00L, 0x184A9380L, 0x076ADA00L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_400_200_700_30_10 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=200_1000_100 rprot=30 rfuse=0 emi_cap=0*/
+{
+{0x06712B00L, 0x1FBE7C80L, 0x1FFCA500L, 0x1FF9E780L,    /* TXACEQ */
+ 0x0AB44500L, 0x1B4C2F80L, 0x00B39680L, 0x1FD02680L},   /* RXACEQ */
+{0x001D7F00L, 0x1FB2B600L, 0x01DA5B00L, 0x00BCE980L,    /* ECFIR/ECIIR */
+ 0x0302C780L, 0x00A9F780L, 0x00CA4080L, 0x0067CB80L,
+ 0x002A8C80L, 0x1FD2B880L, 0x0C9B1F00L, 0x1B5C6500L},
+{0x028A8100L, 0x19D87880L, 0x039CA200L, 0x0A133B00L,    /* ZSYNTH */
+ 0x1DEA3480L, 0x84}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x00EEE880L,   /* RXACGAIN */
+ 0x07BE2880L, 0x1841D800L, 0x077C5180L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_200_1000_100_0_0 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=150_830_72 rprot=30 rfuse=4 emi_cap=10*/
+{
+{0x06C61F80L, 0x1FEDC200L, 0x000A4C80L, 0x1FFD5980L,    /* TXACEQ */
+ 0x09746080L, 0x1DA76280L, 0x006BE900L, 0x1FDED780L},   /* RXACEQ */
+{0x00078F80L, 0x0013A900L, 0x00E97680L, 0x02038500L,    /* ECFIR/ECIIR */
+ 0x019FDE80L, 0x01169700L, 0x005BED80L, 0x1FCC5400L,
+ 0x00699800L, 0x1F91FA80L, 0x023E0000L, 0x059F0380L},
+{0x1F502180L, 0x01216300L, 0x1F4CF480L, 0x0EB01C00L,    /* ZSYNTH */
+ 0x18093280L, 0x9F}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x00FFE280L,   /* RXACGAIN */
+ 0x07B89400L, 0x18476C80L, 0x07712800L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_150_830_72_30_4_10 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=215_1000_137 rprot=30 rfuse=0 emi_cap=10*/
+{
+{0x06B8F480L, 0x1FD68A80L, 0x0006F100L, 0x1FFC9E00L,    /* TXACEQ */
+ 0x0B23A880L, 0x1A3F0A00L, 0x00BF3A80L, 0x1FCDF180L},   /* RXACEQ */
+{0x00173680L, 0x1FD13A80L, 0x014F9E80L, 0x01285A00L,    /* ECFIR/ECIIR */
+ 0x0211A080L, 0x013D4900L, 0x00933D00L, 0x00962100L,
+ 0x00439100L, 0x1FBA9500L, 0x0D1BBC80L, 0x1AD88700L},
+{0x1F257880L, 0x00D78D00L, 0x0002B600L, 0x0D102F00L,    /* ZSYNTH */
+ 0x1AEEBF80L, 0xBC}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x00FB9C00L,   /* RXACGAIN */
+ 0x07C0AF80L, 0x183F5100L, 0x07815F00L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_210_1000_137_30_0_10 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=300_1000_220 rprot=30 rfuse=0 emi_cap=10*/
+{
+{0x074FA800L, 0x1FCA8780L, 0x00047880L, 0x1FFDFE00L,    /* TXACEQ */
+ 0x0AE6E080L, 0x19FA5A00L, 0x00019980L, 0x1FE4D780L},   /* RXACEQ */
+{0x1FDB4F00L, 0x00E48280L, 0x1ECE1400L, 0x04DB4400L,    /* ECFIR/ECIIR */
+ 0x1DCCF080L, 0x04008700L, 0x1F366C80L, 0x0103ED80L,
+ 0x00651800L, 0x1F99F080L, 0x0E032980L, 0x19F7F380L},
+{0x1FE09F80L, 0x1FEA2580L, 0x00350D00L, 0x0EAC2600L,    /* ZSYNTH */
+ 0x19531180L, 0xA4}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x01109680L,   /* RXACGAIN */
+ 0x07BD5B00L, 0x1842A580L, 0x077AB600L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_300_1000_220_30_0_10 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=900_INF_2160 rprot=30 rfuse=0 emi_cap=0*/
+{
+{0x06CC5D00L, 0x1FFE1280L, 0x00033D80L, 0x1FFD5A00L,    /* TXACEQ */
+ 0x0800C380L, 0x00029A00L, 0x00017980L, 0x1FFBE300L},   /* RXACEQ */
+{0x1FB99C00L, 0x0185B800L, 0x1EDD5780L, 0x066CAB00L,    /* ECFIR/ECIIR */
+ 0x1D784880L, 0x02FC2D00L, 0x1EF79800L, 0x006F9580L,
+ 0x00278200L, 0x1FDAA700L, 0x0F8B5C80L, 0x1873AE00L},
+{0x00202E00L, 0x1FBE7B80L, 0x00215600L, 0x0FF18200L,    /* ZSYNTH */
+ 0x180E7880L, 0x3E}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x0102B100L,   /* RXACGAIN */
+ 0x07996280L, 0x18669E00L, 0x0732C500L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_900_INF_2160_30_0_10 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=320_1050_230 rprot=30 rfuse=4 emi_cap=10*/
+{
+{0x07AB0D00L, 0x1F951280L, 0x00058C80L, 0x1FFDD380L,    /* TXACEQ */
+ 0x0AF47880L, 0x19AA7000L, 0x1FFC4B80L, 0x1FE39A80L},   /* RXACEQ */
+{0x1FEF6780L, 0x00885D80L, 0x1FD33E80L, 0x0331BF80L,    /* ECFIR/ECIIR */
+ 0x1FD81180L, 0x025B2D00L, 0x00265980L, 0x00C86180L,
+ 0x00730100L, 0x1F8E9780L, 0x0DFB3A80L, 0x19F6DF00L},
+{0x1FEB0380L, 0x1FCF3B80L, 0x0045A100L, 0x0EAD7600L,    /* ZSYNTH */
+ 0x19520480L, 0xAB}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x0118AE80L,   /* RXACGAIN */
+ 0x07BDD100L, 0x18422F80L, 0x077BA200L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_320_1050_230_30_4_10 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=270_750_150 rprot=30 rfuse=0 emi_cap=10*/
+{
+{0x0715CB80L, 0x1FD56880L, 0x000D4480L, 0x1FFEAE00L,    /* TXACEQ */
+ 0x0A834F80L, 0x1BA7E500L, 0x0080D300L, 0x1FDC1580L},   /* RXACEQ */
+{0x0017A080L, 0x1FDE3600L, 0x0129F900L, 0x01915280L,    /* ECFIR/ECIIR */
+ 0x01434280L, 0x018E9E00L, 0x1FFE1200L, 0x0085E000L,
+ 0x001ECE80L, 0x1FDF3C80L, 0x0CC9EA00L, 0x1B2E1180L},
+{0x00C66800L, 0x1DD9CB80L, 0x015F8F00L, 0x0CB97F00L,    /* ZSYNTH */
+ 0x1B44F480L, 0x94}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x0108FB80L,   /* RXACGAIN */
+ 0x07BB6980L, 0x18449700L, 0x0776D380L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_350_1000_210_30_0_10 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=270_750_150 rprot=30 rfuse=0 emi_cap=10*/
+{
+{0x0715CB80L, 0x1FD56880L, 0x000D4480L, 0x1FFEAE00L,    /* TXACEQ */
+ 0x0A834F80L, 0x1BA7E500L, 0x0080D300L, 0x1FDC1580L},   /* RXACEQ */
+{0x0017A080L, 0x1FDE3600L, 0x0129F900L, 0x01915280L,    /* ECFIR/ECIIR */
+ 0x01434280L, 0x018E9E00L, 0x1FFE1200L, 0x0085E000L,
+ 0x001ECE80L, 0x1FDF3C80L, 0x0CC9EA00L, 0x1B2E1180L},
+{0x00C66800L, 0x1DD9CB80L, 0x015F8F00L, 0x0CB97F00L,    /* ZSYNTH */
+ 0x1B44F480L, 0x94}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x0108FB80L,   /* RXACGAIN */
+ 0x07BB6980L, 0x18449700L, 0x0776D380L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_270_750_150_30_0 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=370_620_310 rprot=30 rfuse=0 emi_cap=10*/
+{
+{0x07E59E80L, 0x1FD33400L, 0x1FFDF800L, 0x1FFD8300L,    /* TXACEQ */
+ 0x09F38000L, 0x1C1C5A00L, 0x1F94D700L, 0x1FDE5800L},   /* RXACEQ */
+{0x00234480L, 0x1F9CDD00L, 0x01F5D580L, 0x1FF39000L,    /* ECFIR/ECIIR */
+ 0x02C17180L, 0x1FBE2500L, 0x00DFFE80L, 0x00441A80L,
+ 0x003BF800L, 0x1FC42400L, 0x0D9EB380L, 0x1A514580L},
+{0x003ED200L, 0x1F5D6B80L, 0x0063B100L, 0x0F12E200L,    /* ZSYNTH */
+ 0x18EC9380L, 0x8B}, 
+ 0x08000000L,   /* TXACGAIN */
+ 0x0127C700L,   /* RXACGAIN */
+ 0x07B51200L, 0x184AEE80L, 0x076A2480L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* ZSYN_370_620_310_30_0 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=600_0_0 rprot=30 rfuse=20 emi_cap=0*/
+{
+{0x08247880L, 0x1FD42100L, 0x00085D80L, 0x1FFAA200L,    /* TXACEQ */
+ 0x0804C400L, 0x1FF75380L, 0x1FF67400L, 0x0001AC80L},   /* RXACEQ */
+{0x00541A80L, 0x1F455800L, 0x02986C80L, 0x000A9400L,    /* ECFIR/ECIIR */
+ 0x0192F300L, 0x000DAA00L, 0x1FC96380L, 0x0003E480L,
+ 0x00232900L, 0x1FE7B180L, 0x1FD28080L, 0x1FD74F80L},
+{0x00A54E00L, 0x1EDC0280L, 0x007EFE00L, 0x0A117B00L,    /* ZSYNTH */
+ 0x1DEAAB80L, 0x6B}, 
+ 0x08AA3500L,   /* TXACGAIN */
+ 0x0145BC00L,   /* RXACGAIN */
+ 0x07BA7700L, 0x18458980L, 0x0774EE00L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ },  /* WB_ZSYN_600_0_0_20_0 */
+/* Source: Database file: cwdb.db */
+/* Database information: version: 1.1.0 build date: 2013-01-08*/
+/* parameters: zref=150_510_47 rprot=20 rfuse=20 emi_cap=10*/
+{
+{0x080A0580L, 0x1FF0DB80L, 0x00071980L, 0x1FFD5900L,    /* TXACEQ */
+ 0x08537280L, 0x1F7AFB80L, 0x0017FF80L, 0x1FF5F080L},   /* RXACEQ */
+{0x00190D80L, 0x1FD62880L, 0x016F1B00L, 0x00EBED00L,    /* ECFIR/ECIIR */
+ 0x01D0A000L, 0x1FEEA600L, 0x001B4580L, 0x000E3100L,
+ 0x1FE59680L, 0x00161080L, 0x1FFF5300L, 0x07D69480L},
+{0x1F92A280L, 0x00CFAE00L, 0x1F904C80L, 0x0F54F500L,    /* ZSYNTH */
+ 0x18096980L, 0x90}, 
+ 0x0832CC80L,   /* TXACGAIN */
+ 0x0137DE00L,   /* RXACGAIN */
+ 0x07B39980L, 0x184C6700L, 0x07673280L,    /* RXACHPF */
+#ifdef ENABLE_HIRES_GAIN
+ 0, 0  /* TXGAIN*10, RXGAIN*10 (hi_res) */
+#else
+ 0, 0  /* TXGAIN, RXGAIN */
+#endif
+ }   /* ZSYN_150_510_47_20_20_10 */
+};
+
+
+Si3219x_FSK_Cfg Si3219x_FSK_Presets[] ={
+{
+{
+0x02232000L,	 /* FSK01 */
+0x077C2000L 	 /* FSK10 */
+},
+{
+0x0015C000L,	 /* FSKAMP0 (0.080 vrms )*/
+0x000BA000L 	 /* FSKAMP1 (0.080 vrms) */
+},
+{
+0x06B60000L,	 /* FSKFREQ0 (2200.0 Hz space) */
+0x079C0000L 	 /* FSKFREQ1 (1200.0 Hz mark) */
+},
+0x00,			 /* FSK8 */
+0x00,			 /* FSKDEPTH (1 deep fifo) */
+},  /* DEFAULT_FSK */
+{
+{
+0x026E4000L,	 /* FSK01 */
+0x0694C000L 	 /* FSK10 */
+},
+{
+0x0014C000L,	 /* FSKAMP0 (0.080 vrms )*/
+0x000CA000L 	 /* FSKAMP1 (0.080 vrms) */
+},
+{
+0x06D20000L,	 /* FSKFREQ0 (2100.0 Hz space) */
+0x078B0000L 	 /* FSKFREQ1 (1300.0 Hz mark) */
+},
+0x00,			 /* FSK8 */
+0x00,			 /* FSKDEPTH (1 deep fifo) */
+}   /* ETSI_FSK */
+};
+
+Si3219x_PulseMeter_Cfg Si3219x_PulseMeter_Presets[] ={
+{
+0x007A2B6AL,  /* PM_AMP_THRESH (1.000) */
+0,            /* Freq (12kHz) */ 
+0,            /* PM_AUTO (off)*/
+0x07D00000L,  /* PM_active (2000 ms) */
+0x07D00000L   /* PM_inactive (2000 ms) */
+ }   /* DEFAULT_PULSE_METERING */
+};
+
+Si3219x_Tone_Cfg Si3219x_Tone_Presets[] = {
+{
+	{
+	0x07B30000L,	 /* OSC1FREQ (350.000 Hz) */
+	0x000C6000L,	 /* OSC1AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC1PHAS (0.000 rad) */
+	0x00,			 /* O1TALO (0 ms) */
+	0x00,			 /* O1TAHI */
+	0x00,			 /* O1TILO (0 ms) */
+	0x00			 /* O1TIHI */
+	},
+	{
+	0x07870000L,	 /* OSC2FREQ (440.000 Hz) */
+	0x000FA000L,	 /* OSC2AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC2PHAS (0.000 rad) */
+	0x00,			 /* O2TALO (0 ms) */
+	0x00,			 /* O2TAHI */
+	0x00,			 /* O2TILO (0 ms) */
+	0x00 			 /* O2TIHI */
+	},
+	0x66 			 /* OMODE */
+},  /* TONEGEN_FCC_DIAL */
+{
+	{
+	0x07700000L,	 /* OSC1FREQ (480.000 Hz) */
+	0x00112000L,	 /* OSC1AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC1PHAS (0.000 rad) */
+	0xA0,			 /* O1TALO (500 ms) */
+	0x0F,			 /* O1TAHI */
+	0xA0,			 /* O1TILO (500 ms) */
+	0x0F			 /* O1TIHI */
+	},
+	{
+	0x07120000L,	 /* OSC2FREQ (620.000 Hz) */
+	0x00164000L,	 /* OSC2AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC2PHAS (0.000 rad) */
+	0xA0,			 /* O2TALO (500 ms) */
+	0x0F,			 /* O2TAHI */
+	0xA0,			 /* O2TILO (500 ms) */
+	0x0F 			 /* O2TIHI */
+	},
+	0x66 			 /* OMODE */
+},  /* TONEGEN_FCC_BUSY */
+{
+	{
+	0x07700000L,	 /* OSC1FREQ (480.000 Hz) */
+	0x00112000L,	 /* OSC1AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC1PHAS (0.000 rad) */
+	0x80,			 /* O1TALO (2000 ms) */
+	0x3E,			 /* O1TAHI */
+	0x00,			 /* O1TILO (4000 ms) */
+	0x7D			 /* O1TIHI */
+	},
+	{
+	0x07870000L,	 /* OSC2FREQ (440.000 Hz) */
+	0x000FA000L,	 /* OSC2AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC2PHAS (0.000 rad) */
+	0x80,			 /* O2TALO (2000 ms) */
+	0x3E,			 /* O2TAHI */
+	0x00,			 /* O2TILO (4000 ms) */
+	0x7D 			 /* O2TIHI */
+	},
+	0x66 			 /* OMODE */
+},  /* TONEGEN_FCC_RINGBACK */
+{
+	{
+	0x07700000L,	 /* OSC1FREQ (480.000 Hz) */
+	0x00112000L,	 /* OSC1AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC1PHAS (0.000 rad) */
+	0x60,			 /* O1TALO (300 ms) */
+	0x09,			 /* O1TAHI */
+	0x60,			 /* O1TILO (300 ms) */
+	0x09			 /* O1TIHI */
+	},
+	{
+	0x07120000L,	 /* OSC2FREQ (620.000 Hz) */
+	0x00164000L,	 /* OSC2AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC2PHAS (0.000 rad) */
+	0x60,			 /* O2TALO (300 ms) */
+	0x09,			 /* O2TAHI */
+	0x40,			 /* O2TILO (200 ms) */
+	0x06 			 /* O2TIHI */
+	},
+	0x66 			 /* OMODE */
+},  /* TONEGEN_FCC_REORDER */
+{
+	{
+	0x07700000L,	 /* OSC1FREQ (480.000 Hz) */
+	0x00112000L,	 /* OSC1AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC1PHAS (0.000 rad) */
+	0x40,			 /* O1TALO (200 ms) */
+	0x06,			 /* O1TAHI */
+	0x40,			 /* O1TILO (200 ms) */
+	0x06			 /* O1TIHI */
+	},
+	{
+	0x07120000L,	 /* OSC2FREQ (620.000 Hz) */
+	0x00164000L,	 /* OSC2AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC2PHAS (0.000 rad) */
+	0x40,			 /* O2TALO (200 ms) */
+	0x06,			 /* O2TAHI */
+	0x40,			 /* O2TILO (200 ms) */
+	0x06 			 /* O2TIHI */
+	},
+	0x66 			 /* OMODE */
+},  /* TONEGEN_FCC_CONGESTION */
+{
+	{
+	0x1F2F0000L,	 /* OSC1FREQ (2130.000 Hz) */
+	0x0063A000L,	 /* OSC1AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC1PHAS (0.000 rad) */
+	0x80,			 /* O1TALO (80 ms) */
+	0x02,			 /* O1TAHI */
+	0x80,			 /* O1TILO (80 ms) */
+	0x02			 /* O1TIHI */
+	},
+	{
+	0x1B8E0000L,	 /* OSC2FREQ (2750.000 Hz) */
+	0x00A84000L,	 /* OSC2AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC2PHAS (0.000 rad) */
+	0x80,			 /* O2TALO (80 ms) */
+	0x02,			 /* O2TAHI */
+	0x40,			 /* O2TILO (1000 ms) */
+	0x1F 			 /* O2TIHI */
+	},
+	0x66 			 /* OMODE */
+},  /* TONEGEN_FCC_CAS */
+{
+	{
+	0x07870000L,	 /* OSC1FREQ (440.000 Hz) */
+	0x000FA000L,	 /* OSC1AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC1PHAS (0.000 rad) */
+	0x60,			 /* O1TALO (300 ms) */
+	0x09,			 /* O1TAHI */
+	0x00,			 /* O1TILO (8000 ms) */
+	0xFA			 /* O1TIHI */
+	},
+	{
+	0x1B8E0000L,	 /* OSC2FREQ (2750.000 Hz) */
+	0x00A84000L,	 /* OSC2AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC2PHAS (0.000 rad) */
+	0x80,			 /* O2TALO (2000 ms) */
+	0x3E,			 /* O2TAHI */
+	0x00,			 /* O2TILO (4000 ms) */
+	0x7D 			 /* O2TIHI */
+	},
+	0x06 			 /* OMODE */
+},  /* TONEGEN_FCC_SAS */
+{
+	{
+	0x1F2F0000L,	 /* OSC1FREQ (2130.000 Hz) */
+	0x01BD0000L,	 /* OSC1AMP (-5.000 dBm) */
+	0x00000000L,	 /* OSC1PHAS (0.000 rad) */
+	0x20,			 /* O1TALO (100 ms) */
+	0x03,			 /* O1TAHI */
+	0x20,			 /* O1TILO (100 ms) */
+	0x03			 /* O1TIHI */
+	},
+	{
+	0x1B8E0000L,	 /* OSC2FREQ (2750.000 Hz) */
+	0x02EFC000L,	 /* OSC2AMP (-5.000 dBm) */
+	0x00000000L,	 /* OSC2PHAS (0.000 rad) */
+	0x20,			 /* O2TALO (100 ms) */
+	0x03,			 /* O2TAHI */
+	0x20,			 /* O2TILO (100 ms) */
+	0x03 			 /* O2TIHI */
+	},
+	0x66 			 /* OMODE */
+},  /* TONEGEN_ETSI_DTAS */
+{
+	{
+	0x05A40000L,	 /* OSC1FREQ (1004.000 Hz) */
+	0x005DE000L,	 /* OSC1AMP (-10.000 dBm) */
+	0x00000000L,	 /* OSC1PHAS (0.000 rad) */
+	0x00,			 /* O1TALO (8000 ms) */
+	0xFA,			 /* O1TAHI */
+	0x00,			 /* O1TILO (8000 ms) */
+	0xFA			 /* O1TIHI */
+	},
+	{
+	0x07870000L,	 /* OSC2FREQ (440.000 Hz) */
+	0x000FA000L,	 /* OSC2AMP (-18.000 dBm) */
+	0x00000000L,	 /* OSC2PHAS (0.000 rad) */
+	0x80,			 /* O2TALO (2000 ms) */
+	0x3E,			 /* O2TAHI */
+	0x00,			 /* O2TILO (4000 ms) */
+	0x7D 			 /* O2TIHI */
+	},
+	0x47 			 /* OMODE */
+}   /* TONEGEN_1004 */
+};
+
+Si3219x_PCM_Cfg Si3219x_PCM_Presets[] ={
+#ifdef REALTEK_PATCH_FOR_SILAB
+	//narrowband
+	{
+	0x03, 	 /* PCM_FMT - 16-bit Linear */
+	0x00, 	 /* WIDEBAND - DISABLED (3.4kHz BW) */
+	0x01, 	 /* PCM_TRI - PCLK RISING EDGE */
+	0x00, 	 /* TX_EDGE - PCLK RISING EDGE */
+	0x00 	 /* A-LAW -  INVERT NONE */
+	},  /* PCM_16LIN */
+	{
+	0x00, 	 /* PCM_FMT - A-Law */
+	0x00, 	 /* WIDEBAND - DISABLED (3.4kHz BW) */
+	0x01, 	 /* PCM_TRI - PCLK RISING EDGE */
+	0x00, 	 /* TX_EDGE - PCLK RISING EDGE */
+	0x01 	 /* A-LAW -  INVERT NONE */
+	},  /* PCM_8ALAW */
+	{
+	0x01, 	 /* PCM_FMT - u-Law */
+	0x00, 	 /* WIDEBAND - DISABLED (3.4kHz BW) */
+	0x01, 	 /* PCM_TRI - PCLK RISING EDGE */
+	0x00, 	 /* TX_EDGE - PCLK RISING EDGE */
+	0x00 	 /* A-LAW -  INVERT NONE */
+	},  /* PCM_8ULAW */
+	//wideband
+	{
+	0x03, 	 /* PCM_FMT - 16-bit Linear */
+	0x01, 	 /* WIDEBAND - ENABLED (7kHz BW) */
+	0x01, 	 /* PCM_TRI - PCLK RISING EDGE */
+	0x00, 	 /* TX_EDGE - PCLK RISING EDGE */
+	0x00 	 /* A-LAW -  INVERT NONE */
+	},    /* PCM_16LIN_WB */
+	{
+	0x00, 	 /* PCM_FMT - A-Law */
+	0x01, 	 /* WIDEBAND - DISABLED (3.4kHz BW) */
+	0x01, 	 /* PCM_TRI - PCLK RISING EDGE */
+	0x00, 	 /* TX_EDGE - PCLK RISING EDGE */
+	0x01 	 /* A-LAW -  INVERT NONE */
+	},  /* PCM_8ALAW_WB */
+	{
+	0x01, 	 /* PCM_FMT - u-Law */
+	0x01, 	 /* WIDEBAND - DISABLED (3.4kHz BW) */
+	0x01, 	 /* PCM_TRI - PCLK RISING EDGE */
+	0x00, 	 /* TX_EDGE - PCLK RISING EDGE */
+	0x00 	 /* A-LAW -  INVERT NONE */
+	},  /* PCM_8ULAW_WB */
+#else	
+	{
+	0x01, 	 /* PCM_FMT - u-Law */
+	0x00, 	 /* WIDEBAND - DISABLED (3.4kHz BW) */
+	0x00, 	 /* PCM_TRI - PCLK RISING EDGE */
+	0x00, 	 /* TX_EDGE - PCLK RISING EDGE */
+	0x00 	 /* A-LAW -  INVERT NONE */
+	},  /* PCM_8ULAW */
+	{
+	0x00, 	 /* PCM_FMT - A-Law */
+	0x00, 	 /* WIDEBAND - DISABLED (3.4kHz BW) */
+	0x00, 	 /* PCM_TRI - PCLK RISING EDGE */
+	0x00, 	 /* TX_EDGE - PCLK RISING EDGE */
+	0x00 	 /* A-LAW -  INVERT NONE */
+	},  /* PCM_8ALAW */
+	{
+	0x03, 	 /* PCM_FMT - 16-bit Linear */
+	0x00, 	 /* WIDEBAND - DISABLED (3.4kHz BW) */
+	0x00, 	 /* PCM_TRI - PCLK RISING EDGE */
+	0x00, 	 /* TX_EDGE - PCLK RISING EDGE */
+	0x00 	 /* A-LAW -  INVERT NONE */
+	},  /* PCM_16LIN */
+	{
+	0x03, 	 /* PCM_FMT - 16-bit Linear */
+	0x01, 	 /* WIDEBAND - ENABLED (7kHz BW) */
+	0x00, 	 /* PCM_TRI - PCLK RISING EDGE */
+	0x00, 	 /* TX_EDGE - PCLK RISING EDGE */
+	0x00 	 /* A-LAW -  INVERT NONE */
+	}   /* PCM_16LIN_WB */
+#endif	
+};
+

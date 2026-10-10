@@ -1,0 +1,8 @@
+#!/bin/sh
+
+#echo "restart" >/dev/console
+/etc/init.d/https-dns-proxy stop
+/etc/init.d/https-dns-proxy start
+/etc/init.d/stubby stop
+/etc/init.d/stubby start
+/etc/init.d/dnsmasq restart

@@ -1,0 +1,31 @@
+menu "Realtek Modules"
+	
+config RTK_NETLOG
+    bool "NetLogger"
+   	depends on SERIAL_8250=y
+	default n if !ARCH_LUNA_SLAVE
+
+config  RTK_KERNEL_OMD
+    bool "Support RTK Kernel OMD Func"
+	depends on YUEME
+
+config RTK_HS_UART
+    bool "Support RTK high speed UART"
+
+config RTK_VBUS_CHAIN
+    bool "USB VBus Chain"
+       depends on USB && RESET_CONTROLLER
+       help
+        Select Y if board has VBUS controller IC
+
+config  RTK_ARM64_WATCHPOINT_DEBUG
+    bool "Provide ARM64 WATCHPONT Debug Func"
+	depends on ARM64
+
+config RTK_WLAN_EVENT_INDICATE
+        bool "Wlan event indicate support"
+        default n
+
+source "realtek/framework_protector/Kconfig"
+
+endmenu

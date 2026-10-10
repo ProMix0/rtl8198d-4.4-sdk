@@ -1,0 +1,28 @@
+echo "run rcm voip script..."
+
+ponmode=`flash get PON_MODE`
+
+echo "ponmode $ponmode"
+
+if [ "$ponmode" == "PON_MODE=0" ]; then
+        aipc_util -E 0x0
+fi
+
+if [ -x "/bin/voip_def_init" ]; then
+	voip_def_init
+fi
+
+#if [ -x "/bin/wait_dsp" ]; then
+#	wait_dsp
+#else
+#	echo "no wait_dsp, so force to sleep 5 seconds..."
+#	sleep 5
+#fi
+
+sh /etc/scripts/voip_select.sh
+
+
+echo "start watch dog"
+/bin/voip_gwdt /var/app.gwdt &
+
+echo 16 > /proc/sys/net/netfilter/nf_conntrack_expect_max

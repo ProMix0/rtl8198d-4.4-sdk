@@ -1,0 +1,22 @@
+mainmenu_option next_comment
+# Pre-defiend feature
+define_bool CONFIG_CMCC_FORWARD_RULE_SUPPORT y
+define_bool CONFIG_CMCC_TRAFFIC_PROCESS_RULE_SUPPORT y
+# define_bool CONFIG_CMCC_IPV6_SECURITY_SUPPORT y
+if [ "$CONFIG_USER_AP_CU" != "y" ]; then
+   define_bool CONFIG_USER_CUMANAGEDEAMON y
+fi
+define_bool CONFIG_USER_CUSPEEDTEST y
+define_bool CONFIG_SUPPORT_IPTV_APPLICATIONTYPE y
+define_bool CONFIG_CU_FASTPATH_SPEEDUP_RULE_SUPPORT y
+
+comment 'CU Feature'
+bool 'Enable the CMCC backdoor account' CONFIG_CMCC_BACKDOOR
+bool 'PPP/DHCP auto diagnostic' CONFIG_SUPPORT_AUTO_DIAG
+
+comment 'preinstall program'
+bool 'cmcc osgiManage' CONFIG_CMCC_OSGIMANAGE
+
+comment 'Install prebundle'
+bool 'cmcc prebundle' CONFIG_CMCC_OSGI_PREBUNDLE 
+endmenu

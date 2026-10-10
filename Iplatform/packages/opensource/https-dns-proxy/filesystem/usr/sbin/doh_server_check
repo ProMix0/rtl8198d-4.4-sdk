@@ -1,0 +1,67 @@
+#!/bin/sh
+
+. /lib/functions.sh
+local server1=$(uci -q get dns_privacy.https_dns_proxy.server1)
+local server2=$(uci -q get dns_privacy.https_dns_proxy.server2)
+local server3=$(uci -q get dns_privacy.https_dns_proxy.server3)
+
+dnsp_retry_times=3
+
+[ -z "$dnsp_retry_times" ] && {
+    dnsp_retry_times=3 # Default retry three times
+}
+
+dnsp_check_interval=30
+
+[ -z "$dnsp_check_interval" ] && {
+    dnsp_check_interval=30 # Default check interval 30 seconds
+}
+
+local request_base64_encode="?dns=uGkBAAABAAAAAAAAB2FsaWJhYmEDY29tAAABAAE"
+
+start_dns_proxy=1
+
+while [ true ]
+do
+    server_num=0
+    dnsp_servers="${server1} ${server2} ${server3}"
+    unavailable_dohserver_num=0
+
+    for server in $dnsp_servers; do
+        server_num=$((server_num + 1))
+        if [ "$server" == "none" ]; then
+            unavailable_dohserver_num=$((unavailable_dohserver_num + 1))
+            continue
+        fi
+        echo $server
+
+        request_url=$server$request_base64_encode
+        result=$(curl --connect-timeout 5 -k -s -w "%{http_code}" -o /dev/null $request_url)
+        echo $result
+
+        if [ $result -eq 200 ]; then
+            break
+        elif [ ! $result -eq 200 ]; then
+            unavailable_dohserver_num=$((unavailable_dohserver_num + 1))
+        fi
+    done
+
+    if [ $unavailable_dohserver_num -eq 3 ]; then
+        echo "all doh servre not available"
+        if [ $start_dns_proxy -eq 1 ]; then
+            /usr/lib/dnsproxy/dnsproxy_deamon.sh > /dev/null 2>&1 &
+            start_dns_proxy=0
+        fi
+    elif [ $unavailable_dohserver_num -lt 3 ]; then
+        echo "some doh server is available delete dns proxy iptable rules"
+        ps | grep dnsproxy | grep -v grep | awk '{print $1}' | xargs kill >/dev/null 2>&1
+        start_dns_proxy=1
+        iptables -t nat -D prerouting_rule_dns 1 >/dev/null 2>&1
+        iptables -t nat -D prerouting_rule_dns 1 >/dev/null 2>&1
+    fi
+
+    sleep $dnsp_check_interval
+done
+
+return 0
+

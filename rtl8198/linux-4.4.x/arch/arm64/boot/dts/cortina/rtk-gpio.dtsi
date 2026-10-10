@@ -1,0 +1,20 @@
+/*
+ * rtk-ca8279-gpio.dtsi - Device Tree Include file for rtk gpio
+ *
+ */
+
+/ {        
+        rtk_gpio {
+                compatible = "realtek,g3hgu-gpio";
+                wps-gpio   = <&gpio0 13 GPIO_ACTIVE_LOW>;
+                wifi-gpio  = <&gpio0 14 GPIO_ACTIVE_LOW>;
+                board-reset-gpio = <&gpio0 15 GPIO_ACTIVE_LOW>;
+        };
+        rtk_led {
+                compatible = "realtek,g3hgu-led";
+                LED_POWER_GREEN   = <15>;
+                LED_WPS_GREEN = <4>;
+               // LED_WIFI  = <4>;
+                LED_INTERNET_GREEN = <12>;
+        };
+ };

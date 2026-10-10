@@ -1,0 +1,25 @@
+ifeq (.config,$(wildcard .config))
+include .config
+endif
+
+ifeq (config.arch,$(wildcard config.arch))
+include config.arch
+#ARCH_CONFIG = $(ROOTDIR)/config.arch
+
+endif
+#
+.PHONY: menuconfig_vendor
+sinclude $(LINUX_CONFIG)
+sinclude $(CONFIG_CONFIG)
+
+menuconfig_vendor:
+	@if egrep "^CONFIG_DEFAULTS_VENDOR=y" .config > /dev/null; then \
+		$(MAKE) -C config menuconfig; \
+	fi	
+	
+.PHONY: menuconfig_busybox
+
+menuconfig_busybox:
+		$(MAKE) -C $(BUSYBOXDIR_DEST) menuconfig;
+
+

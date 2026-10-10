@@ -1,0 +1,99 @@
+/*
+ * dts file for Cortina Access Saturn Development Board
+ *
+ * Copyright (C) 2016, Cortina Access
+ */
+
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include "saturn_soc.dtsi"
+
+/* board specific and SoC overrides below */
+/ {
+	model = "Cortina Access Titan FPGA Board";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	memory { /* 256MB */
+		device_type = "memory";
+		reg = <0x00000000 0x10000000>;
+	};
+
+	system_ictl: system_ictl@bc100070 {	/* System interrupt */
+				compatible = "cortina,per-ictl";
+				reg = <0xbc100070  0x8>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupt-parent = <&cpuintc>;
+				interrupts = <2>;
+	};
+
+	titan_ictl: titan_ictl@bc10a04c {	/* Titan interrupt */
+		compatible = "cortina,per-ictl";
+		reg = <0xbc10a04c 0x8>;
+		interrupt-controller;
+		#interrupt-cells = <1>;
+		interrupt-parent = <&system_ictl>;
+		interrupts = <12>;
+	};
+
+	ethernet@b2228000 {
+		compatible = "cortina,ni-interface";
+
+		reg = <0xb2228000 0x83c>,		/* FPGA IDP DOWN */
+		      <0xb222a000 0x868>,		/* FPGA IDP UP */
+		      <0xb222b000 0x98>,		/* FPGA RGMII */
+		      <0xbc10a020 0x4>,			/* TITANGLB IDP Control */
+		      <0xbc10a024 0x4>;			/* TITANGLB RGMII Control */
+
+		interrupt-parent = <&titan_ictl>;
+		interrupts = <28>, <29>;
+		interrupt-names = "IDP_DOWN", "IDP_UP";
+	};
+
+	pon_ictl:pon_ictl@b4034008 {
+		compatible = "cortina,per-ictl";
+		reg = <0xb4034008  0x8>;
+		interrupt-controller;
+		#interrupt-cells = <1>;
+		interrupt-parent = <&vecintc>;
+		interrupts = <2>;
+		mode = <0>;
+		interrupt-names = "PON";
+	};
+
+	xgpon {
+		compatible = "cortina,ca77xx-pon";
+		reg = <0xb40348a0 0x8>, /* PLOAM */
+			  <0xb4034b1c 0x8>, /* ACTP */
+			  <0xb4034440 0x8>, /* USBG */
+			  <0xb4034118 0x8>; /* DSFP */
+
+		interrupt-parent = <&pon_ictl>;
+		interrupts = <2>, <4>, <1>, <0>;
+		interrupt-names = "PLOAM", "ACTP", "USBG", "DSFP";
+	};
+
+	sflash@b2223000 {
+		fip-uboot@0 {
+			label = "fib-uboot";
+			reg = <0x0 0x50000>;
+		};
+		device-tree-dtb@60000 {
+			label = "device-tree-dtb";
+			reg = <0x60000 0x10000>;
+		};
+		initrd@70000 {
+			label = "initrd";
+			reg = <0x70000 0x550000>;
+		};
+		kernel@600000 {
+			label = "kernel";
+			reg = <0x600000 0xd00000>;
+		};
+		user@1000000 {
+			label = "user";
+			reg = <0x1500000 0xa00000>;
+		};
+	};
+};

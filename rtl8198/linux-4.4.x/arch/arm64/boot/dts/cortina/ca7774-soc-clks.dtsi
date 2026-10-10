@@ -1,0 +1,250 @@
+/*
+ * ca7774-soc-clks.dtsi - Device Tree Include file for CA7774 SoC clock
+ * contoller.
+ */
+
+#include <dt-bindings/clock/ca7774-clock.h>
+
+/ {
+	/* external 25 MHz reference crystal */
+	fixed_reference_clk: fixed_reference {
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
+		clock-frequency = <25000000>;
+		clock-accuracy = <10000>;
+	};
+
+	soc_clks {
+		compatible = "cortina,ca77xx-soc-clks";
+		reg = <0x0 0xf4320000 0x0 0x01b4>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		/* CPU clocks */
+		pll_cpll_clk: pll_cpll {
+			compatible = "cortina,ca77xx-pll-cpll-clk";
+			#clock-cells = <0>;
+			clocks = <&fixed_reference_clk>;
+			/* init-mult = /bits/ 8 <48>; */
+		};
+		pll_fpll_clk: pll_fpll {
+			compatible = "cortina,ca77xx-pll-fpll-clk";
+			#clock-cells = <0>;
+			clocks = <&fixed_reference_clk>;
+			/* init-mult = /bits/ 8 <80>; */
+		};
+
+		div_f2c_clk: div_f2c {
+			compatible = "cortina,div-cpll-clk";
+			#clock-cells = <0>;
+			clocks = <&pll_fpll_clk>;
+			operate-shift = /bits/ 8 <CA7774_CPLLDIV_F2C_OFFSET>;
+			operate-width = /bits/ 8 <CA7774_CPLLDIV_F2C_SIZE>;
+		};
+		div_f_clk: div_fpll {
+			compatible = "cortina,div-fpll-clk";
+			#clock-cells = <0>;
+			clocks = <&pll_fpll_clk>;
+			operate-shift = /bits/ 8 <CA7774_FPLLDIV_FPLL_OFFSET>;
+			operate-width = /bits/ 8 <CA7774_FPLLDIV_FPLL_SIZE>;
+		};
+		div_c2f_clk: div_c2f {
+			compatible = "cortina,div-fpll-clk";
+			#clock-cells = <0>;
+			clocks = <&pll_cpll_clk>;
+			operate-shift = /bits/ 8 <CA7774_FPLLDIV_C2F_OFFSET>;
+			operate-width = /bits/ 8 <CA7774_FPLLDIV_C2F_SIZE>;
+		};
+
+		mux_cpu_clk: mux_cpu {
+			compatible = "cortina,mux-cpu-clk";
+			#clock-cells = <0>;
+			clocks = <&pll_cpll_clk>, <&div_f2c_clk>;
+			operate-shift = /bits/ 8 <CA7774_CPLLDIV_CF_SEL>;
+		};
+		mux_pe_clk: mux_pe {
+			compatible = "cortina,mux-pe-clk";
+			#clock-cells = <0>;
+			clocks = <&div_f_clk>, <&div_c2f_clk>;
+			operate-shift = /bits/ 8 <CA7774_PEDIV_OFFLOAD_SEL>;
+		};
+
+		div_cortex_clk: div_cortex {
+			compatible = "cortina,div-cpll-clk";
+			#clock-cells = <0>;
+			clocks = <&mux_cpu_clk>;
+			operate-shift = /bits/ 8 <CA7774_CPLLDIV_CORTEX_OFFSET>;
+			operate-width = /bits/ 8 <CA7774_CPLLDIV_CORTEX_SIZE>;
+			init-div = /bits/ 8 <1>;
+		};
+		div_cci_clk: div_cci {
+			compatible = "cortina,div-cpll-clk";
+			#clock-cells = <0>;
+			clocks = <&div_cortex_clk>;
+			operate-shift = /bits/ 8 <CA7774_CPLLDIV_CCI_OFFSET>;
+			operate-width = /bits/ 8 <CA7774_CPLLDIV_CCI_SIZE>;
+			init-div = /bits/ 8 <2>;
+		};
+		div_peaxi_clk: div_peaxi {
+			compatible = "cortina,div-fpll-clk";
+			#clock-cells = <0>;
+			clocks = <&mux_pe_clk>;
+			operate-shift = /bits/ 8 <CA7774_FPLLDIV_PEAXI_OFFSET>;
+			operate-width = /bits/ 8 <CA7774_FPLLDIV_PEAXI_SIZE>;
+			init-div = /bits/ 8 <2>;
+		};
+		mux_peaxi_clk: mux_peaxi {
+			compatible = "cortina,mux-pe-clk";
+			#clock-cells = <0>;
+			clocks = <&div_peaxi_clk>, <&mux_pe_clk>;
+			operate-shift = /bits/ 8 <CA7774_PEDIV_FULLSPEED_SEL>;
+		};
+
+		/* Peripheral clocks */
+		pll_epll_clk: pll_epll {
+			compatible = "cortina,ca77xx-pll-epll-clk";
+			#clock-cells = <0>;
+			clocks = <&fixed_reference_clk>;
+			/* init-mult = /bits/ 8 <64>; */
+		};
+
+		div_crypto_clk: div_crypto {
+			compatible = "cortina,div-epll-clk";
+			#clock-cells = <0>;
+			clocks = <&pll_epll_clk>;
+			operate-shift = /bits/ 8 <CA7774_EPLLDIV_CRYPTO_OFFSET>;
+			operate-width = /bits/ 8 <CA7774_EPLLDIV_CRYPTO_SIZE>;
+			init-div = /bits/ 8 <6>;
+		};
+		div_core_clk: div_core {
+			compatible = "cortina,div-epll-clk";
+			#clock-cells = <0>;
+			clocks = <&pll_epll_clk>;
+			operate-shift = /bits/ 8 <CA7774_EPLLDIV_CORE_OFFSET>;
+			operate-width = /bits/ 8 <CA7774_EPLLDIV_CORE_SIZE>;
+			init-div = /bits/ 8 <6>;
+		};
+		div_hsaxi_clk: div_hsaxi {
+			compatible = "cortina,div-epll-clk";
+			#clock-cells = <0>;
+			clocks = <&pll_epll_clk>;
+			operate-shift = /bits/ 8 <CA7774_EPLLDIV_HSAXI_OFFSET>;
+			operate-width = /bits/ 8 <CA7774_EPLLDIV_HSAXI_SIZE>;
+			init-div = /bits/ 8 <6>;
+		};
+		div_lsaxi_clk: div_lsaxi {
+			compatible = "cortina,div-epll-clk";
+			#clock-cells = <0>;
+			clocks = <&pll_epll_clk>;
+			operate-shift = /bits/ 8 <CA7774_EPLLDIV_LSAXI_OFFSET>;
+			operate-width = /bits/ 8 <CA7774_EPLLDIV_LSAXI_SIZE>;
+			init-div = /bits/ 8 <12>;
+		};
+		div_eaxi_clk: div_eaxi {
+			compatible = "cortina,div-epll2-clk";
+			#clock-cells = <0>;
+			clocks = <&pll_epll_clk>;
+			operate-shift = /bits/ 8 <CA7774_EPLLDIV2_EAXI_OFFSET>;
+			operate-width = /bits/ 8 <CA7774_EPLLDIV2_EAXI_SIZE>;
+			init-div = /bits/ 8 <8>;
+		};
+		div_atb_clk: div_atb {
+			compatible = "cortina,div-epll2-clk";
+			#clock-cells = <0>;
+			clocks = <&pll_epll_clk>;
+			operate-shift = /bits/ 8 <CA7774_EPLLDIV2_ATB_OFFSET>;
+			operate-width = /bits/ 8 <CA7774_EPLLDIV2_ATB_SIZE>;
+			init-div = /bits/ 8 <6>;
+		};
+
+		factor_peripheral_clk: factor_peripheral {
+			compatible = "cortina,fixed-factor-clk";
+			#clock-cells = <0>;
+			clocks = <&pll_epll_clk>;
+			fixed-div = <16>;
+		};
+		factor_usb_suspend_clk: factor_usb_suspend {
+			compatible = "cortina,fixed-factor-clk";
+			#clock-cells = <0>;
+			clocks = <&pll_epll_clk>;
+			fixed-div = <200>;
+		};
+
+		/* pseudo clock for control the related clock to PE */
+		pe_daemon_clk: pe_daemon {
+			compatible = "cortina,ca77xx-pe-daemon-clk";
+			#clock-cells = <0>;
+			clocks = <&fixed_reference_clk>,
+				 <&pll_fpll_clk>,
+				 <&div_f_clk>,
+				 <&mux_pe_clk>;
+			init-speed = <800000000>;
+		};
+
+		/* pseudo clock for control the related clock to CPU */
+		cpu_daemon_clk: cpu_daemon {
+			compatible = "cortina,ca77xx-cpu-daemon-clk";
+			#clock-cells = <0>;
+			clocks = <&fixed_reference_clk>,
+				 <&pll_cpll_clk>,
+				 <&div_f2c_clk>,
+				 <&mux_cpu_clk>,
+				 <&div_cortex_clk>;
+			init-speed = <1200000000>;
+			/* read-only; */
+		};
+
+		gate_pcie0_clk: gate_pcie0 {
+			compatible = "cortina,gate-config-clk";
+			#clock-cells = <0>;
+			operate-shift = /bits/ 8 <CA7774_CFG_CLKEN_PCIE0>;
+		};
+		gate_pcie1_clk: gate_pcie1 {
+			compatible = "cortina,gate-config-clk";
+			#clock-cells = <0>;
+			operate-shift = /bits/ 8 <CA7774_CFG_CLKEN_PCIE1>;
+		};
+		gate_pcie2_clk: gate_pcie2 {
+			compatible = "cortina,gate-config-clk";
+			#clock-cells = <0>;
+			operate-shift = /bits/ 8 <CA7774_CFG_CLKEN_PCIE2>;
+		};
+#if 0	/* turn on when the relataed drivers support */
+		gate_sata_clk: gate_sata {
+			compatible = "cortina,gate-config-clk";
+			#clock-cells = <0>;
+			operate-shift = /bits/ 8 <CA7774_CFG_CLKEN_SATA>;
+		};
+		gate_crypto_clk: gate_crypto {
+			compatible = "cortina,gate-config-clk";
+			#clock-cells = <0>;
+			operate-shift = /bits/ 8 <CA7774_CFG_PD_CRYPTO>;
+			active-low;
+		};
+		gate_pe0_clk: gate_pe0 {
+			compatible = "cortina,gate-config-clk";
+			#clock-cells = <0>;
+			operate-shift = /bits/ 8 <CA7774_CFG_PD_OFFLOAD0>;
+			active-low;
+		};
+		gate_pe1_clk: gate_pe1 {
+			compatible = "cortina,gate-config-clk";
+			#clock-cells = <0>;
+			operate-shift = /bits/ 8 <CA7774_CFG_PD_OFFLOAD1>;
+			active-low;
+		};
+		gate_l3fe_clk: gate_l3fe {
+			compatible = "cortina,gate-config-clk";
+			#clock-cells = <0>;
+			operate-shift = /bits/ 8 <CA7774_CFG_PD_L3FE>;
+			active-low;
+		};
+		gate_core_clk: gate_core {
+			compatible = "cortina,gate-config-clk";
+			#clock-cells = <0>;
+			operate-shift = /bits/ 8 <CA7774_CFG_PD_CORE>;
+			active-low;
+		};
+#endif
+	};
+};

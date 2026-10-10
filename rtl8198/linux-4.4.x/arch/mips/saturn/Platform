@@ -1,0 +1,6 @@
+#
+# Saturn Linux Platform BSP
+#
+platform-$(CONFIG_RTK_MIPS)	+= saturn/
+cflags-$(CONFIG_RTK_MIPS)	+= -I$(srctree)/arch/mips/saturn -I$(srctree)/arch/mips/include/asm/mach-saturn/
+load-$(CONFIG_RTK_MIPS)		 = 0x80010000

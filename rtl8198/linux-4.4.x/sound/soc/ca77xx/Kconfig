@@ -1,0 +1,14 @@
+config SND_CA77XX_SOC
+	tristate "SoC Audio for the Cortina Systems CA77XX chip"
+	depends on ARCH_CORTINA
+	help
+	  Say Y or M if you want to add support for codecs attached to
+	  the CA77XX PCM or I2S interface. You will also need
+	  to select the audio interfaces to support below.
+
+config SND_CA77XX_SOC_DIAG
+	tristate "SoC Audio Diagnostic for the Cortina Systems CA77XX chip"
+	depends on SND_CA77XX_SOC
+	help
+	  Say M if you want to add diagnostic for the CA77XX PCM or I2S
+	  interface.

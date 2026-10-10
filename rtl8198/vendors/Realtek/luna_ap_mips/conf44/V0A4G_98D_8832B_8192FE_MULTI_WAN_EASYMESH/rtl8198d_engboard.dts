@@ -1,0 +1,119 @@
+/*
+ * Realtek Semiconductor Corp.
+ *
+ * Device Tree Structure
+ *
+ * Tony Wu (tonywu@realtek.com)
+ */
+
+/dts-v1/;
+/*Reference resources from rtl8198f-engboard.dts and rtl9607c_engboard.dts*/
+#include "rtl8198d_soc.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#ifndef CONFIG_LUNA_MEMORY_AUTO_DETECTION 
+/*#include "memory.dts"*/
+#endif
+
+/ {
+	compatible = "rtk,8198d";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	gpio-keys-polled {
+		compatible = "gpio-keys-polled";
+		poll-interval = <20>;
+		autorepeat;
+
+		reset {
+			label = "reset";
+			linux,code = <KEY_RESTART>;
+			gpios = <&gpio0 2 GPIO_ACTIVE_LOW>;
+			autorepeat;
+		};
+		wps {
+			label = "wps";
+			linux,code = <KEY_WPS_BUTTON>;
+			gpios = <&gpio0 3 GPIO_ACTIVE_LOW>;
+			autorepeat;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		power {
+			label = "power";
+			gpios = <&gpio0 0 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+		};
+		wlan2g {
+			label = "wlan2g";
+			gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+		wlan5g {
+			label = "wlan5g";
+			gpios = <&gpio0 25 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+		lan {
+			label = "lan";
+			gpios = <&gpio0 16 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+		internetgreen {
+			label = "internetgreen";
+			gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+		internetorange {
+			label = "internetorange";
+			gpios = <&gpio1 2 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+		wps {
+			label = "wps";
+			gpios = <&gpio0 15 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+	};
+};
+
+&gic {
+	timer {
+		compatible = "mti,gic-timer";
+		interrupts = <GIC_LOCAL 1 IRQ_TYPE_NONE>;
+		/* clocks = <&soc_clk25mhz>; */
+		clocks = <&apro_soc_clk 0>;
+		/* clock-frequency = <900000000>; */
+	};
+};
+
+&uart0 {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED GIC_EXT_UART0 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+
+/* FIXME Disable for early development
+&eth0 {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED 9 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+&gmac {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED 9 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+&usb {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED 8 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+&hdmi0 {
+	interrupt-parent = <&gic>;
+	interrupts = <GIC_SHARED 13 IRQ_TYPE_LEVEL_HIGH>;
+};
+*/

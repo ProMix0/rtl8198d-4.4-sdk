@@ -1,0 +1,87 @@
+#!/bin/sh
+
+. /lib/functions.sh
+local dot_server1=$(uci -q get dns_privacy.stubby.server1)
+local dot_server2=$(uci -q get dns_privacy.stubby.server2)
+local dot_server3=$(uci -q get dns_privacy.stubby.server3)
+
+dnsp_retry_times=3
+
+[ -z "$dnsp_retry_times" ] && {
+    dnsp_retry_times=3 # Default retry three times
+}
+
+dnsp_check_interval=30
+
+[ -z "$dnsp_check_interval" ] && {
+    dnsp_check_interval=30 # Default check interval 30 seconds
+}
+
+local dot_port=853
+
+start_dns_proxy=1
+
+detect_dot_server ()
+{
+    server=$1
+    local result=$(openssl s_client -connect "${server}:${dot_port}" | grep CONNECTED)
+    local connect=${result:0:9}
+    echo $server $connect
+    if [ "$connect" == "CONNECTED" ]; then
+        echo 1 > /tmp/detect_dohdot_server/dot_flag
+    fi
+    echo "detect done"
+}
+
+while [ true ]
+do
+    server_num=0
+    dnsp_servers="${dot_server1} ${dot_server2} ${dot_server3}"
+    
+    unavailable_server_num=0
+
+    for server in $dnsp_servers; do
+        server_num=$((server_num + 1))
+        if [ "$server" == "none" ]; then
+            unavailable_server_num=$((unavailable_server_num + 1))
+            continue
+        fi
+
+        rm -rf /tmp/detect_dohdot_server/dot_flag
+        detect_dot_server $server &
+        # pid=$!
+        sleep 5
+        if [ -e "/tmp/detect_dohdot_server/dot_flag" ]; then
+            result=1
+        else
+            result=0
+            ps | grep "${server}:${dot_port}" | grep -v grep | awk '{print $1}' | xargs kill >/dev/null 2>&1
+        fi
+        echo $result
+
+        if [ $result -eq 1 ]; then
+            break
+        else
+            unavailable_server_num=$((unavailable_server_num + 1))
+        fi
+    done
+
+    if [ $unavailable_server_num -eq 3 ]; then
+        echo "all dot servre not available"
+        if [ $start_dns_proxy -eq 1 ]; then
+            /usr/lib/dnsproxy/dnsproxy_deamon.sh > /dev/null 2>&1 &
+            start_dns_proxy=0
+        fi
+    elif [ $unavailable_server_num -lt 3 ]; then
+        echo "some dot server is available delete dns proxy iptable rules"
+        ps | grep dnsproxy | grep -v grep | awk '{print $1}' | xargs kill >/dev/null 2>&1
+        start_dns_proxy=1
+        iptables -t nat -D prerouting_rule_dns 1 >/dev/null 2>&1
+        iptables -t nat -D prerouting_rule_dns 1 >/dev/null 2>&1
+    fi
+
+    sleep $dnsp_check_interval
+done
+
+return 0
+

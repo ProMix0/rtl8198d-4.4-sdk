@@ -1,0 +1,66 @@
+/*
+ * ca77xx-led.dtsi - Device Tree Include file for CA77xx SoC with
+ * LED contoller.
+ *
+ */
+
+/ {
+	led_ctrl: led-controller@bc100114 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "cortina,ca77xx-leds";
+		reg = <0xbc100114 0x44>;
+
+		pinctrl-0 = <&led_ctrl_default>;
+		pinctrl-names = "default";
+
+		led0: led@0 {
+			reg = <0x0>;
+		};
+		led1: led@1 {
+			reg = <0x1>;
+		};
+		led2: led@2 {
+			reg = <0x2>;
+		};
+		led3: led@3 {
+			reg = <0x3>;
+		};
+		led4: led@4 {
+			reg = <0x4>;
+		};
+		led5: led@5 {
+			reg = <0x5>;
+		};
+		led6: led@6 {
+			reg = <0x6>;
+		};
+		led7: led@7 {
+			reg = <0x7>;
+		};
+		led8: led@8 {
+			reg = <0x8>;
+		};
+		led9: led@9 {
+			reg = <0x9>;
+		};
+		led10: led@a {
+			reg = <0xa>;
+		};
+		led11: led@b {
+			reg = <0xb>;
+		};
+		led12: led@c {
+			reg = <0xc>;
+		};
+		led13: led@d {
+			reg = <0xd>;
+		};
+		led14: led@e {
+			reg = <0xe>;
+		};
+		led15: led@f {
+			reg = <0xf>;
+		};
+	};
+};

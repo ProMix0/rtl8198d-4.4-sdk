@@ -1,0 +1,62 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=100
+. /usr/lib/dnsproxy/dnsproxy_api.sh
+
+local dns_privacy=$(uci get dns_privacy.global.dns_privacy)
+local dns_mode=$(uci -q get dns_privacy.global.dns_mode)
+local listen_port1=$(uci -q get dns_privacy.https_dns_proxy.listen_port1)
+local listen_port2=$(uci -q get dns_privacy.https_dns_proxy.listen_port2)
+local listen_port3=$(uci -q get dns_privacy.https_dns_proxy.listen_port3)
+local bootstrap_dns=$(uci -q get dns_privacy.https_dns_proxy.bootstrap_dns)
+#local server_list=$(uci get dns_privacy.stubby.server | tr ' ' '\n')
+local server1=$(uci -q get dns_privacy.https_dns_proxy.server1)
+local server2=$(uci -q get dns_privacy.https_dns_proxy.server2)
+local server3=$(uci -q get dns_privacy.https_dns_proxy.server3)
+local wan_type=$(uci -q get network.wan.wan_type)
+
+start()
+{
+    if [ ! -d "/tmp/detect_dohdot_server" ]; then
+        mkdir /tmp/detect_dohdot_server/
+    fi
+
+    if [ "$wan_type" = "v6plus" ] || [ "$wan_type" = "dslite" ]; then
+        echo "not support doh in dslite or v6plus"
+    else
+        if [ "$dns_privacy" = 'doh' ]; then
+            if [ "$server1" != 'none' ]; then
+                https-dns-proxy -p "${listen_port1}" -d -b "${bootstrap_dns}" -r "${server1}" -4 1
+            fi
+
+            if [ "$server2" != 'none' ]; then
+                https-dns-proxy -p "${listen_port2}" -d -b "${bootstrap_dns}" -r "${server2}" -4 1
+            fi
+            if [ "$server3" != 'none' ]; then
+                https-dns-proxy -p "${listen_port3}" -d -b "${bootstrap_dns}" -r "${server3}" -4 1
+            fi
+            #echo "$server_list" | while IFS= read -r server; do
+            #    https-dns-proxy -p ${listen_port} -d -b ${bootstrap_dns} -r ${server} -4 1
+            #    listen_port=$((listen_port+1))
+            #done
+            #close dnsproxy
+            [ "${dns_mode}" = "default" ] && doh_server_check &
+            ps | grep dnsproxy | grep -v grep | awk '{print $1}' | xargs kill >/dev/null 2>&1
+
+            #delete iptables rules related to dnsproxy
+            iptables -t nat -D prerouting_rule_dns 1 >/dev/null 2>&1
+            iptables -t nat -D prerouting_rule_dns 1 >/dev/null 2>&1
+        fi
+    fi
+    return 0
+}
+
+stop()
+{
+    ps | grep doh_server_check | grep -v grep | awk '{print $1}' | xargs kill >/dev/null 2>&1
+    ps | grep https-dns-proxy | grep -v grep | awk '{print $1}' | xargs kill >/dev/null 2>&1
+    ps | grep https-dns-proxy | grep -v grep | awk '{print $1}' | xargs kill >/dev/null 2>&1
+    ps | grep https-dns-proxy | grep -v grep | awk '{print $1}' | xargs kill >/dev/null 2>&1
+    return 0
+}

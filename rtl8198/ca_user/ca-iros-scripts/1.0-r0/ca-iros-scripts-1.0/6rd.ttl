@@ -1,0 +1,195 @@
+;; 6RD Unicast
+;;
+;; LAN-to-WAN, CE-to-BR, from port 1 to port 7
+;;   mac_sa = 00-c0-a8-12-34-56
+;;   mac_da = 00-13-25-00-00-02
+;;   v6_src = 2001:a801:0a00::1
+;;   v6_dest = 3001:0000:0100::1
+;;   sport = 63
+;;   dport = 63
+;;   NO vid
+;;
+;; LAN-to-WAN, CE-to-CE, from port 1 to port 7
+;;   mac_sa = 00-c0-a8-12-34-56
+;;   mac_da = 00-13-25-00-00-02
+;;   v6_src = 2001:a801:0a00::1
+;;   v6_dest = 2001:a8064:0a00::1
+;;   sport = 63
+;;   dport = 63
+;;   NO vid
+;;
+;; WAN2LAN, BR-to-CE, from port 0x7 to port 0x1
+;;   mac_sa = 00-c0-a8-ab-cd-ef
+;;   mac_da = 00-13-25-00-00-01
+;;   outer v4_src = 192.0.0.1
+;;   outer v4_dest = 192.168.1.10
+;;   inner v6_src = 3001:0000:0100::1
+;;   inner v6_dest = 2001:a801:0a00::1
+;;   sport = 63
+;;   dport = 63
+;;   NO vid
+;;
+;; WAN2LAN, CE-to-CE, from port 0x7 to port 0x1
+;;   mac_sa = 00-c0-a8-ab-cd-ef
+;;   mac_da = 00-13-25-00-00-01
+;;   outer v4_src = 192.168.100.10
+;;   outer v4_dest = 192.168.1.10
+;;   inner v6_src = 2001:a864:0a00::1
+;;   inner v6_dest = 2001:a801:0a00::1
+;;   sport = 63
+;;   dport = 63
+;;   NO vid
+;;
+;; 6RD entry 0:
+;;   ce_ip = 192.168.1.10 (local)
+;;   br_ip = 192.0.0.1 (peer)
+;;   6rd_v6_prfx = 2001::/64
+;;   6rd_id_start = 1000
+;;   6rd_id_end = 60000
+;;   6rd_ingr_chk_en = 1
+;;   6rd_v6_prfx_len = 16
+;;   6rd_v4_msk_len = 8
+
+sendln 'iros'
+wait 'ca-iros->'
+
+;; T3, LPM (only set t4ctrl)
+
+sendln 'cd /etc/cortina/iros/aal/lpm'
+wait 'ca-iros->'
+
+sendln 'source set_default_t4ctrl.tcl'
+wait 'ca-iros->'
+
+sendln 'source add_lpm_v6_wan2lan.tcl'
+wait 'ca-iros->'
+
+;; DS-Lite Table
+;;   It sets LPM, NextHop, Hash(if NAT is needed).
+
+sendln 'cd /etc/cortina/iros/aal/6rd'
+wait 'ca-iros->'
+
+sendln 'source add_0.tcl'
+wait 'ca-iros->'
+
+sendln 'cd /etc/cortina/iros/aal/hashlite'
+wait 'ca-iros->'
+
+sendln 'source add_hash_v6_wan2lan.tcl'
+wait 'ca-iros->'
+
+sendln 'cd /'
+wait 'ca-iros->'
+sendln 'exit'
+wait 'root@OpenWrt:'
+
+;; IF Table
+
+sendln 'app-cli'
+wait 'Cortina>'
+sendln 'enable'
+wait 'Cortina#'
+sendln 'config'
+wait 'Cortina(config)#'
+sendln 'aal'
+wait 'Cortina(config-aal)#'
+sendln 'l3_if'
+wait 'Cortina(config-aal-l3_if)#'
+
+;; IF Table, entry 32 for port 0x7 (WAN)
+
+sendln 'l3_if ldpid_vld 32 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if ldpid 32 0x7'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if mac_sa_vld 32 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if mac_sa_an_sel 32 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if vlan_vld 32 0'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if vlan_cnt 32 0'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if deep_q 32 1'
+wait 'Cortina(config-aal-l3_if)#'
+
+;; IF Table, entry 1 for port 0x19 (LAN)
+
+sendln 'l3_if ldpid_vld 1 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if ldpid 1 0x19'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if mac_sa_vld 1 1'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if mac_sa_an_sel 1 2'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if vlan_vld 1 0'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if vlan_cnt 1 0'
+wait 'Cortina(config-aal-l3_if)#'
+sendln 'l3_if deep_q 1 1'
+wait 'Cortina(config-aal-l3_if)#'
+
+
+sendln 'exit'
+wait 'Cortina(config-aal)#'
+
+;; Classifier
+sendln 'l3_cls'
+wait 'Cortina(config-aal-l3_cls)#'
+
+;; Classifier for UC downstream
+sendln 'key_clean 0 1'
+
+;;set the key of lspid
+sendln 'tunnel_id_key lspid 0 0x18'
+sendln 'tunnel_id_key msk_lspid 0 0'
+
+;;set the key of ip_sa to 192.0.0.0/8
+;;sendln 'tunnel_id_key ip_sa 0 0xc0000000'
+;;sendln 'tunnel_id_key msk_ip_sa_l 0 8'
+
+;;set the key of ip_da to 192.168.1.0/24
+sendln 'tunnel_id_key ip_da 0 0xc0a8010a'
+sendln 'tunnel_id_key msk_ip_da_l 0 24'
+
+sendln 'tunnel_id_key ip_protocol 0 0x29'
+sendln 'tunnel_id_key msk_ip_protocol 0 0'
+
+;;enable the key
+sendln 'tunnel_id_key cls_key_valid 0 1'
+sendln 'tunnel_id_key cls_pri 0 10'
+sendln 'tunnel_id_key cls_rslt_type 0 1'
+
+;;clean fib 0 fields in fib table index 0
+sendln 'fib_clean 0 0'
+
+;;set the fib of mcgid to 0x19
+sendln 'fib_0 dpid_vld 0 1'
+sendln 'fib_0 permit 0 1'
+sendln 'fib_0 mcgid 0 0x19'
+
+;; set ingress if_id to 0x20 (6rd entry 0)
+sendln 'fib_0 mdata_w_1 0 0x2000'
+sendln 'fib_0 mdata_w_vld_1 0 0xc'
+
+;; pop outer L3 hdr (ipv4 hdr)
+sendln 'fib_0 pop_l3_en 0 1'
+sendln 'fib_0 pop_l3_vld 0 1'
+
+;; set t2ctrl to 0xf
+sendln 'fib_0 t2_ctrl 0 0xf'
+sendln 'fib_0 t2_ctrl_vld 0 1'
+sendln 'fib_0 t3_ctrl 0 0x0'
+sendln 'fib_0 t3_ctrl_vld 0 1'
+sendln 'fib_0 t4_ctrl 0 0x0'
+sendln 'fib_0 t4_ctrl_vld 0 1'
+
+;;show key and fib settings
+sendln 'show aal l3_cls tunnel_id_key 0'
+sendln 'show aal l3_cls fib_0 0'
+
+
+sendln 'logout'
+

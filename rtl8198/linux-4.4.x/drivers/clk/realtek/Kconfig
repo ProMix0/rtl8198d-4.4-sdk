@@ -1,0 +1,5 @@
+config COMMON_CLK_RTK_APRO
+	bool "RTK ApolloPro Clock Driver"
+	depends on (CLKSRC_MIPS_GIC)
+	help
+	  Build the RTK ApolloPro clock driver based on the common clock framework.

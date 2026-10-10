@@ -1,0 +1,22 @@
+#!/bin/sh
+
+## invoid to do rcS twice when system already up ##
+startRunFile="/var/run/.start_up_run_file"
+if [ -f $startRunFile ]; then
+	echo "*********** SYSTEM ALREADY UP *************"
+	exit 1
+fi 
+
+echo === Start to run rc0 ~ rc63 ===
+i=0
+while [ "$i" != "64" ]
+do
+	rc_file=/etc/init.d/rc$i
+	if [ -f "$rc_file" ]; then 
+		echo "----- do_rc [$rc_file] -----"	
+		sh $rc_file
+	fi	
+	i=$(($i+1))
+done
+
+touch $startRunFile

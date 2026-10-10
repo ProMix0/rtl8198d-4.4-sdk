@@ -1,0 +1,126 @@
+#if 1 /* RTK VoIP */
+/ {
+	reserved-memory {
+		/* reserved memory area in DDR for Taroko eCos */
+                voip_vector_reserved: voip_vector_buffer@0x0 {
+                        reg = <0x00000000 0x0 0x0 0x1000>;
+                };
+
+                /* reserved memory area in DDR for Taroko eCos */
+		voip_reserved: voip_buffer@0x2000000 {
+			 reg = <0x00000000 0x2000000 0x0 0x700000>;
+		};
+
+		voip_ipc_reserved: voip_ipc_noncache_buffer@0x2700000 {
+			 reg = <0x00000000 0x2700000 0x0 0x100000>;
+		};
+	};
+
+	voip_ipc@0x2700000 {
+		compatible = "cortina,voip_ipc";
+		reg = <0x0 0xf4329000 0x0 0x20>,
+		      <0x0 0x80000000 0x0 0x10>;
+		memory-region = <&voip_ipc_reserved>,
+				 <&voip_reserved>;
+		interrupt-parent = <&per_ictl>;
+		interrupts = <IRQ_PER_SOFT>;
+
+		resets = <&block_rst PE1_RESET>, <&block_rst RCPU1_RESET>;
+		reset-names = "pe_reset", "rcpu_reset";
+	};
+};
+
+&dma_ssp_ictl0 {
+	status = "disabled";
+};
+
+&audio {
+	status = "disabled";
+};
+
+#else	/* SLIC SDK diagnostic */
+/ {
+	slic_clk: ext_slic_clk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+#if 0
+		/* extclk ONLY and divided internally to generate sclk
+		 * ISI:24576000, ZSI:49152000
+		 */
+		clock-frequency = <24576000>;
+		clock-output-names = "ext-slic-clk";
+#else
+		/* extclk & extsclk BOTH
+		 * ISI: extclk - 24576000/extsclk - 2048000
+		 * ZSI: extclk - 49152000/extsclk - 4096000
+		 */
+		clock-frequency = <4096000>;
+		clock-output-names = "ext-slic-sclk";
+#endif
+	};
+};
+
+&audio {
+	clocks = <&slic_clk>;
+	/* clocks = <&apb_pclk>; */
+};
+#endif
+
+&spi0 {
+#if 1
+	/*
+	 * Le9641: channel_count = 1, with zsi, mode spi-cpha/spi-cpol
+	 *         channel_count = 1 (SPI/PCM)
+	 * Le9642: channel_count = 2, with zsi, mode spi-cpha/spi-cpol
+	 */
+	voicepath_spi0: voicepath_spi0@0 {
+		compatible = "microsemi,voicepath_spi", "rohm,dh2228fv";
+		status = "okay";
+		spi-max-frequency = <2500000>;
+		reg = <0>;
+		spi-zsi;
+		spi-cpha;
+		spi-cpol;
+		channel_count = <2>;
+		debug_level = <7>;
+		/* reset-gpio = <&gpio0 3 GPIO_ACTIVE_LOW>; */
+        };
+#endif
+
+#if 0
+	/* explained here proslic_api/docs/ProSLIC_API_QuickStart_Linux.pdf */
+	/* Si32183: channel_count = 1, with isi, mode spi-cpha
+	 * Si32285: channel_count = 2, with isi, mode spi-cpha
+	 * Si32287: channel_count = 2, w/o isi, mode spi-cpha/spi-cpol
+	 */
+	proslic_spi0: proslic_spi0@0 {
+		compatible = "silabs,proslic_spi", "rohm,dh2228fv";
+		status = "okay";
+		spi-max-frequency = <2500000>;
+		reg = <0>;
+		/* spi-isi; */
+		spi-cpha;
+		spi-cpol;
+		channel_count = <2>;
+		debug_level = <7>;
+		reset-gpio = <&gpio0 3 GPIO_ACTIVE_LOW>;
+	};
+#endif
+
+#if 0
+	/* SPI/PCM: spi-cpha/spi-cpol
+	 * CSI:     spi-csi/spi-cpha/spi-cpol
+         */
+	lantiq_spi0: lantiq_spi0@0 {
+		compatible = "lantiq,duslicxs", "rohm,dh2228fv";
+		status = "okay";
+		spi-max-frequency = <2500000>;
+		reg = <0>;
+		spi-cpha;
+		spi-cpol;
+		channel_count = <2>;
+		debug_level = <7>;
+		reset-gpio = <&gpio0 3 GPIO_ACTIVE_LOW>;
+        };
+#endif
+};

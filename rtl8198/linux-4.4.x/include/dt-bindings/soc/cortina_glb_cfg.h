@@ -1,0 +1,23 @@
+/*
+ * This header provides global config mapping.
+ *
+ */
+
+#ifndef _DT_BINDINGS_RESET_CORTINA_GLOBAL_CONFIG_H
+#define _DT_BINDINGS_RESET_CORTINA_GLOBAL_CONFIG_H
+
+/* Saturn GLOBAL_CONFIG */
+#define SATURN_WD_RESET_SUBSYS_ENABLE	4
+#define SATURN_WD_RESET_ALL_BLOCKS	6
+#define SATURN_WD_RESET_REMAP		7
+#define SATURN_WD_RESET_EXT_RESET	8
+#define SATURN_EXT_RESET		9
+#define SATURN_GPON_PD			16
+#define SATURN_EPON_PD			17
+#define SATURN_L3FE_PD			18
+#define SATURN_PER_PD			19
+#define SATURN_FLASH_PD			20
+#define SATURN_SD_PD			21
+#define SATURN_IOSW_PD			22
+
+#endif

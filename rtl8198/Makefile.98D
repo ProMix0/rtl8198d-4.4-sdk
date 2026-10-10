@@ -1,0 +1,35 @@
+#
+#  Checkout src for 98D
+#
+ROOTDIR  = $(shell pwd)
+
+preconfig44_%: 
+	@echo $* > tttttmp
+	@if [ "`grep 98D tttttmp`" != "" ]; then \
+		if [ -d $(ROOTDIR)/linux-4.4.x/drivers/net/wireless/realtek/rtl8192cd ]; then \
+			echo `cd linux-4.4.x/drivers/net/wireless/realtek/rtl8192cd && svn info` > tttttmp; \
+			if [ "`grep branch-rtl819x-sdk-v3.4.13 tttttmp`" == "" ]; then \
+				mv linux-4.4.x/drivers/net/wireless/realtek/rtl8192cd linux-4.4.x/drivers/net/wireless/realtek/rtl8192cd-`date +%Y%m%d_%H%M%S`; \
+				svn co http://cadinfo.realtek.com/svn/CN/jungle/branches/branch-rtl819x-sdk-v3.4.13/linux-2.6.30/drivers/net/wireless/rtl8192cd $(ROOTDIR)/linux-4.4.x/drivers/net/wireless/realtek/rtl8192cd-3413; \
+				ln -sf $(ROOTDIR)/linux-4.4.x/drivers/net/wireless/realtek/rtl8192cd-3413 $(ROOTDIR)/linux-4.4.x/drivers/net/wireless/realtek/rtl8192cd; \
+			fi ; \
+		fi; \
+		if [ ! -d $(ROOTDIR)/linux-4.4.x/drivers/net/wireless/rtl8192cd ]; then \
+			mkdir -p $(ROOTDIR)/linux-4.4.x/drivers/net/wireless/rtl8192cd; \
+			ln -sf $(ROOTDIR)/linux-4.4.x/drivers/net/wireless/realtek/rtl8192cd/Kconfig-usb $(ROOTDIR)/linux-4.4.x/drivers/net/wireless/rtl8192cd/Kconfig-usb; \
+		fi; \
+		if [ -d $(ROOTDIR)/user/11s-PathSelection/msdk-1004k ]; then \
+			rm -fr $(ROOTDIR)/user/11s-PathSelection; \
+			svn export http://cadinfo.realtek.com/svn/CN/jungle/branches/luna_8198f/user/11s-PathSelection $(ROOTDIR)/user/11s-PathSelection; \
+		fi; \
+		if [ -d $(ROOTDIR)/rtk_voip ]; then \
+			rm -fr rtk_voip; \
+			mkdir -p rtk_voip/kernel; \
+			touch rtk_voip/kernel/Kconfig; \
+			mkdir -p rtk_voip/aipc_char; \
+			touch rtk_voip/aipc_char/Kconfig; \
+			mkdir -p rtk_voip/maserati_2.0; \
+			echo "prepare:" > rtk_voip/maserati_2.0/Makefile;\
+		fi; \
+	fi
+	@rm -f tttttmp
